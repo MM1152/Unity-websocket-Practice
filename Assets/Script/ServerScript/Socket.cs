@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
 using WebSocketSharp;
+using System.Threading;
 /*
 [Serializable]
 public class Data{
@@ -47,7 +48,7 @@ public class Data{
 /// </summary>
 public class Socket : MonoBehaviour
 {
-
+    private Thread thread;
     public GameObject[] other ;
     public MoveObject[] otherMoveObject;
     public GameObject user;
@@ -59,15 +60,16 @@ public class Socket : MonoBehaviour
     public ConcurrentQueue<Action> queue = new ConcurrentQueue<Action>();
 
     private void Awake(){
+        
         // OnMessage : 서버에서 메세지가 넘어오면 실행되는 함수
         try {
             
             using(ws = new WebSocket("ws://172.30.1.10:8000")) {
-                
+               
                 ws.OnMessage += (sender , e) => {
                     
                     Data data = JsonUtility.FromJson<Data>(e.Data);
-                    Debug.Log(data.title);
+                    
                     if(data.title.Equals("checkUserID")){
                         userName = data.id.ToString();
                         queue.Enqueue(() => CreateUser());
@@ -76,7 +78,9 @@ public class Socket : MonoBehaviour
                     }if(data.title.Equals("checkCreateUser")){
                         queue.Enqueue(() => CreateOtherUser(data.id , data.users));
                     }if(data.title.Equals("checkMove")){
-                        queue.Enqueue(() => MoveOtherCharector(data));
+                        Debug.Log(data.x);
+                        //thread = new Thread(() => addQueue(() => MoveCharector(data.id)));
+                       queue.Enqueue(() => MoveOtherCharector(data));
                     }if(data.title.Equals("checkAttack")){
                         queue.Enqueue(() => AttackShow(data.id , new Vector2(data.x , data.y)));
                     }
@@ -91,18 +95,25 @@ public class Socket : MonoBehaviour
         
     }
     void Update(){
+        
+
         while(queue.Count > 0){
             if(queue.TryDequeue(out var action)){
                 action?.Invoke();
             }
         }
+    
     }
     void LateUpdate(){
         if(this_player_MoveObject.state != State.ATTACK){
             queue.Enqueue(() => MoveCharector(int.Parse(this_player.name)));
             this_player_MoveObject.Move();
         }
+            
         AttackUser();
+    }
+    void addQueue(Action callback){
+        queue.Enqueue(callback);
     }
     ///<summary>
     ///Attack 실행시 호출되는 함수
