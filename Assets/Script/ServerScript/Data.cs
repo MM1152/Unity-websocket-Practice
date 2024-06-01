@@ -1,5 +1,5 @@
 using System;
-
+using UnityEngine;
 /// <summary>
 /// Type (string title , int id , int[] users , float x , float y)
 /// </summary>
@@ -10,6 +10,7 @@ public class Data{
     public int[] users;
     public float x;
     public float y;
+    public Vector2 moveXY;
     public Data(string title){
         this.title = title;
     }
@@ -27,7 +28,15 @@ public class Data{
         this.x = x;
         this.y = y;
     }
+    public Data (string title, int id , float x , float y , Vector2 moveXY){
+        this.title=title;
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.moveXY = moveXY;
+    }
     public Data getData(){
         return this;
     }
+
 }
