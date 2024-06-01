@@ -10,9 +10,9 @@ wss.on('connection', (ws , req) => {
 
     userId++;
     userList.push(userId);
-    console.log(ws.Server);
+    
     ws.id = userId;
-
+    console.log(ws.id);
     var data1 = {
         title : "checkUserID",
         id : userId,
@@ -23,10 +23,10 @@ wss.on('connection', (ws , req) => {
     
     ws.on('message', function message(data) {
         data = JSON.parse(data)
-        
+        console.log(`${ws.id} send to ${data.title}`);
         if(data.title == "EndConnection"){
             console.log("send EndConnectionMessage");
-            console.log(data.id);
+            console.log(`disconnetion wsid : ${ws.id}`);
 
             for(let i = 0; i < userList.length; i++){
                 if(userList[i] == data.id){
@@ -62,20 +62,31 @@ wss.on('connection', (ws , req) => {
         }
         if(data.title == "PlayerMove"){
             wss.clients.forEach(function each(client) {
-                console.log(`ws : ${ws.id} client : ${client.id}`);
                 if(client != ws && client.readyState === WebSocket.OPEN){
                     var data2 = {
                         title : "checkMove",
                         id : data.id ,
                         x : data.x ,
-                        y : data.y 
+                        y : data.y, 
+                        moveXY : data.moveXY
                     }
                     client.send(JSON.stringify(data2));
             } 
         })
         }
         if(data.title == "AttackOtherPlayer"){
-
+            console.log(data.moveXY)
+            wss.clients.forEach(function each(client) {
+                if(client.id != data.id){
+                    var data2  = {
+                        title : "checkAttack",
+                        id : data.id,
+                        x : data.x,
+                        y : data.y
+                    }
+                    client.send(JSON.stringify(data2))
+                }
+            })
         }
 
 })
