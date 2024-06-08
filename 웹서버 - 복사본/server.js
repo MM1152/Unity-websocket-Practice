@@ -22,10 +22,11 @@ wss.on('connection', (ws , req) => {
 
     ws.on('close' , () => {
         for(let i = 0; i < userList.length; i++){
-            if(userList[i].userId == ws.id){
+            if(userList[i] == ws.id){
                 userList.splice(i,1);
             }
         }
+        console.log(userList)
         var data2 = {
             title : "CheckOutUser" ,
             users : userList,
@@ -36,28 +37,7 @@ wss.on('connection', (ws , req) => {
     ws.on('message', function message(data) {
         
         data = JSON.parse(data)
-        
-        if(data.title == "EndConnection"){
-            console.log(`disconnetion wsid : ${ws.id}`);
- 
-            for(let i = 0; i < userList.length; i++){
-                if(userList[i] == data.id){
-                    userList.splice(i,1);
-                }
-            }
-           
-            wss.clients.forEach(function each(client) {           
-                if (client.readyState === WebSocket.OPEN) {
-                    var data2 = {
-                        title : "checkOutUser" ,
-                        users : userList ,
-                        id : data.id
-                    } 
-                    client.send(JSON.stringify(data2));
-                
-                }
-        })
-        }
+        console.log(data.x + " " + data.y);
         if(data.title == "Connection"){
             var data2 = make_data("CreateOtherUser" , data.id , userList)
             all_player_response(data2)
@@ -118,9 +98,9 @@ function all_player_response(data){
     })
 }
 
-function without_player_response(data , ws){
+function without_player_response(data){
     wss.clients.forEach(function each(client) {
-        if(ws.id != client.id){
+        if(data.id != client.id){
             client.send(JSON.stringify(data))
         }
     })
