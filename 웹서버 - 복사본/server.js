@@ -8,10 +8,23 @@ var userId = 0
 var userList = []
 wss.on('connection', (ws , req) => {
 
-    userId++;
-    userList.push(userId);
     
+    for(let i = 1; i < 100; i++){
+        for(let j =0; j < userList.length; j++){
+            if(userList[j] == i){
+                userId = 0;
+                break;
+            }
+            else {
+                userId = i;
+            }
+        }
+        if(userId != 0){
+            break;
+        }
+    }
     ws.id = userId;
+    userList.push(userId);
     console.log(ws.id);
     var data1 = {
         title : "checkUserID",
@@ -23,7 +36,7 @@ wss.on('connection', (ws , req) => {
     
     ws.on('message', function message(data) {
         data = JSON.parse(data)
-        console.log(`${ws.id} send to ${data.title}`);
+   
         if(data.title == "EndConnection"){
             console.log("send EndConnectionMessage");
             console.log(`disconnetion wsid : ${ws.id}`);
