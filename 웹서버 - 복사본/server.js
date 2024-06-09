@@ -8,13 +8,26 @@ var enemyList = []
 var userList = []
 wss.on('connection', (ws , req) => {
 
-    let x = 0;
-    let y = 0;
 
     userId++;
     userList.push(userId)
     
+    for(let i = 1; i < 100; i++){
+        for(let j =0; j < userList.length; j++){
+            if(userList[j] == i){
+                userId = 0;
+                break;
+            }
+            else {
+                userId = i;
+            }
+        }
+        if(userId != 0){
+            break;
+        }
+    }
     ws.id = userId;
+    userList.push(userId);
     console.log(ws.id);
 
     var data1 = make_data("Init" , userId , userList)
