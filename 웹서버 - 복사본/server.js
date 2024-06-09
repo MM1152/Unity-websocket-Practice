@@ -37,7 +37,7 @@ wss.on('connection', (ws , req) => {
     ws.on('message', function message(data) {
         
         data = JSON.parse(data)
-        console.log(data.x + " " + data.y);
+        console.log(`Who : ${ws.id}  [${data.x} , ${data.y}] moveXY : ${data.moveXY .x}`);
         if(data.title == "Connection"){
             var data2 = make_data("CreateOtherUser" , data.id , userList)
             all_player_response(data2)
