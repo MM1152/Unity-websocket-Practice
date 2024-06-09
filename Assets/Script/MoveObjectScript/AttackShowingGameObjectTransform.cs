@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Compression;
 using UnityEngine;
 
 public class AttackShowingGameObjectTransform : MonoBehaviour
 {
     MoveObject moveObject;
+    Vector2 attackPosition;
     
     // Start is called before the first frame update
     void Awake()
@@ -14,15 +16,16 @@ public class AttackShowingGameObjectTransform : MonoBehaviour
     }
 
     void OnEnable() {
-        gameObject.transform.localPosition = new Vector3(moveObject.moveX / 1.5f  , moveObject.moveY / 1.5f).normalized;
-        
         float z = 0;
-        if(moveObject.moveX == 0 || moveObject.moveY == 0){
-            z = moveObject.moveX == 0 ? 90 : 0;
-        }else {
-            z = moveObject.moveX * moveObject.moveY == -1 ? -45f : 45f; 
-        }
 
-        gameObject.transform.rotation = Quaternion.Euler(0,0,z);
+        if(moveObject.sp.flipX){
+            attackPosition = new Vector2(-1f , 0f);
+            z = 180f;
+        } else {
+            attackPosition = new Vector2(1f , 0f);
+            z = 0f;
+        }
+        gameObject.transform.localPosition = attackPosition;
+        gameObject.transform.rotation = Quaternion.Euler(0,z,0);
     }
 }

@@ -7,8 +7,9 @@ using UnityEngine;
 using UnityEngine.UI;
 public class MoveObject : MonoBehaviour
 {
-    bool WaitAnimationFinish;
 
+    Socket socket;
+    public ObjectStatus stat;
     [Header("Component")]
     public Rigidbody2D rg;
     public Animator ani;
@@ -30,27 +31,51 @@ public class MoveObject : MonoBehaviour
     [Header("Character Name")]
     [SerializeField] private string userName;
     
+    
 
 
+    void Update(){
+        Move();
+        Attack();
+    }
     void Start(){
         state = State.IDLE;
+        socket = Socket.Instance;
         sp = GetComponent<SpriteRenderer>();
         ani = GetComponent<Animator>();
         text.text = this.gameObject.name;
         rg = GetComponent<Rigidbody2D>();
     }
     public void Move(){
-        moveX = Input.GetAxisRaw("Horizontal");
-        moveY = Input.GetAxisRaw("Vertical");
-        SetAnimation(State.MOVE);
-        transform.position += new Vector3(moveX , moveY).normalized * speed * Time.deltaTime;
-    }
-    public IEnumerator Attack(){
-        attackShow.SetActive(true);
-        SetAnimation(State.ATTACK);
-        
-        yield return new WaitForSeconds(.5f);
+        if(this.gameObject == socket.this_player && state != State.ATTACK){
+            moveX = Input.GetAxisRaw("Horizontal");
+            moveY = Input.GetAxisRaw("Vertical");
+            SetAnimation(State.MOVE);
+            transform.position += new Vector3(moveX , moveY).normalized * speed * Time.deltaTime;
 
+            socket.sendMessage -= Time.deltaTime;
+            if(socket.sendMessage < 0 && (moveX != 0 || moveY != 0)){
+                SendMessage();
+                socket.sendMessage = socket.sendMessageTime;
+            }
+        } 
+    }
+    public void SendMessage(){
+        Data data = new Data("PlayerMove" , this.gameObject.name , transform.position.x , transform.position.y , new Vector2(moveX , moveY));
+        socket.ws.Send(JsonUtility.ToJson(data));
+    }
+    public void Attack(){
+        if(Input.GetKeyDown(KeyCode.Space) && this.gameObject == socket.this_player && !socket.this_player_MoveObject.attackShow.activeSelf){
+            StartCoroutine(AttackShow());
+            Data attackData = new Data("AttackOtherPlayer" , name);
+            socket.ws.Send(JsonUtility.ToJson(attackData));
+        }
+        
+    }
+    public IEnumerator AttackShow(){
+        SetAnimation(State.ATTACK);
+        attackShow.SetActive(true);
+        yield return new WaitForSeconds(.5f);
         attackShow.SetActive(false);
         SetAnimation(State.IDLE);
     } 
@@ -60,18 +85,13 @@ public class MoveObject : MonoBehaviour
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if(other.tag == "Player"){
-            isAttackSussecs = true;
-            Rigidbody2D otherRigidBody = other.GetComponent<MoveObject>().rg;
-            otherRigidBody.AddForce(new Vector2(moveX , moveY) * pushPower , ForceMode2D.Impulse);
-            StartCoroutine(StopObject(otherRigidBody));
-            attackingPlayer = other;
+        if(other.tag == "Enemy"){
+            Debug.Log("AttackEnemy");
+            other.GetComponent<Animator>().SetTrigger("IsHit");
+            other.GetComponent<EnemyAi>().state = State.HURT;
         }
     }
-    IEnumerator StopObject(Rigidbody2D rg){
-        yield return new WaitForSeconds(0.3f);
-        rg.velocity = Vector2.zero;
-    }
+
     ///<summary>
     /// 애니메이션을 STATE로 SET해주는 함수
     ///</summary>
@@ -97,5 +117,8 @@ public class MoveObject : MonoBehaviour
 public enum State{
     IDLE,
     ATTACK,
-    MOVE
+    MOVE,
+    FINDENEMY,
+    HURT
+
 }
