@@ -58,7 +58,7 @@ public class MoveObject : MonoBehaviour
                 SendMessage();
                 socket.sendMessage = socket.sendMessageTime;
             }
-        } 
+        }
     }
     public void SendMessage(){
         Data data = new Data("PlayerMove" , this.gameObject.name , transform.position.x , transform.position.y , new Vector2(moveX , moveY));
