@@ -43,18 +43,18 @@ const wss = new WebSocket.Server({port : 8000}, () => {
 })
 var userId = 0
 var enemyList = []
-var userList = [{}]
+var userList = []
 
-
+init();
 wss.on('connection', (ws , req) => {
 
-    init();
+
 
     ws.id = userId;
 
     var data1 = JSON.stringify({
         title : "Init" ,
-        id : userList[userId] ,
+        id : userList[userId - 1].id ,
         users : userList ,
         enemyList : enemyList
     });
