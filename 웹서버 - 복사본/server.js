@@ -44,17 +44,15 @@ const wss = new WebSocket.Server({port : 8000}, () => {
 var userId = 0
 var enemyList = []
 var userList = []
+EnemyInit()
 
-init();
 wss.on('connection', (ws , req) => {
-
-
-
+    init();
     ws.id = userId;
 
     var data1 = JSON.stringify({
         title : "Init" ,
-        id : userList[userId - 1].id ,
+        id : userId ,
         users : userList ,
         enemyList : enemyList
     });
@@ -64,7 +62,7 @@ wss.on('connection', (ws , req) => {
 
     ws.on('close' , () => {
         for(let i = 0; i < userList.length; i++){
-            if(userList[i] == ws.id){
+            if(userList[i].id == ws.id){
                 userList.splice(i,1);
             }
         }
@@ -79,9 +77,10 @@ wss.on('connection', (ws , req) => {
     ws.on('message', function message(data) {
         
         data = JSON.parse(data)
+        console.log(data);
         if(data.title == "Connection"){
-            var data2 = make_data("CreateOtherUser" , userList)
-            all_player_response(data2)
+            var data2 = {title : "CreateOtherUser" , users : userList}
+            all_player_response(data2);
         }
         if(data.title == "PlayerMove"){
             var data2 = make_data("CheckMove" ,userList , data.moveXY)
@@ -144,8 +143,7 @@ function without_player_response(data){
         }
     })
 }
-
-function init(){
+function EnemyInit(){
     for(let i = 0; i < 3; i++){
         enemyList.push({
             id : i,
@@ -155,11 +153,14 @@ function init(){
         })
     }
 
+}
+function init(){
+
     userId++;
     
     for(let i = 1; i < 100; i++){
-        for(let j =0; j < userList.length; j++){
-            if(userList[j] == i){
+        for(let j = 0; j < userList.length; j++){
+            if(userList[j].id == i){
                 userId = 0;
                 break;
             }
@@ -171,7 +172,7 @@ function init(){
             break;
         }
     }
-
+    console.log(userId);
     userList.push({id : userId ,
          x : 0 ,
          y : 0});
