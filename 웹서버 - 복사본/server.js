@@ -1,7 +1,62 @@
 const WebSocket = require('ws')
+const express = require("express")
+const multer = require('multer');
+const path = require('path');
+const bodyParser = require("body-parser")
+const app = express()
+
+var db = require('./bin/DB.js')
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static("public"))
+
+const uploadDir = path.join(__dirname, 'uploads');
+const fs = require('fs');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+app.listen(8001, () => {
+    console.log(`http sever port 8001`)
+})
+
+app.post('/getData' , (req,res) => {
+    var result = req.body
+
+    var query = 'INSERT INTO mapData (mapSizeX , mapSizeY , mapValue , mapName , decoValue) Values (? , ? , ? ,? , ?)';
+    var params = [result.mapSize.x , result.mapSize.y , JSON.stringify(result.mapData) , result.mapName , JSON.stringify(result.DecoData)];
+    db.query(query , params , function(err , rows , fields){
+        if(err) console.log(err)
+    });
+
+})
+
+app.post('/mapData' , (req, res) => {
+    var reslut = req.body;
+    console.log(reslut.NeedMapName);
+    var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
+    var parmas = reslut.NeedMapName;
+    db.query(query , parmas , function(err , rows , fields) {
+        var data = {
+            "mapData" : rows
+        }
+        res.send(data);
+    })
+})
 
 const wss = new WebSocket.Server({port : 8000}, () => {
-    console.log('서버 시작')
+    console.log('wss server port 8000')
 })
 var userId = 0
 var enemyList = []
@@ -10,7 +65,6 @@ wss.on('connection', (ws , req) => {
 
 
     userId++;
-    userList.push(userId)
     
     for(let i = 1; i < 100; i++){
         for(let j =0; j < userList.length; j++){
@@ -50,7 +104,6 @@ wss.on('connection', (ws , req) => {
     ws.on('message', function message(data) {
         
         data = JSON.parse(data)
-        console.log(`Who : ${ws.id}  [${data.x} , ${data.y}] moveXY : ${data.moveXY .x}`);
         if(data.title == "Connection"){
             var data2 = make_data("CreateOtherUser" , data.id , userList)
             all_player_response(data2)
