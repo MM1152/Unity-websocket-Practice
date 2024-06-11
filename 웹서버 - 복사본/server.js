@@ -1,32 +1,15 @@
 const WebSocket = require('ws')
 const express = require("express")
-const multer = require('multer');
 const path = require('path');
 const bodyParser = require("body-parser")
 const app = express()
 
 var db = require('./bin/DB.js')
 
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname);
-    }
-});
-
-
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("public"))
 
-const uploadDir = path.join(__dirname, 'uploads');
-const fs = require('fs');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
 app.listen(8001, () => {
     console.log(`http sever port 8001`)
 })
@@ -60,32 +43,24 @@ const wss = new WebSocket.Server({port : 8000}, () => {
 })
 var userId = 0
 var enemyList = []
-var userList = []
+var userList = [{}]
+
+
 wss.on('connection', (ws , req) => {
 
+    init();
 
-    userId++;
-    
-    for(let i = 1; i < 100; i++){
-        for(let j =0; j < userList.length; j++){
-            if(userList[j] == i){
-                userId = 0;
-                break;
-            }
-            else {
-                userId = i;
-            }
-        }
-        if(userId != 0){
-            break;
-        }
-    }
     ws.id = userId;
-    userList.push(userId);
-    console.log(ws.id);
 
-    var data1 = make_data("Init" , userId , userList)
-    ws.send(JSON.stringify(data1));
+    var data1 = JSON.stringify({
+        title : "Init" ,
+        id : userList[userId] ,
+        users : userList ,
+        enemyList : enemyList
+    });
+    
+    console.log(data1);
+    ws.send(data1);
 
     ws.on('close' , () => {
         for(let i = 0; i < userList.length; i++){
@@ -105,11 +80,11 @@ wss.on('connection', (ws , req) => {
         
         data = JSON.parse(data)
         if(data.title == "Connection"){
-            var data2 = make_data("CreateOtherUser" , data.id , userList)
+            var data2 = make_data("CreateOtherUser" , userList)
             all_player_response(data2)
         }
         if(data.title == "PlayerMove"){
-            data2 = make_data("CheckMove" , data.id , userList , data.x , data.y , data.moveXY , data.state)
+            var data2 = make_data("CheckMove" ,userList , data.moveXY)
             without_player_response(data2 , ws)
         }
         if(data.title == "AttackOtherPlayer"){
@@ -117,9 +92,7 @@ wss.on('connection', (ws , req) => {
                 if(client.id != data.id){
                     var data2  = {
                         title : "CheckAttack",
-                        id : data.id,
-                        x : data.x,
-                        y : data.y
+                        oneUser : userList[data.id - 1]
                     }
                     client.send(JSON.stringify(data2))
                 }
@@ -170,4 +143,38 @@ function without_player_response(data){
             client.send(JSON.stringify(data))
         }
     })
+}
+
+function init(){
+    for(let i = 0; i < 3; i++){
+        enemyList.push({
+            id : i,
+            type : 1,
+            x: 5,
+            y: 3 * (i + 0.5)
+        })
+    }
+
+    userId++;
+    
+    for(let i = 1; i < 100; i++){
+        for(let j =0; j < userList.length; j++){
+            if(userList[j] == i){
+                userId = 0;
+                break;
+            }
+            else {
+                userId = i;
+            }
+        }
+        if(userId != 0){
+            break;
+        }
+    }
+
+    userList.push({id : userId ,
+         x : 0 ,
+         y : 0});
+
+    
 }
