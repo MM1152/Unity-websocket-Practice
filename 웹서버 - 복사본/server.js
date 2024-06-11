@@ -4,7 +4,8 @@ const path = require('path');
 const bodyParser = require("body-parser")
 const app = express()
 
-var db = require('./bin/DB.js')
+var db = require('./bin/DB.js');
+const { debug } = require('console');
 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -77,13 +78,20 @@ wss.on('connection', (ws , req) => {
     ws.on('message', function message(data) {
         
         data = JSON.parse(data)
-        console.log(data);
+
         if(data.title == "Connection"){
             var data2 = {title : "CreateOtherUser" , users : userList}
             all_player_response(data2);
         }
         if(data.title == "PlayerMove"){
-            var data2 = make_data("CheckMove" ,userList , data.moveXY)
+            
+            var data2 = {title : "CheckMove" , id : ws.id ,x : data.x , y : data.y , moveXY : data.moveXY}
+            console.log(data2);
+            let who = userStateChange(ws);
+
+            userList[who].x = data.x;
+            userList[who].y = data.y;
+            console.log(userList);
             without_player_response(data2 , ws)
         }
         if(data.title == "AttackOtherPlayer"){
@@ -153,6 +161,14 @@ function EnemyInit(){
         })
     }
 
+}
+function userStateChange(ws){
+    for(let i = 0; i < userList.length; i++){
+        if(userList[i].id == ws.id){
+            return i;
+        }
+    }
+    return 'fail'
 }
 function init(){
 
