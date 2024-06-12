@@ -5,15 +5,12 @@ using UnityEngine;
 public class EnemyCount : MonoBehaviour
 {
     public List<GameObject> Enemys;
-    public List<Transform> respawnPoint;
     public GameObject prefebEnemy;
     Socket socket;
-    void Start()
-    {   
+    public void setEnemys(){
         for(int i = 0; i < this.gameObject.transform.childCount; i++){
             Enemys.Add(gameObject.transform.GetChild(i).gameObject);
         }
-
     }
 
     // Update is called once per frame
@@ -31,12 +28,4 @@ public class EnemyCount : MonoBehaviour
         }
     }
 
-    public void Respawn(){
-        
-        for(int i = 0; i < 3; i++){
-            GameObject respawnEnemy = Instantiate(prefebEnemy , this.gameObject.transform) as GameObject;
-            respawnEnemy.transform.position = respawnPoint[i].position;
-            respawnEnemy.name = "Enemy" + i;
-        }
-    }
 }

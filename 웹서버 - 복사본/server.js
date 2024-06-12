@@ -4,7 +4,7 @@ const path = require('path');
 const bodyParser = require("body-parser")
 const app = express()
 
-var db = require('./bin/DB.js');
+//var db = require('./bin/DB.js');
 const { debug } = require('console');
 
 app.use(bodyParser.json()); 
@@ -84,13 +84,14 @@ wss.on('connection', (ws , req) => {
             all_player_response(data2);
         }
         if(data.title == "PlayerMove"){
-            
+            console.log(ws.id);
             var data2 = {title : "CheckMove" , id : ws.id ,x : data.x , y : data.y , moveXY : data.moveXY}
-            let who = userStateChange(ws);
+            
 
+            let who = userStateChange(ws);
             userList[who].x = data.x;
             userList[who].y = data.y;
-            console.log(userList);
+
             without_player_response(data2 , ws)
         }
         if(data.title == "AttackOtherPlayer"){
@@ -118,12 +119,36 @@ wss.on('connection', (ws , req) => {
             })
         }
 
+    
 })
 })
 
 wss.on('listening' , () => {
     console.log('리스닝')
 })
+
+setInterval(EnemyChangeState , 1000)
+let movePos = [1 , 1 , 1];
+function EnemyChangeState(){
+    //console.log("=========================")
+    for(let i = 0; i < enemyList.length; i++){
+        
+        if(enemyList[i].spawnPos.x + 2 < enemyList[i].x || enemyList[i].spawnPos.y + 2 < enemyList[i].y){
+            movePos[i] = -1;
+        }
+        else if(enemyList[i].spawnPos.x - 2 > enemyList[i].x || enemyList[i].spawnPos.y - 2 > enemyList[i].y){
+            movePos[i] = 1;
+        }
+        //console.log(`${i}  ${enemyList[i].x}  ${enemyList[i].y}  movePos : ${movePos}`)
+        enemyList[i].x += (Math.random() + movePos[i] * 0.3) ;
+        enemyList[i].y += (Math.random() + movePos[i] * 0.3) ;
+    }
+    //console.log("=========================")
+
+    wss.clients.forEach(function(client) {
+        client.send(JSON.stringify({title : "EnemyAround" , enemyList : enemyList}));
+    })
+}
 
 function make_data(title , id , userList , x , y , moveXY , state){
     var data = {title : title,
@@ -136,6 +161,8 @@ function make_data(title , id , userList , x , y , moveXY , state){
     }
     return data
 }
+
+
 
 function all_player_response(data){
     wss.clients.forEach(function each(client) {
@@ -152,11 +179,14 @@ function without_player_response(data){
 }
 function EnemyInit(){
     for(let i = 0; i < 3; i++){
+        let x = 5;
+        let y = 3 * i + 0.5;
         enemyList.push({
             id : i,
             type : 1,
             x: 5,
-            y: 3 * (i + 0.5)
+            y: 3 * (i + 0.5),
+            spawnPos : {x, y}
         })
     }
 

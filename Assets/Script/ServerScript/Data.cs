@@ -53,8 +53,8 @@ public class UserData{
     public float y;
 }
 [Serializable]
-public class Enemy{
-    
+public class Enemys{
+    public EnemyData[] enemyList;
 }
 [Serializable]
 public class EnemyData{

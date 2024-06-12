@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Threading;
 using System;
+using System.Security.Cryptography;
 public class EnemyAi : MonoBehaviour
 {
     [Header("적 인스펙터")]
@@ -27,7 +28,7 @@ public class EnemyAi : MonoBehaviour
     public State state;
     public Vector2 spawnPos;
     public CircleCollider2D FindUserRadious;
-
+    public float pos;
 
     float maxAroundMove;
     public bool returnSpawnPos;
@@ -38,6 +39,7 @@ public class EnemyAi : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        pos = 0.01f;
         ani = GetComponent<Animator>();
         sp = GetComponent<SpriteRenderer>();
         socket = Socket.Instance;
@@ -50,14 +52,8 @@ public class EnemyAi : MonoBehaviour
         thread = new Thread(() => InvokeRepeating("SendMessage" , 0.5f , 0.5f));
     }
 
-    public void SendMessage()
-    {
-        data = new Data("EnemyPos", this.gameObject.name, transform.position.x, transform.position.y , state);
-        socket.ws.Send(JsonUtility.ToJson(data));
-    }
     private void Update()
     {
-        Move();
         if (state == State.FINDENEMY || state == State.MOVE)
         {
             ani.SetBool("IsMove", true);
@@ -67,32 +63,17 @@ public class EnemyAi : MonoBehaviour
             ani.SetBool("IsMove", false);
         }
     }
-    private void Move()
+    public IEnumerator Move(Vector2 targetPos)
     {
-        if (Vector2.Distance(this.gameObject.transform.position, spawnPos) > maxAroundMove && state == State.IDLE)
-        {
-            returnSpawnPos = true;
-            state = State.MOVE;
+        Vector2 startPos = transform.position;
+        flipX((Vector3)targetPos);
+        state = State.MOVE;
+        for(float radio = 0f; radio < 1f; radio += pos){
+            this.gameObject.transform.position = Vector2.Lerp(startPos , targetPos , radio);
+            yield return null;
         }
-        if (returnSpawnPos)
-        {
-            
-            transform.position += ((Vector3)spawnPos - this.gameObject.transform.position).normalized * Time.deltaTime;
-            flipX(spawnPos);
-            if (Vector2.Distance(spawnPos, this.gameObject.transform.position) < 0.5f)
-            {
-                returnSpawnPos = false;
-                state = State.IDLE;
-            }
-        }
-        else if (state == State.FINDENEMY)
-        {
-            if(Vector2.Distance(transform.position , User.transform.position) > 0.5f){
-                transform.position += (User.transform.position - this.gameObject.transform.position).normalized * Time.deltaTime;
-            }
-            
-            flipX(User.transform.position);
-        }
+        state = State.IDLE;
+        transform.position = targetPos;
     }
     public void flipX(Vector3 targetPos){
         if(targetPos.x - this.gameObject.transform.position.x < 0f){
