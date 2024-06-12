@@ -13,7 +13,7 @@ public class FollowCharacter : MonoBehaviour
     void Update()
     {
         if(followCharacter == null){
-            followCharacter = GameObject.Find("Server").GetComponent<Socket>().this_player.transform;
+             followCharacter = GameObject.Find("Server").GetComponent<Socket>().this_player.transform;
         }
         if(followCharacter != null){
              gameObject.transform.position += (followCharacter.position - gameObject.transform.position + Vector3.back * 10f) * Time.deltaTime * smooth;

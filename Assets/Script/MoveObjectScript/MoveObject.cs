@@ -67,7 +67,7 @@ public class MoveObject : MonoBehaviour
     public void Attack(){
         if(Input.GetKeyDown(KeyCode.Space) && this.gameObject == socket.this_player && !socket.this_player_MoveObject.attackShow.activeSelf){
             StartCoroutine(AttackShow());
-            Data attackData = new Data("AttackOtherPlayer" , name);
+            Data attackData = new Data("AttackOtherPlayer" , this.gameObject.name);
             socket.ws.Send(JsonUtility.ToJson(attackData));
         }
         

@@ -7,21 +7,18 @@ using UnityEngine;
 public class Data{
     public string title;
     public string id;
-    public int[] users;
+    public UserData[] users;
+    public Vector2 moveXY;
     public float x;
     public float y;
-    public Vector2 moveXY;
     public State state;
+    public EnemyData[] enemyList;
     public Data(string title){
         this.title = title;
     }
     public Data(string title , string id){
         this.title = title;
         this.id = id;
-    }
-    public Data(string title , int[] users){
-        this.title = title;
-        this.users = users;
     }
     public Data(string title , string id, float x , float y){
         this.title = title;
@@ -36,17 +33,33 @@ public class Data{
         this.y = y;
         this.state = state;
     }
-    public Data (string title, string id , float x , float y , Vector2 moveXY){
-        this.title=title;
+    public Data(string title , string id, float x , float y , Vector2 moveXY){
+        this.title = title;
         this.id = id;
         this.x = x;
         this.y = y;
         this.moveXY = moveXY;
-        
     }
-    
+
     public Data getData(){
         return this;
     }
-
+    
+}
+[Serializable]
+public class UserData{
+    public int id;
+    public float x;
+    public float y;
+}
+[Serializable]
+public class Enemy{
+    
+}
+[Serializable]
+public class EnemyData{
+    public int type;
+    public int id;
+    public float x;
+    public float y;
 }

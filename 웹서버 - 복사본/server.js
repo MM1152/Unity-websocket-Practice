@@ -86,7 +86,6 @@ wss.on('connection', (ws , req) => {
         if(data.title == "PlayerMove"){
             
             var data2 = {title : "CheckMove" , id : ws.id ,x : data.x , y : data.y , moveXY : data.moveXY}
-            console.log(data2);
             let who = userStateChange(ws);
 
             userList[who].x = data.x;
@@ -96,10 +95,10 @@ wss.on('connection', (ws , req) => {
         }
         if(data.title == "AttackOtherPlayer"){
             wss.clients.forEach(function each(client) {
-                if(client.id != data.id){
+                if(client.id != ws.id){
                     var data2  = {
                         title : "CheckAttack",
-                        oneUser : userList[data.id - 1]
+                        id : ws.id
                     }
                     client.send(JSON.stringify(data2))
                 }

@@ -44,10 +44,6 @@ public class CheckMove : ISocket
                 break;
             }
         }
-
-
-
-
     }
 
     IEnumerator Moving()
@@ -58,7 +54,6 @@ public class CheckMove : ISocket
         {
             movingPlayer.transform.position = Vector2.Lerp(startPos, targetPos, i);
             yield return null;
-            Debug.Log($"WHO : {movingPlayer}  start Pos : {startPos}  Target Pos : {targetPos}");
         }
         movingPlayer.transform.position = targetPos;
         movingPlayerMoveObj.moveX = 0;
