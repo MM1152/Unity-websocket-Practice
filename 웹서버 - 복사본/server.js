@@ -84,7 +84,6 @@ wss.on('connection', (ws , req) => {
             all_player_response(data2);
         }
         if(data.title == "PlayerMove"){
-            console.log(ws.id);
             var data2 = {title : "CheckMove" , id : ws.id ,x : data.x , y : data.y , moveXY : data.moveXY}
             
 
@@ -105,21 +104,6 @@ wss.on('connection', (ws , req) => {
                 }
             })
         }
-        if(data.title == "EnemyPos"){
-            console.log(data.id + " " + data.state);
-            var EnemyPos = {
-                title : "enemyMove",
-                id : data.id,
-                x : data.x,
-                y : data.y,
-                state : data.state
-            }
-            wss.clients.forEach(function each(client){
-                client.send(JSON.stringify(data2))
-            })
-        }
-
-    
 })
 })
 
@@ -128,22 +112,81 @@ wss.on('listening' , () => {
 })
 
 setInterval(EnemyChangeState , 1000)
-let movePos = [1 , 1 , 1];
+let movePos = [1 , 1 , 1]; // 생성할 Enemy 의 갯수만큼 만들어줘야됌
 function EnemyChangeState(){
-    //console.log("=========================")
+    
+    console.log("┌───────────────────────────────────────┐")
     for(let i = 0; i < enemyList.length; i++){
+
+        if(enemyList[i].FollowTarger == null){ // 유저 찾아오기
+            userList.forEach(user => {
+                let dx = user.x - enemyList[i].x
+                let dy = user.y - enemyList[i].y
+                //console.log(`user<->enemy${i} Distance ${Math.abs((user.x - enemyList[i].x) + (user.y - enemyList[i].y))}`);
+                if(Math.sqrt(dx * dx + dy * dy) < 5){
+                    enemyList[i].FollowTarger = user;          
+                }
+            });
+        }
+
+        if(enemyList[i].FollowTarger != null){ // 유저가 비어있지 않으면 그 유저한테로의 상태 설정
+            let dx = enemyList[i].FollowTarger.x - enemyList[i].x
+            let dy = enemyList[i].FollowTarger.y - enemyList[i].y
+
+            if(Math.sqrt(dx * dx + dy * dy) > 5){
+                enemyList[i].FollowTarger = null;
+                enemyList[i].state = "MoveAround"
+            }
+            else if(Math.sqrt(dx * dx + dy * dy) < 1) { 
+                enemyList[i].state = "AttackAroundInUser"
+            }else if(Math.sqrt(dx * dx + dy * dy) < 5){
+                enemyList[i].state = "FollowUser";  
+            }
+
+           
+        }
+
+        //console.log(enemyList)
+
+        if(enemyList[i].state == "MoveAround"){
+            if(enemyList[i].spawnPos.x + 2 < enemyList[i].x || enemyList[i].spawnPos.y + 2 < enemyList[i].y){
+                enemyList[i].movePos = -1;
+            }
+            else if(enemyList[i].spawnPos.x - 2 > enemyList[i].x || enemyList[i].spawnPos.y - 2 > enemyList[i].y){
+                enemyList[i].movePos = 1;
+            }
+            //console.log(`${i} spawnPos : ${enemyList[i].spawnPos.x}  ${enemyList[i].x}  ${enemyList[i].y}  movePos : ${movePos}`)
+            
+            enemyList[i].x += (Math.random() * enemyList[i].movePos) ;
+            enemyList[i].y += (Math.random() * enemyList[i].movePos) ;
+        } else {
+            let dx = enemyList[i].FollowTarger.x - enemyList[i].x
+            let dy = enemyList[i].FollowTarger.y - enemyList[i].y
+            if(enemyList[i].state == "FollowUser"){
+                enemyList[i].x += (enemyList[i].FollowTarger.x - enemyList[i].x) * 0.3
+                enemyList[i].y += (enemyList[i].FollowTarger.y - enemyList[i].y) * 0.3 
+            }
+            //console.log(` user<->enemy Distance ${Math.sqrt((dx * dx)+(dy * dy))}`)
+            
+            for(let j = 0; j < enemyList.length; j++){
+                if(i == j){
+                    continue;
+                }
+                let enemyDx = enemyList[i].x - enemyList[j].x;
+                let enemyDy = enemyList[i].y - enemyList[j].y;
+                //console.log("enemy"+i + "  enemy" + j+ "  Distance " + Math.sqrt((enemyDx * enemyDx) + (enemyDy * enemyDy)));
+                if(Math.sqrt((enemyDx * enemyDx) + (enemyDy * enemyDy)) < 0.5){
+                    console.log("회피")
+                    enemyList[i].x += Math.random() * 2 - 1
+                    enemyList[i].y += Math.random() * 2 - 1
+                }   
+            }
+        }
         
-        if(enemyList[i].spawnPos.x + 2 < enemyList[i].x || enemyList[i].spawnPos.y + 2 < enemyList[i].y){
-            movePos[i] = -1;
-        }
-        else if(enemyList[i].spawnPos.x - 2 > enemyList[i].x || enemyList[i].spawnPos.y - 2 > enemyList[i].y){
-            movePos[i] = 1;
-        }
-        //console.log(`${i}  ${enemyList[i].x}  ${enemyList[i].y}  movePos : ${movePos}`)
-        enemyList[i].x += (Math.random() + movePos[i] * 0.3) ;
-        enemyList[i].y += (Math.random() + movePos[i] * 0.3) ;
+        console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
+        
     }
-    //console.log("=========================")
+    console.log("└───────────────────────────────────────┘")
 
     wss.clients.forEach(function(client) {
         client.send(JSON.stringify({title : "EnemyAround" , enemyList : enemyList}));
@@ -186,7 +229,10 @@ function EnemyInit(){
             type : 1,
             x: 5,
             y: 3 * (i + 0.5),
-            spawnPos : {x, y}
+            spawnPos : {x, y},
+            FollowTarger : null,
+            movePos : 1,
+            state : "MoveAround"
         })
     }
 
