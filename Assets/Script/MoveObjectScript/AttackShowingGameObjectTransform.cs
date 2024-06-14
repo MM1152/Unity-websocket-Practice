@@ -7,7 +7,7 @@ public class AttackShowingGameObjectTransform : MonoBehaviour
 {
     MoveObject moveObject;
     Vector2 attackPosition;
-    
+     float z = 0;
     // Start is called before the first frame update
     void Awake()
     {
@@ -16,7 +16,7 @@ public class AttackShowingGameObjectTransform : MonoBehaviour
     }
 
     void OnEnable() {
-        float z = 0;
+       
 
         if(moveObject.sp.flipX){
             attackPosition = new Vector2(-1f , 0f);

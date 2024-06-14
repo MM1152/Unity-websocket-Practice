@@ -62,4 +62,7 @@ public class EnemyData{
     public int id;
     public float x;
     public float y;
+    public string state;
+    public int Hp;
+    public int MaxHp;
 }

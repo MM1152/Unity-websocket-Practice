@@ -9,12 +9,8 @@ using UnityEngine;
 public class CheckMove : ISocket
 {
     public float speed;
-    public GameObject movingPlayer;
+    public GameObject[] movingPlayer;
     public MoveObject movingPlayerMoveObj;
-    Vector2 startPos;
-    Vector2 targetPos;
-    float currentTime;
-    bool isMoving;
 
     public void Start()
     {
@@ -27,39 +23,16 @@ public class CheckMove : ISocket
         {
             if (socket.other[i].name == data.id.ToString())
             {
-                movingPlayer = socket.other[i];
-
-                targetPos = new Vector3(data.x, data.y);
-                startPos = movingPlayer.transform.position;
-                movingPlayerMoveObj = movingPlayer.GetComponent<MoveObject>();
-                movingPlayerMoveObj.moveX = data.moveXY.x;
-                movingPlayerMoveObj.moveY = data.moveXY.y;
-                movingPlayerMoveObj.SetAnimation(State.MOVE);
-                
-
-                if (!isMoving)
-                {
-                    StartCoroutine(Moving());
-                }
+                MoveObject moveObject = socket.other[i].GetComponent<MoveObject>(); 
+                Debug.Log(moveObject.gameObject.name + "  data.MoveXY : " + data.moveXY.x);
+                moveObject.moveX = data.moveXY.x;
+                moveObject.moveY = data.moveXY.y;
+                moveObject.SetAnimation(State.MOVE);
+                StartCoroutine(moveObject.Moving(new Vector2(data.x , data.y)));
                 break;
             }
         }
     }
 
-    IEnumerator Moving()
-    {
-        isMoving = true;
-    
-        for (float i = 0f; i <= 1.0f; i += speed)
-        {
-            movingPlayer.transform.position = Vector2.Lerp(startPos, targetPos, i);
-            yield return null;
-        }
-        movingPlayer.transform.position = targetPos;
-        movingPlayerMoveObj.moveX = 0;
-        movingPlayerMoveObj.moveY = 0;
-        movingPlayerMoveObj.SetAnimation(State.IDLE);
-        
-        isMoving = false;
-    }
+
 }

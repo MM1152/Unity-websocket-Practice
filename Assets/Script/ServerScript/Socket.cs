@@ -11,8 +11,6 @@ using System.Collections.Generic;
 /// </summary>
 public class Socket : MonoBehaviour
 {
-    public float sendMessage;
-    public float sendMessageTime;
     public GameObject ServerManager;
     public EnemyCount enemyCount;
     private static Socket socket;

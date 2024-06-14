@@ -273,8 +273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0207764d71322934ca501ecc189e8dd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sendMessage: 0
-  sendMessageTime: 0.2
   ServerManager: {fileID: 745822560}
   enemyCount: {fileID: 1463282592}
   url: ws://localhost:8000
@@ -784,7 +782,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: 
   speed: 0.05
-  movingPlayer: {fileID: 0}
+  movingPlayer: []
   movingPlayerMoveObj: {fileID: 0}
 --- !u!114 &745822565
 MonoBehaviour:
@@ -972,6 +970,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 824650252}
   m_CullTransparentMesh: 1
+--- !u!1 &825021210
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 825021212}
+  - component: {fileID: 825021211}
+  m_Layer: 0
+  m_Name: CoinPooling
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &825021211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825021210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cbe524602a60a34ab8da08e3e6efc68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coin: {fileID: 1027864845504681497, guid: dad53d5aa78793c4283f123005212b27, type: 3}
+  maxCoin: 3
+--- !u!4 &825021212
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 825021210}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &914893580
 GameObject:
   m_ObjectHideFlags: 0
@@ -2079,3 +2123,4 @@ SceneRoots:
   - {fileID: 620282516}
   - {fileID: 1549860827}
   - {fileID: 1632789645}
+  - {fileID: 825021212}

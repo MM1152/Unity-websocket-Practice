@@ -8,14 +8,18 @@ using UnityEngine;
 using System.Threading;
 using System;
 using System.Security.Cryptography;
+using UnityEngine.UI;
+using System.Security.Permissions;
 public class EnemyAi : MonoBehaviour
 {
     [Header("적 인스펙터")]
+    public CoinPooling coinPooling;
     public GameObject User;
     public GameObject FindUser;
     public GameObject SearchingUser;
     public Animator ani;
     public SpriteRenderer sp;
+    public Slider Hpbar;
 
     [Space(10)]
     [Header("적 스태이터스")]
@@ -24,11 +28,12 @@ public class EnemyAi : MonoBehaviour
     public float searchUserRadius;
     public float findUserRadious;
     public float moveAway;
-    public Animator Enemyani;
     public State state;
     public Vector2 spawnPos;
     public CircleCollider2D FindUserRadious;
     public float pos;
+    public bool isDie;
+
 
     float maxAroundMove;
     public bool returnSpawnPos;
@@ -36,11 +41,11 @@ public class EnemyAi : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        coinPooling = GameObject.Find("CoinPooling").GetComponent<CoinPooling>();
         pos = 0.01f;
         ani = GetComponent<Animator>();
         sp = GetComponent<SpriteRenderer>();
         state = new State();
-        Enemyani = GetComponent<Animator>();
         spawnPos = transform.position;
         FindUserRadious = this.gameObject.transform.Find("FindUserRadious").GetComponent<CircleCollider2D>();
         FindUserRadious.radius = searchUserRadius;
@@ -74,6 +79,13 @@ public class EnemyAi : MonoBehaviour
             transform.position = targetPos;
         }
 
+    }
+    public IEnumerator Die(){
+        ani.SetBool("IsDie" , true);
+        
+        yield return new WaitUntil(() => ani.GetCurrentAnimatorStateInfo(0).IsName("EnemyDie") && ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
+        coinPooling.MakeCoin(this.gameObject.transform);
+        this.gameObject.SetActive(false);
     }
     public void flipX(Vector3 targetPos)
     {

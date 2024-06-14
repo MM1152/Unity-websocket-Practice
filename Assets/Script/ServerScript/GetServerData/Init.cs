@@ -19,6 +19,8 @@ public class Init : ISocket
             GameObject SpawnEnemy = Instantiate(enemys[enemy.type - 1]) as GameObject;
             SpawnEnemy.name = "Enemy " + enemy.id.ToString();
             SpawnEnemy.transform.position = new Vector3(enemy.x , enemy.y , -2f);
+            SpawnEnemy.GetComponent<EnemyAi>().Hpbar.maxValue = enemy.MaxHp;
+            SpawnEnemy.GetComponent<EnemyAi>().Hpbar.value = enemy.Hp;
             SpawnEnemy.transform.SetParent(enemyCount.transform);
         }
         GameObject player = Instantiate(socket.user);

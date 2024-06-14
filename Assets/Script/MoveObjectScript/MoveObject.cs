@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 public class MoveObject : MonoBehaviour
 {
 
@@ -22,10 +25,12 @@ public class MoveObject : MonoBehaviour
     [Header("Charector Status")]
     public State state;
     public float speed;
+    public float radio;
     public float pushPower;
     public float moveX;
     public float moveY;
     public bool isAttackSussecs;
+    public bool firstSendMoveData;
     [Space(9)]
 
     [Header("Character Name")]
@@ -39,6 +44,7 @@ public class MoveObject : MonoBehaviour
         Attack();
     }
     void Start(){
+        radio = 0.02f;
         state = State.IDLE;
         socket = Socket.Instance;
         sp = GetComponent<SpriteRenderer>();
@@ -53,14 +59,15 @@ public class MoveObject : MonoBehaviour
             SetAnimation(State.MOVE);
             transform.position += new Vector3(moveX , moveY).normalized * speed * Time.deltaTime;
 
-            socket.sendMessage -= Time.deltaTime;
-            if(socket.sendMessage < 0 && (moveX != 0 || moveY != 0)){
-                SendMessage();
-                socket.sendMessage = socket.sendMessageTime;
+            if(!firstSendMoveData){
+                firstSendMoveData = true;
+                InvokeRepeating("SendMessage" , 0 , 0.5f);     
             }
         }
     }
-    public void SendMessage(){
+ 
+    private void SendMessage(){
+        
         Data data = new Data("PlayerMove" , this.gameObject.name , transform.position.x , transform.position.y , new Vector2(moveX , moveY));
         socket.ws.Send(JsonUtility.ToJson(data));
     }
@@ -71,6 +78,21 @@ public class MoveObject : MonoBehaviour
             socket.ws.Send(JsonUtility.ToJson(attackData));
         }
         
+    }
+    public IEnumerator Moving(Vector2 targetPos)
+    {
+        Debug.Log("StartCorutain");
+        Vector2 startPos = transform.position;
+        for (float i = 0f; i <= 1.0f; i += radio)
+        {
+            transform.position = Vector2.Lerp(startPos, targetPos, i);
+            yield return null;
+        }
+        transform.position = targetPos;
+        moveX = 0;
+        moveY = 0;
+        SetAnimation(State.IDLE);
+        Debug.Log("EndCorutain");
     }
     public IEnumerator AttackShow(){
         SetAnimation(State.ATTACK);
@@ -87,8 +109,9 @@ public class MoveObject : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if(other.tag == "Enemy"){
             Debug.Log("AttackEnemy");
-            other.GetComponent<Animator>().SetTrigger("IsHit");
-            other.GetComponent<EnemyAi>().state = State.HURT;
+            //other.GetComponent<Animator>().SetTrigger("IsHit");
+            //other.GetComponent<EnemyAi>().state = State.HURT;
+            socket.ws.Send(JsonUtility.ToJson(new Data("HitEnemy" , other.name.Split(' ')[1])));
         }
     }
 

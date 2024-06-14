@@ -410,7 +410,7 @@ Rigidbody2D:
     serializedVersion: 2
     m_Bits: 0
   m_Interpolate: 0
-  m_SleepingMode: 1
+  m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!58 &104181024418398181
@@ -465,6 +465,7 @@ MonoBehaviour:
   SearchingUser: {fileID: 6779282147637955513}
   ani: {fileID: 0}
   sp: {fileID: 0}
+  Hpbar: {fileID: 2279304956692819231}
   stat: {fileID: 11400000, guid: c4d719625da64ca469e630c597eacc96, type: 2}
   speed: 2
   searchUserRadius: 10
@@ -474,6 +475,8 @@ MonoBehaviour:
   state: 0
   spawnPos: {x: 0, y: 0}
   FindUserRadious: {fileID: 0}
+  pos: 0
+  isDie: 0
   returnSpawnPos: 0
 --- !u!1 &4713939132519039746
 GameObject:

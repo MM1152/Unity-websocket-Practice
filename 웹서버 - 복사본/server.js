@@ -65,6 +65,13 @@ wss.on('connection', (ws , req) => {
         for(let i = 0; i < userList.length; i++){
             if(userList[i].id == ws.id){
                 userList.splice(i,1);
+                
+            }
+        }
+        for(let i = 0; i < enemyList.length; i++){
+            if(enemyList[i].FollowTarger != null && enemyList[i].FollowTarger.id == ws.id){
+                enemyList[i].FollowTarger = null;
+                enemyList[i].state = "MoveAround"
             }
         }
         console.log(userList)
@@ -86,7 +93,6 @@ wss.on('connection', (ws , req) => {
         if(data.title == "PlayerMove"){
             var data2 = {title : "CheckMove" , id : ws.id ,x : data.x , y : data.y , moveXY : data.moveXY}
             
-
             let who = userStateChange(ws);
             userList[who].x = data.x;
             userList[who].y = data.y;
@@ -104,6 +110,22 @@ wss.on('connection', (ws , req) => {
                 }
             })
         }
+        if(data.title == "HitEnemy"){
+            enemyList.forEach(element => {
+                if(element.id == data.id){
+                    element.Hp -= 10
+                    if(element.Hp < 0){
+                        element.state = "Die"
+                        element.FollowTarger = null;
+                    }else {
+                        element.state = "Hit"
+                    }
+
+                    
+                }
+            });
+            all_player_response({title : "EnemyAround" ,  enemyList : enemyList});
+        }
 })
 })
 
@@ -112,12 +134,12 @@ wss.on('listening' , () => {
 })
 
 setInterval(EnemyChangeState , 1000)
-let movePos = [1 , 1 , 1]; // 생성할 Enemy 의 갯수만큼 만들어줘야됌
 function EnemyChangeState(){
     
-    console.log("┌───────────────────────────────────────┐")
+    
     for(let i = 0; i < enemyList.length; i++){
-
+        console.log("┌───────────────────────────────────────┐")
+       if(enemyList[i].state != "Hit" && enemyList[i].state != "Die"){
         if(enemyList[i].FollowTarger == null){ // 유저 찾아오기
             userList.forEach(user => {
                 let dx = user.x - enemyList[i].x
@@ -128,7 +150,7 @@ function EnemyChangeState(){
                 }
             });
         }
-
+        
         if(enemyList[i].FollowTarger != null){ // 유저가 비어있지 않으면 그 유저한테로의 상태 설정
             let dx = enemyList[i].FollowTarger.x - enemyList[i].x
             let dy = enemyList[i].FollowTarger.y - enemyList[i].y
@@ -145,8 +167,6 @@ function EnemyChangeState(){
 
            
         }
-
-        //console.log(enemyList)
 
         if(enemyList[i].state == "MoveAround"){
             if(enemyList[i].spawnPos.x + 2 < enemyList[i].x || enemyList[i].spawnPos.y + 2 < enemyList[i].y){
@@ -182,16 +202,27 @@ function EnemyChangeState(){
                 }   
             }
         }
-        
+       }else if (enemyList[i].state == "Hit"){
+            enemyList[i].state = "MoveAround";
+       }
+       
         console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
+        if(enemyList[i].FollowTarger != null){
+            console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
+        }
+        console.log(`\t     EnemyHp : ${enemyList[i].Hp}`)
         
-    }
-    console.log("└───────────────────────────────────────┘")
+        console.log("└───────────────────────────────────────┘")
 
+    }
+    console.log("\n\n\n\n\n\n\n\n")
+    
     wss.clients.forEach(function(client) {
         client.send(JSON.stringify({title : "EnemyAround" , enemyList : enemyList}));
     })
 }
+
+
 
 function make_data(title , id , userList , x , y , moveXY , state){
     var data = {title : title,
@@ -232,7 +263,9 @@ function EnemyInit(){
             spawnPos : {x, y},
             FollowTarger : null,
             movePos : 1,
-            state : "MoveAround"
+            state : "MoveAround",
+            Hp : 100,
+            MaxHp : 100
         })
     }
 
