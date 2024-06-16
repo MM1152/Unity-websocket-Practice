@@ -1,0 +1,43 @@
+using System.Collections;
+using System.Collections.Generic;
+using System;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Networking;
+using Unity.VisualScripting.FullSerializer;
+
+public class HttpRequest : MonoBehaviour
+{
+    private static HttpRequest httpRequests;
+    public static HttpRequest HttpRequests {
+        get {
+            if (httpRequests == null) {
+                return null;
+            }
+            return httpRequests;
+        }
+    }
+    void Awake()
+    {
+        httpRequests = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public IEnumerator Request(string url , string FiledName ,  string jsonData , Action<string> callback){     
+        
+        WWWForm form = new WWWForm();
+        form.AddField(FiledName , jsonData);
+        UnityWebRequest request = UnityWebRequest.Post(url , form);
+
+        yield return request.SendWebRequest();
+
+         if (request.error == null)
+        {
+            string result = request.downloadHandler.text;
+            callback(result);
+            //callback(request.downloadHandler.text);
+        }else {
+            Debug.Log("Connection Fail");
+        }
+    }
+}

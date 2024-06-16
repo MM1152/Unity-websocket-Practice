@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using WebSocketSharp;
 using System.Threading;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 /// <summary>
 /// ws://localhost:8000 연결 
@@ -53,7 +54,6 @@ public class Socket : MonoBehaviour
                 ws.OnMessage += (sender , e) => {
                     
                     Data data = JsonUtility.FromJson<Data>(e.Data);
-                    
                     Action action = null;
                     for(int i = 0; i < Init.Count; i++){
                         if(Init[i].GetType().ToString().Equals(data.title)){
@@ -88,6 +88,9 @@ public class Socket : MonoBehaviour
 
 
     private void OnApplicationQuit() {
+        Data data = new Data("SaveData");
+        data.this_player = this_player_MoveObject.getUserData();
+        ws.Send(JsonUtility.ToJson(data));
         ws.Close();
     }
 }

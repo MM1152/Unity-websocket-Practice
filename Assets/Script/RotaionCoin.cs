@@ -51,4 +51,9 @@ public class RotaionCoin : MonoBehaviour
             Thread.Sleep(50);
         }
     }
+    private void OnTriggerEnter2D(Collider2D other) {
+        if(other.tag == "Player"){
+            this.gameObject.SetActive(false);
+        }    
+    }
 }

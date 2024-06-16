@@ -13,7 +13,9 @@ public class CreateOtherUser : ISocket
         socket.other = GameObject.FindGameObjectsWithTag("Player");
         Debug.Log(data.users.Length);
         if(socket.other.Length != data.users.Length){
+            
             for(int i = 0; i < data.users.Length; i++){
+                Debug.Log(data.users[i].id);
                 bool isCreated = false;
                 for(int j = 0; j < socket.other.Length; j++){
                     if(socket.other[j].name == data.users[i].id.ToString()){

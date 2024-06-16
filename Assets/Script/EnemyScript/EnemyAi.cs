@@ -34,8 +34,6 @@ public class EnemyAi : MonoBehaviour
     public float pos;
     public bool isDie;
 
-
-    float maxAroundMove;
     public bool returnSpawnPos;
 
     // Start is called before the first frame update
@@ -49,7 +47,6 @@ public class EnemyAi : MonoBehaviour
         spawnPos = transform.position;
         FindUserRadious = this.gameObject.transform.Find("FindUserRadious").GetComponent<CircleCollider2D>();
         FindUserRadious.radius = searchUserRadius;
-        maxAroundMove = 3f;
     }
 
     private void Update()
@@ -80,8 +77,12 @@ public class EnemyAi : MonoBehaviour
         }
 
     }
-    public IEnumerator Die(){
+    public IEnumerator Die(UserData user){
         ani.SetBool("IsDie" , true);
+        Debug.Log(user.id);
+        if(GameObject.Find(user.id) != null){
+            GameObject.Find(user.id).GetComponent<MoveObject>().setUserExp(user);
+        }
         
         yield return new WaitUntil(() => ani.GetCurrentAnimatorStateInfo(0).IsName("EnemyDie") && ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
         coinPooling.MakeCoin(this.gameObject.transform);
@@ -97,5 +98,8 @@ public class EnemyAi : MonoBehaviour
         {
             sp.flipX = false;
         }
+    }
+    public void Attack(){
+        ani.SetTrigger("IsAttack");
     }
 }

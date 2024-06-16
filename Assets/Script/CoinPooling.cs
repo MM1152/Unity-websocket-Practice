@@ -10,7 +10,10 @@ public class CoinPooling : MonoBehaviour
     public int maxCoin = 0;
 
     public void MakeCoin(Transform transform){
-        for(int i = 0; i < this.gameObject.transform.childCount; i++){
+        for(int i = 0; i < maxCoin; i++){
+            if(gameObject.transform.childCount < i + 1){
+                break;
+            }
             GameObject thisCoin = gameObject.transform.GetChild(i).gameObject;
             if(thisCoin.activeSelf){
                 continue;
@@ -21,7 +24,7 @@ public class CoinPooling : MonoBehaviour
             }
         }
 
-        while(createCoinCount <= maxCoin){
+        while(createCoinCount < maxCoin){
             GameObject coinprefeb = Instantiate(coin , gameObject.transform) as GameObject;
             coinprefeb.SetActive(false);
             coinprefeb.transform.position = transform.position;

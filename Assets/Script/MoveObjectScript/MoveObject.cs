@@ -12,8 +12,9 @@ public class MoveObject : MonoBehaviour
 {
 
     Socket socket;
-    public ObjectStatus stat;
+    public SetStatsUI stat;
     [Header("Component")]
+    public ExpBarUI exp;
     public Rigidbody2D rg;
     public Animator ani;
     public Collider2D attackingPlayer;
@@ -23,6 +24,8 @@ public class MoveObject : MonoBehaviour
     public Text text;
     [Space(9)]
     [Header("Charector Status")]
+    [SerializeField]
+    private UserData this_player_info;
     public State state;
     public float speed;
     public float radio;
@@ -37,11 +40,22 @@ public class MoveObject : MonoBehaviour
     [SerializeField] private string userName;
     
     
-
-
+    public UserData getUserData(){
+        return this_player_info;
+    }
+    public void setUserExp(UserData data){
+        if(this_player_info.Level != data.Level){
+            stat.SetStatsPoint(data);
+        }
+        this_player_info = data;
+        exp.setMaxExp(this_player_info.maxExp);
+        exp.setcurrentExp(this_player_info.exp);
+        
+    }
     void Update(){
         Move();
         Attack();
+        
     }
     void Start(){
         radio = 0.02f;
@@ -51,6 +65,7 @@ public class MoveObject : MonoBehaviour
         ani = GetComponent<Animator>();
         text.text = this.gameObject.name;
         rg = GetComponent<Rigidbody2D>();
+        
     }
     public void Move(){
         if(this.gameObject == socket.this_player && state != State.ATTACK){
@@ -111,9 +126,16 @@ public class MoveObject : MonoBehaviour
             Debug.Log("AttackEnemy");
             //other.GetComponent<Animator>().SetTrigger("IsHit");
             //other.GetComponent<EnemyAi>().state = State.HURT;
-            socket.ws.Send(JsonUtility.ToJson(new Data("HitEnemy" , other.name.Split(' ')[1])));
+            Data data = new Data("HitEnemy");
+            data.id = other.name.Split(' ')[1];
+            data.this_player = this_player_info;
+            socket.ws.Send(JsonUtility.ToJson(data));
+            
+            
         }
     }
+
+    
 
     ///<summary>
     /// 애니메이션을 STATE로 SET해주는 함수

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Threading;
 using UnityEngine;
 
+
 public class EnemyAround : ISocket
 {
     [SerializeField]
@@ -16,42 +17,36 @@ public class EnemyAround : ISocket
     {
         foreach (var enemy in enemyCount.Enemys)
         {
-            
             int thisEnemyIndex = int.Parse(enemy.name.Split(' ')[1]);
-            Debug.Log(data.enemyList[thisEnemyIndex].state);
             EnemyAi enemyAi = enemy.GetComponent<EnemyAi>();
             enemyAi.Hpbar.value = data.enemyList[thisEnemyIndex].Hp;
+            enemyAi.FindUser.SetActive(false);
             if(data.enemyList[thisEnemyIndex].state.Equals("Die")){
                 if(enemy.activeSelf){
-                   StartCoroutine(enemyAi.Die()); 
+                   StartCoroutine(enemyAi.Die(data.this_player)); 
                 }
-                
             }
 
-            if (data.enemyList[thisEnemyIndex].state.Equals("Hit"))
+            else if (data.enemyList[thisEnemyIndex].state.Equals("Hit"))
             {
                 enemyAi.ani.SetTrigger("IsHit");
                 
             }
             else
             {
-
-                if (data.enemyList[thisEnemyIndex].state.Equals("FollowUser") || data.enemyList[thisEnemyIndex].state.Equals("AttackAroundInUser"))
-                {
+                
+                if (data.enemyList[thisEnemyIndex].state.Equals("FollowUser"))
+                {   
                     enemyAi.FindUser.SetActive(true);
                 }
-                else
+                else if(data.enemyList[thisEnemyIndex].state.Equals("AttackAroundInUser"))
                 {
-                    enemyAi.FindUser.SetActive(false);
+                   enemyAi.Attack();
                 }
-                StartCoroutine(enemyAi.Move(
-                (new Vector2(data.enemyList[thisEnemyIndex].x,
-                data.enemyList[int.Parse(enemy.name.Split(' ')[1])].y))));
-                
+
+                StartCoroutine(enemyAi.Move(new Vector2(data.enemyList[thisEnemyIndex].x, data.enemyList[int.Parse(enemy.name.Split(' ')[1])].y)));
             }
 
         }
     }
-
-
 }

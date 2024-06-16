@@ -8,11 +8,13 @@ public class Data{
     public string title;
     public string id;
     public UserData[] users;
+    public UserData this_player;
     public Vector2 moveXY;
     public float x;
     public float y;
     public State state;
     public EnemyData[] enemyList;
+
     public Data(string title){
         this.title = title;
     }
@@ -48,9 +50,16 @@ public class Data{
 }
 [Serializable]
 public class UserData{
-    public int id;
+    public string id;
     public float x;
     public float y;
+    public int hp;
+    public int mp;
+    public int strStats;
+    public int intStats;
+    public int exp;
+    public int Level;
+    public int maxExp;
 }
 [Serializable]
 public class Enemys{
