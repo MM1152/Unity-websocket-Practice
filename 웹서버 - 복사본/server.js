@@ -153,7 +153,7 @@ wss.on('connection', async (ws , req) => {
         if(data.title == "SaveData"){;
             let who = userStateChange(ws);
             var query = "UPDATE user_status Set hp = ? , mp = ? , strstats = ? , intstats = ? , exp = ? , Level = ? where id = ?";
-            var params = [data.this_player.hp , data.this_player.mp , data.this_player.strStats , data.this_player.intStats , data.this_player.exp , data.this_player.Level , ws.id[0]];
+            var params = [data.this_player.hp , data.this_player.mp , data.this_player.strStats , data.this_player.intStats , data.this_player.exp , data.this_player.Level , userList[who].name];
 
             db.query(query , params , function(err , rows ,fields) {
                 console.log("데이터 저장 완료");
@@ -194,6 +194,14 @@ wss.on('connection', async (ws , req) => {
                 }
             });
             all_player_response({title : "EnemyAround" ,  enemyList : enemyList , this_player : data.this_player});
+        }
+
+        if(data.title == "AttackOtherPlayer"){
+            var data2 = {
+                title : "CheckAttack",
+                id : data.id,
+            }
+            without_player_response(data2);
         }
 })
 })
@@ -338,7 +346,7 @@ function EnemyInit(){
 function userStateChange(ws){
     for(let i = 0; i < userList.length; i++){
         
-        if(userList[i].id == ws.id[1]){
+        if(userList[i].id == ws.id){
             return i;
         }
     }
@@ -353,6 +361,7 @@ function init(ws){
         
         db.query(getUserDataquery , getUserDataparams , function(err , rows , fields){
             userList.push ({
+                name : rows[0].id,
                 id : rows[0].nick_name,
                 x : 0,
                 y : 0,
@@ -364,8 +373,7 @@ function init(ws){
                 Level : rows[0].Level,
                 maxExp : rows[0].Level * 100
             })
-            console.log(rows[0].id);
-            ws.id = [rows[0].id , rows[0].nick_name]
+            ws.id =  rows[0].nick_name
             resolve();
         })
         

@@ -44,13 +44,13 @@ public class MoveObject : MonoBehaviour
         return this_player_info;
     }
     public void setUserExp(UserData data){
-        if(this_player_info.Level != data.Level){
+       if(this_player_info.Level != data.Level){
             stat.SetStatsPoint(data);
         }
         this_player_info = data;
         exp.setMaxExp(this_player_info.maxExp);
         exp.setcurrentExp(this_player_info.exp);
-        
+         
     }
     void Update(){
         Move();
@@ -58,6 +58,7 @@ public class MoveObject : MonoBehaviour
         
     }
     void Start(){
+        exp.gameObject.SetActive(false);
         radio = 0.02f;
         state = State.IDLE;
         socket = Socket.Instance;
@@ -65,7 +66,9 @@ public class MoveObject : MonoBehaviour
         ani = GetComponent<Animator>();
         text.text = this.gameObject.name;
         rg = GetComponent<Rigidbody2D>();
-        
+        if(socket.this_player == this.gameObject){
+             exp.gameObject.SetActive(true);
+        }
     }
     public void Move(){
         if(this.gameObject == socket.this_player && state != State.ATTACK){
