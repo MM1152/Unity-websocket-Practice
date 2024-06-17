@@ -7,6 +7,7 @@ const app = express()
 var db = require('./bin/DB.js');
 const { connect } = require('http2');
 const { debug } = require('console');
+const { spawn } = require('child_process');
 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -211,9 +212,10 @@ wss.on('listening' , () => {
 })
 
 setInterval(EnemyChangeState , 1000)
+setInterval(EnemyRespawn , 5000)
 function EnemyChangeState(){
       for(let i = 0; i < enemyList.length; i++){
-       // console.log("┌───────────────────────────────────────┐")
+        console.log("┌───────────────────────────────────────┐")
        if(enemyList[i].state != "Hit" && enemyList[i].state != "Die"){
         if(enemyList[i].FollowTarger == null){ // 유저 찾아오기
             userList.forEach(user => {
@@ -279,35 +281,35 @@ function EnemyChangeState(){
             enemyList[i].state = "MoveAround";
        }
        
-        //console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
+        console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
         if(enemyList[i].FollowTarger != null){
-            //console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
+            console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
         }
-        //console.log(`\t     EnemyHp : ${enemyList[i].Hp}`)
+        console.log(`\t     EnemyHp : ${enemyList[i].Hp}`)
         
-        //console.log("└───────────────────────────────────────┘")
+        console.log("└───────────────────────────────────────┘")
     }
-    //console.log("\n\n\n\n\n\n\n\n")
+    console.log("\n\n\n\n\n\n\n\n")
     
     wss.clients.forEach(function(client) {
         client.send(JSON.stringify({title : "EnemyAround" , enemyList : enemyList}));
     })
 }
 
-
-function make_data(title , id , userList , x , y , moveXY , state){
-    var data = {title : title,
-        id : id,
-        users : userList ,
-        x : x,
-        y : y,
-        moveXY : moveXY,
-        state : state
-    }
-    return data
+function EnemyRespawn(){
+    enemyList.forEach(enemy => {
+        if(enemy.state == "Die"){
+            console.log("Respawn Enemy : " + enemy.id);
+            enemy.state = "MoveAround";
+            enemy.Hp = enemy.MaxHp;
+            enemy.x = enemy.spawnPos.x
+            enemy.y = enemy.spawnPos.y
+        }
+    });
+    wss.clients.forEach(function each(client) {
+        client.send(JSON.stringify({title : "EnemyRespawn" , enemyList : enemyList}));
+    })
 }
-
-
 
 function all_player_response(data){
     wss.clients.forEach(function each(client) {
@@ -316,6 +318,7 @@ function all_player_response(data){
 }
 
 function without_player_response(data){
+
     wss.clients.forEach(function each(client) {
         if(data.id != client.id){
             client.send(JSON.stringify(data))
