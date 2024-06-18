@@ -178,7 +178,7 @@ wss.on('connection', async (ws, req) => {
         if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
                 if (element.id == data.id) {
-                    element.Hp -= 10 * data.this_player.strStats;
+                    element.Hp -= 10 * data.this_player.strStats * 0;
                     if (element.Hp < 0) {
                         element.state = "Die"
                         data.this_player.exp += element.DropExp;
@@ -189,7 +189,7 @@ wss.on('connection', async (ws, req) => {
    
                         }
                         if (!element.isDie) {
-                            let RespawnId = setInterval(() => { EnemyRespawn(element) }, 5000);
+                            let RespawnId = setInterval(() => {EnemyRespawn(element)}, 5000);
                             RespawnInterval.set(element.id, RespawnId);
                             element.isDie = true;
                         }
@@ -219,6 +219,8 @@ wss.on('listening', () => {
 
 setInterval(EnemyChangeState, 1000)
 
+let AttackInterval = new Map();
+
 function EnemyChangeState() {
     for (let i = 0; i < enemyList.length; i++) {
         console.log("┌───────────────────────────────────────┐")
@@ -244,13 +246,24 @@ function EnemyChangeState() {
                 }
                 else if (Math.sqrt(dx * dx + dy * dy) < 1) {
                     enemyList[i].state = "AttackAroundInUser"
+                    if(!enemyList[i].isAttack){
+                        console.log(`start Attack Interval : ${enemyList[i].id}`)
+                        let AttackId = setInterval(() => {EnemyAttack(enemyList[i])} , 3000);
+                        AttackInterval.set(enemyList[i].id , AttackId);
+                        enemyList[i].isAttack = true;
+                    }
                 } else if (Math.sqrt(dx * dx + dy * dy) < 5) {
                     enemyList[i].state = "FollowUser";
                 }
-
-
             }
-
+            if(enemyList[i].state != "AttackAroundInUser"){
+                if(AttackInterval.has(enemyList[i].id)){
+                    console.log(`enemy interval stop : ${enemyList[i].id}`)
+                    clearInterval(AttackInterval.get(enemyList[i].id))
+                    AttackInterval.delete(enemyList[i].id)
+                    enemyList[i].isAttack = false;
+                }
+            }
             if (enemyList[i].state == "MoveAround") {
                 if (enemyList[i].spawnPos.x + 2 < enemyList[i].x || enemyList[i].spawnPos.y + 2 < enemyList[i].y) {
                     enemyList[i].movePos = -1;
@@ -301,7 +314,10 @@ function EnemyChangeState() {
         client.send(JSON.stringify({ title: "EnemyAround", enemyList: enemyList }));
     })
 }
-
+function EnemyAttack(enemy){
+    console.log(`enemyAttack : ${enemy.id}`)
+    all_player_response({title : "EnemyAttack" , enemy : enemy})
+}
 function EnemyRespawn(enemy) {
     console.log("Respawn Enemy : " + enemy.id);
     enemy.state = "MoveAround";
@@ -349,7 +365,8 @@ function EnemyInit() {
             MaxHp: 100,
             AttackTime: 2,
             DropExp: 50,
-            isDie: false
+            isDie: false,
+            isAttack : false
         })
     }
 
