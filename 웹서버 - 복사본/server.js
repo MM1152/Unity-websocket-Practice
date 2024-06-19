@@ -178,7 +178,7 @@ wss.on('connection', async (ws, req) => {
         if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
                 if (element.id == data.id) {
-                    element.Hp -= 10 * data.this_player.strStats * 0;
+                    element.Hp -= 10 * data.this_player.strStats;
                     if (element.Hp < 0) {
                         element.state = "Die"
                         data.this_player.exp += element.DropExp;
@@ -194,13 +194,15 @@ wss.on('connection', async (ws, req) => {
                             element.isDie = true;
                         }
                         element.FollowTarger = null;
+                        all_player_response({ title: "EnemyDie", enemy: element, this_player: data.this_player });
                     } else {
                         element.state = "Hit"
+                        all_player_response({ title: "EnemyHit", enemyList: enemyList, this_player: data.this_player });
                     }
 
                 }
             });
-            all_player_response({ title: "EnemyAround", enemyList: enemyList, this_player: data.this_player });
+            
         }
 
         if (data.title == "AttackOtherPlayer") {
@@ -248,7 +250,7 @@ function EnemyChangeState() {
                     enemyList[i].state = "AttackAroundInUser"
                     if(!enemyList[i].isAttack){
                         console.log(`start Attack Interval : ${enemyList[i].id}`)
-                        let AttackId = setInterval(() => {EnemyAttack(enemyList[i])} , 3000);
+                        let AttackId = setInterval(() => {EnemyAttack(enemyList[i])} , enemyList[i].AttackTime * 1000);
                         AttackInterval.set(enemyList[i].id , AttackId);
                         enemyList[i].isAttack = true;
                     }

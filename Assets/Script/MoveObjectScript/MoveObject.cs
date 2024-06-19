@@ -126,7 +126,6 @@ public class MoveObject : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
         if(other.tag == "Enemy"){
-            Debug.Log("AttackEnemy");
             //other.GetComponent<Animator>().SetTrigger("IsHit");
             //other.GetComponent<EnemyAi>().state = State.HURT;
             Data data = new Data("HitEnemy");

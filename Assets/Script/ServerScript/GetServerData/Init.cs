@@ -1,6 +1,5 @@
 
-using TMPro;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 
 public class Init : ISocket
@@ -8,11 +7,9 @@ public class Init : ISocket
     [SerializeField]
     private GameObject[] enemys;
     [SerializeField]
-    private EnemyCount enemyCount;
-    [SerializeField]
-    public void Start()
-    {
-        setSocket();
+    //private EnemyCount enemyCount;
+    private void Start() {
+        enemyCount ??= GameObject.Find("EnemyCount").GetComponent<EnemyCount>();    
     }
     public override void RunNetworkCode(Data data)
     {

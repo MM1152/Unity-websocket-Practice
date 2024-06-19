@@ -8,9 +8,13 @@ using System.Threading;
 public abstract class ISocket : MonoBehaviour
 {
     protected Socket socket;
+    protected EnemyCount enemyCount;
     public string name;
-    public virtual void setSocket() {
+    protected ISocket(){
         socket = Socket.Instance;
     }
+    private void Start() {
+        enemyCount ??= GameObject.Find("EnemyCount").GetComponent<EnemyCount>();    
+    } 
     public abstract void RunNetworkCode(Data data);
 }

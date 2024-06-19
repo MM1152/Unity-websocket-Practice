@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class CreateOtherUser : ISocket
 {
-    public void Start()
-    {
-        setSocket();
-    }
     public override void RunNetworkCode(Data data)
     {
         socket.other = GameObject.FindGameObjectsWithTag("Player");

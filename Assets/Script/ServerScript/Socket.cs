@@ -12,6 +12,7 @@ using Unity.VisualScripting;
 /// </summary>
 public class Socket : MonoBehaviour
 {
+    
     public GameObject ServerManager;
     public EnemyCount enemyCount;
     private static Socket socket;
@@ -27,6 +28,9 @@ public class Socket : MonoBehaviour
 
     public Component[] components;
     public List<ISocket> Init = new List<ISocket>();
+    public Socket(){
+        socket = this;
+    }
     public static Socket Instance
     {
         get{
@@ -37,6 +41,7 @@ public class Socket : MonoBehaviour
         }
     }
     private void Awake(){
+        socket = this;
         QualitySettings.vSyncCount = 0; 
         Application.targetFrameRate = 120;
         components = ServerManager.GetComponents<Component>();
@@ -45,7 +50,7 @@ public class Socket : MonoBehaviour
                 Init.Add((ISocket)component);
             }
         }
-        socket = this;
+        
         // OnMessage : 서버에서 메세지가 넘어오면 실행되는 함수
         try {
             
@@ -93,5 +98,7 @@ public class Socket : MonoBehaviour
         ws.Send(JsonUtility.ToJson(data));
         ws.Close();
     }
+
 }
+ 
  

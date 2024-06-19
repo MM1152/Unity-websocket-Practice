@@ -14,6 +14,7 @@ public class Data{
     public float y;
     public State state;
     public EnemyData[] enemyList;
+    public EnemyData enemy;
 
     public Data(string title){
         this.title = title;

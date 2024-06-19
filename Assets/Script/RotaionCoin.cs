@@ -1,12 +1,15 @@
 
 using System.Collections;
+using System.Linq.Expressions;
 using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class RotaionCoin : MonoBehaviour
 {
+    Transform targetPos;
     float z = 0;   
+    bool isThreading;
     Thread thread;
     Vector3 p1;
     Vector3 p2;
@@ -18,9 +21,23 @@ public class RotaionCoin : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        z += 1f;
-        this.gameObject.transform.rotation = Quaternion.Euler(90f , z, 0f);    
-        this.gameObject.transform.position = movePos;
+        if(isThreading){
+            z += 5f;
+            this.gameObject.transform.rotation = Quaternion.Euler(0 , 0, z);    
+            this.gameObject.transform.position = movePos;
+        }
+        
+        if(!isThreading){
+            this.gameObject.transform.rotation = Quaternion.Euler(0 , 0, 0);  
+        }
+
+        if(targetPos != null){
+            transform.position += (targetPos.position - transform.position).normalized * Time.deltaTime;
+            if(Vector2.Distance(transform.position ,targetPos.position) < 0.5f){
+                gameObject.SetActive(false);
+                targetPos = null;
+            }
+        }
     }
     void OnEnable(){
         p1 = this.gameObject.transform.position;
@@ -34,7 +51,7 @@ public class RotaionCoin : MonoBehaviour
     void Bezier()
     {
         float time = 0f;
-
+        isThreading = true;
         while(true)
         {
             if (time > 1f)
@@ -48,12 +65,18 @@ public class RotaionCoin : MonoBehaviour
             movePos = Vector3.Lerp(p4, p5, time);
             time += 0.05f;
 
-            Thread.Sleep(50);
+            Thread.Sleep(10);
         }
+        isThreading = false;
     }
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.tag == "Player"){
             this.gameObject.SetActive(false);
         }    
+    }
+    
+    public IEnumerator AbsorbCoin(Transform userPos){
+        yield return new WaitForSeconds(1.3f);
+        targetPos = userPos;
     }
 }

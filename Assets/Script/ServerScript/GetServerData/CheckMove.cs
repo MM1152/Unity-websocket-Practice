@@ -12,11 +12,6 @@ public class CheckMove : ISocket
     public GameObject[] movingPlayer;
     public MoveObject movingPlayerMoveObj;
 
-    public void Start()
-    {
-        setSocket();
-
-    }
     public override void RunNetworkCode(Data data)
     {
         for (int i = 0; i < socket.other.Length; i++)

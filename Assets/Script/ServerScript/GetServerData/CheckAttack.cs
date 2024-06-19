@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class CheckAttack : ISocket
 {
-    public void Start()
-    {
-        setSocket();
-    }
     public override void RunNetworkCode(Data data)
     {
         MoveObject attackingUser = GameObject.Find(data.id.ToString()).GetComponent<MoveObject>();

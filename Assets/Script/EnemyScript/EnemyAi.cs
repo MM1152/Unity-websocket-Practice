@@ -35,7 +35,7 @@ public class EnemyAi : MonoBehaviour
     public bool isDie;
 
     public bool returnSpawnPos;
-
+    public Vector2 target;
     // Start is called before the first frame update
     void Start()
     {
@@ -59,13 +59,15 @@ public class EnemyAi : MonoBehaviour
         {
             ani.SetBool("IsMove", false);
         }
+
     }
     public IEnumerator Move(Vector2 targetPos)
     {
-        if ((Vector2)transform.position != targetPos)
+
+        if ((Vector2)transform.position != targetPos && state != State.ATTACK)
         {
+            flipX(targetPos);
             Vector2 startPos = transform.position;
-            flipX((Vector3)targetPos);
             state = State.MOVE;
             for (float radio = 0f; radio < 1f; radio += pos)
             {
@@ -77,15 +79,21 @@ public class EnemyAi : MonoBehaviour
         }
 
     }
+    public void Hit(){
+        if(state != State.ATTACK){
+            ani.SetTrigger("IsHit");
+        }
+    }
+
     public IEnumerator Die(UserData user){
         ani.SetBool("IsDie" , true);
-        Debug.Log(user.id);
-        if(GameObject.Find(user.id) != null){
-            GameObject.Find(user.id).GetComponent<MoveObject>().setUserExp(user);
-        }
+
+        MoveObject userMoveObject;    
+        userMoveObject = GameObject.Find(user.id).GetComponent<MoveObject>();
+        userMoveObject.setUserExp(user);
         
         yield return new WaitUntil(() => ani.GetCurrentAnimatorStateInfo(0).IsName("EnemyDie") && ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
-        coinPooling.MakeCoin(this.gameObject.transform);
+        coinPooling.MakeCoin(this.gameObject.transform , userMoveObject.transform);
         this.gameObject.SetActive(false);
     }
     public void flipX(Vector3 targetPos)
@@ -99,7 +107,13 @@ public class EnemyAi : MonoBehaviour
             sp.flipX = false;
         }
     }
-    public void Attack(){
+    public IEnumerator Attack(){
+        Debug.Log("Start Attack");
+        state = State.ATTACK;
         ani.SetTrigger("IsAttack");
+        
+        yield return new WaitForSeconds(1f);
+        Debug.Log("Finish");
+        state = State.IDLE;
     }
 }
