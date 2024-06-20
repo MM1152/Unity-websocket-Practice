@@ -26,10 +26,13 @@ public class Init : ISocket
         }
 
         GameObject player = Instantiate(socket.user);
-        
-        socket.this_player = player;
-        socket.this_player_MoveObject = socket.this_player.GetComponent<MoveObject>();
         player.name = data.id;
+        player.AddComponent<MoveObject>();
+        socket.this_player = player;
+        
+        socket.this_player_MoveObject = socket.this_player.GetComponent<MoveObject>();
+        
+        socket.this_player_MoveObject.setUserData(data.this_player);
         socket.this_player_MoveObject.setUserExp(data.this_player);
         socket.this_player_MoveObject.stat.SetStats(data.this_player);
         socket.this_player_MoveObject.stat.SetStatsPoint(data.this_player);

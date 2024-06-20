@@ -1,21 +1,23 @@
+using UnityEngine;
+
 public class AttackState : Istate
 {
-    private MoveObject moveObject;
-    public void Enter(MoveObject moveObject)
+    private IMoveObj moveObject;
+    public void Enter(IMoveObj moveObject)
     {
         this.moveObject = moveObject;
         moveObject.ani.SetTrigger("IsAttack");
         moveObject.Attack();
     }
 
-    public void Exit()
-    {
-        
-    }
+    public void Enter(IMoveObj moveObject, Vector2 targetPos){ }
+
+    public void Exit(){ }
+   
 
     public void Update()
     {
-        if(!moveObject.attackShow.activeSelf){
+        if(!moveObject.IsAttack){
             moveObject.stateMachine.Transition(new IdleState());
         }
     }

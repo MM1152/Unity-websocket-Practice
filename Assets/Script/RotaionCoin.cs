@@ -44,7 +44,6 @@ public class RotaionCoin : MonoBehaviour
         p2 = this.gameObject.transform.position + new Vector3(0f , Random.Range(2f, 4f));
         p3 = this.gameObject.transform.position + new Vector3(Random.Range(-1f , 1f), Random.Range(0.1f, 0.5f));
 
-
         thread = new Thread(Bezier);
         thread.Start();
     }

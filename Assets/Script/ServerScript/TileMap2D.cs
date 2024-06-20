@@ -19,14 +19,17 @@ public class GetData
 {
     public List<MapData> mapData;
 }
+
 public class TileMap2D : MonoBehaviour
 {
+
     public Sprite[] mapImage;
     private HttpRequest httpRequest;
     public Sprite[] decoImage;
     public Transform mapSpawn;
     public Transform decoSpawn;
     public GameObject Tile;
+    
     private void Awake()
     {
         httpRequest = HttpRequest.HttpRequests;
@@ -63,4 +66,6 @@ public class TileMap2D : MonoBehaviour
             spawnDeco.transform.position = (Vector3)position + new Vector3(0f, 0f, spawnDeco.transform.parent.transform.position.z);
         }
     }
+    
+    
 }

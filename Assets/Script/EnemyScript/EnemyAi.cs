@@ -1,24 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Resources;
-using System.Runtime.Remoting.Metadata;
-using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
-using System.Threading;
-using System;
-using System.Security.Cryptography;
 using UnityEngine.UI;
-using System.Security.Permissions;
-public class EnemyAi : MonoBehaviour
+
+public class EnemyAi : IMoveObj
 {
     [Header("적 인스펙터")]
     public CoinPooling coinPooling;
     public GameObject User;
     public GameObject FindUser;
     public GameObject SearchingUser;
-    public Animator ani;
-    public SpriteRenderer sp;
     public Slider Hpbar;
 
     [Space(10)]
@@ -39,36 +29,19 @@ public class EnemyAi : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Init();
         coinPooling = GameObject.Find("CoinPooling").GetComponent<CoinPooling>();
         pos = 0.01f;
-        ani = GetComponent<Animator>();
-        sp = GetComponent<SpriteRenderer>();
-        state = new State();
-        spawnPos = transform.position;
-        FindUserRadious = this.gameObject.transform.Find("FindUserRadious").GetComponent<CircleCollider2D>();
-        FindUserRadious.radius = searchUserRadius;
     }
 
-    private void Update()
+    public IEnumerator StartMove(Vector2 targetPos)
     {
-        if (state == State.FINDENEMY || state == State.MOVE)
-        {
-            ani.SetBool("IsMove", true);
-        }
-        if (state == State.IDLE)
-        {
-            ani.SetBool("IsMove", false);
-        }
-
-    }
-    public IEnumerator Move(Vector2 targetPos)
-    {
-
         if ((Vector2)transform.position != targetPos && state != State.ATTACK)
         {
-            flipX(targetPos);
+            
             Vector2 startPos = transform.position;
             state = State.MOVE;
+            flipX(targetPos);
             for (float radio = 0f; radio < 1f; radio += pos)
             {
                 this.gameObject.transform.position = Vector2.Lerp(startPos, targetPos, radio);
@@ -77,7 +50,7 @@ public class EnemyAi : MonoBehaviour
             state = State.IDLE;
             transform.position = targetPos;
         }
-
+        stateMachine.Transition(new IdleState());
     }
     public void Hit(){
         if(state != State.ATTACK){
@@ -107,13 +80,23 @@ public class EnemyAi : MonoBehaviour
             sp.flipX = false;
         }
     }
-    public IEnumerator Attack(){
-        Debug.Log("Start Attack");
-        state = State.ATTACK;
+    public IEnumerator StartAttack(){
+        IsAttack = true;
         ani.SetTrigger("IsAttack");
         
         yield return new WaitForSeconds(1f);
-        Debug.Log("Finish");
-        state = State.IDLE;
+        IsAttack = false;
+    }
+
+    public override void Move(){ }
+
+    public override void Move(Vector2 targetPos)
+    {
+        StartCoroutine(StartMove(targetPos));
+    }
+
+    public override void Attack()
+    {
+        StartCoroutine(StartAttack());
     }
 }

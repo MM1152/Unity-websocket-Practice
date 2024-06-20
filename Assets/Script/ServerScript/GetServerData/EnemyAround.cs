@@ -6,6 +6,7 @@ using UnityEngine;
 public class EnemyAround : ISocket
 {
     private Thread thread;
+    
 
     public override void RunNetworkCode(Data data)
     {
@@ -16,21 +17,17 @@ public class EnemyAround : ISocket
             enemyAi.Hpbar.value = data.enemyList[thisEnemyIndex].Hp;
             enemyAi.FindUser.SetActive(false);
 
-            
-            if (data.enemyList[thisEnemyIndex].state.Equals("Hit"))
-            {
-                enemyAi.Hit();
-            }
-            else
-            {
-                
-                if (data.enemyList[thisEnemyIndex].state.Equals("FollowUser"))
-                {   
-                    enemyAi.FindUser.SetActive(true);
-                }
 
-                StartCoroutine(enemyAi.Move(new Vector2(data.enemyList[thisEnemyIndex].x, data.enemyList[int.Parse(enemy.name.Split(' ')[1])].y)));
+            if (data.enemyList[thisEnemyIndex].state.Equals("FollowUser"))
+            {
+                enemyAi.FindUser.SetActive(true);
             }
+            if(!enemyAi.IsAttack){
+                enemyAi.stateMachine.Transition(new MoveState() , new Vector2(data.enemyList[thisEnemyIndex].x , data.enemyList[thisEnemyIndex].y));
+            }
+            
+            
+
 
         }
     }

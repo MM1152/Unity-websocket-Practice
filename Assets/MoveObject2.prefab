@@ -390,7 +390,7 @@ GameObject:
   - component: {fileID: 6167177073041132352}
   - component: {fileID: 8191204435184657520}
   m_Layer: 5
-  m_Name: "\uC778\uBCA4\uD1A0\uB9AC/\uC2A4\uD0EF\uCC3D"
+  m_Name: InventoryANDstatus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -512,7 +512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1832647628435630816
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1490,7 +1490,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7557850633394544662}
   - component: {fileID: 6038178439918184557}
-  - component: {fileID: 6209107607442756987}
   - component: {fileID: 75939634671715664}
   - component: {fileID: -7061112723812099186}
   - component: {fileID: 1884440106917939488}
@@ -1572,47 +1571,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6209107607442756987
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3052496245399316046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2ffa9581b4c22544a61ca313ebd7121, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stat: {fileID: 8561307948263832679}
-  exp: {fileID: 5446845152483849958}
-  rg: {fileID: 0}
-  ani: {fileID: 0}
-  attackingPlayer: {fileID: 0}
-  attackShow: {fileID: 450345926805256392}
-  playerHand: {fileID: 4098055847149360945}
-  sp: {fileID: 0}
-  text: {fileID: 5192332790952646902}
-  this_player_info:
-    id: 
-    x: 0
-    y: 0
-    hp: 0
-    mp: 0
-    strStats: 0
-    intStats: 0
-    exp: 0
-    Level: 0
-    maxExp: 0
-  state: 0
-  speed: 3
-  radio: 0
-  pushPower: 1.5
-  moveX: 0
-  moveY: 0
-  isAttackSussecs: 0
-  firstSendMoveData: 0
-  userName: 
 --- !u!58 &75939634671715664
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2092,7 +2050,7 @@ RectTransform:
   m_Father: {fileID: 3551913470592899087}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3072,7 +3030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c5737d7509e95a489034d2c5b3a7137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveObject: {fileID: 6209107607442756987}
+  moveObject: {fileID: 0}
   stats:
   - {fileID: 2761614314331534455}
   - {fileID: 931608848798964415}
@@ -3093,7 +3051,7 @@ GameObject:
   - component: {fileID: 5192332790952646902}
   - component: {fileID: 1545774490582845426}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: Name
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
