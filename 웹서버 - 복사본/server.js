@@ -225,7 +225,7 @@ let AttackInterval = new Map();
 
 function EnemyChangeState() {
     for (let i = 0; i < enemyList.length; i++) {
-        console.log("┌───────────────────────────────────────┐")
+        //console.log("┌───────────────────────────────────────┐")
         if (enemyList[i].state != "Hit" && enemyList[i].state != "Die") {
             if (enemyList[i].FollowTarger == null) { // 유저 찾아오기
                 userList.forEach(user => {
@@ -302,15 +302,15 @@ function EnemyChangeState() {
             enemyList[i].state = "MoveAround";
         }
 
-        console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
+        //console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
         if (enemyList[i].FollowTarger != null) {
-            console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
+            //console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
         }
-        console.log(`\t     EnemyHp : ${enemyList[i].Hp}`)
+        //console.log(`\t     EnemyHp : ${enemyList[i].Hp}`)
 
-        console.log("└───────────────────────────────────────┘")
+        //console.log("└───────────────────────────────────────┘")
     }
-    console.log("\n\n\n\n\n\n\n\n")
+    //console.log("\n\n\n\n\n\n\n\n")
 
     wss.clients.forEach(function (client) {
         client.send(JSON.stringify({ title: "EnemyAround", enemyList: enemyList }));
