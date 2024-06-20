@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 public class MoveObject : MonoBehaviour
 {
-
+    public StateMachine stateMachine;
     Socket socket;
     public SetStatsUI stat;
     [Header("Component")]
@@ -38,64 +38,76 @@ public class MoveObject : MonoBehaviour
 
     [Header("Character Name")]
     [SerializeField] private string userName;
-    
-    
-    public UserData getUserData(){
+
+
+    public UserData getUserData()
+    {
         return this_player_info;
     }
-    public void setUserExp(UserData data){
-       if(this_player_info.Level != data.Level){
+    public void setUserExp(UserData data)
+    {
+        if (this_player_info.Level != data.Level)
+        {
             stat.SetStatsPoint(data);
         }
         this_player_info = data;
         exp.setMaxExp(this_player_info.maxExp);
         exp.setcurrentExp(this_player_info.exp);
-         
+
     }
-    void Update(){
-        Move();
-        Attack();
-        
+    void Update()
+    {
+        //Move();
+        //Attack();
+        stateMachine.Update();
     }
-    void Start(){
-        exp.gameObject.SetActive(false);
-        radio = 0.02f;
-        state = State.IDLE;
-        socket = Socket.Instance;
+    void Awake()
+    {
         sp = GetComponent<SpriteRenderer>();
         ani = GetComponent<Animator>();
         text.text = this.gameObject.name;
         rg = GetComponent<Rigidbody2D>();
-        if(socket.this_player == this.gameObject){
-             exp.gameObject.SetActive(true);
-        }
-    }
-    public void Move(){
-        if(this.gameObject == socket.this_player && state != State.ATTACK){
-            moveX = Input.GetAxisRaw("Horizontal");
-            moveY = Input.GetAxisRaw("Vertical");
-            SetAnimation(State.MOVE);
-            transform.position += new Vector3(moveX , moveY).normalized * speed * Time.deltaTime;
 
-            if(!firstSendMoveData){
-                firstSendMoveData = true;
-                InvokeRepeating("SendMessage" , 0 , 0.5f);     
-            }
+        stateMachine = new StateMachine(this);
+        stateMachine.Init(new IdleState());
+    }
+    void Start()
+    {
+        //exp.gameObject.SetActive(false);
+        //radio = 0.02f;
+        //state = State.IDLE;
+        //socket = Socket.Instance;
+
+        /* if (socket.this_player == this.gameObject)
+         {
+             exp.gameObject.SetActive(true);
+         }
+         */
+    }
+    public void Move()
+    {
+        moveX = Input.GetAxisRaw("Horizontal");
+        moveY = Input.GetAxisRaw("Vertical");
+
+        transform.position += new Vector3(moveX, moveY).normalized * speed * Time.deltaTime;
+        SetAnimation(State.MOVE);
+        if (!firstSendMoveData)
+        {
+            firstSendMoveData = true;
+            //InvokeRepeating("SendMessage", 0, 0.5f);
         }
     }
- 
-    private void SendMessage(){
-        
-        Data data = new Data("PlayerMove" , this.gameObject.name , transform.position.x , transform.position.y , new Vector2(moveX , moveY));
+
+    public void SendMessage()
+    {
+        Data data = new Data("PlayerMove", this.gameObject.name, transform.position.x, transform.position.y, new Vector2(moveX, moveY));
         socket.ws.Send(JsonUtility.ToJson(data));
     }
-    public void Attack(){
-        if(Input.GetKeyDown(KeyCode.Space) && this.gameObject == socket.this_player && !socket.this_player_MoveObject.attackShow.activeSelf){
-            StartCoroutine(AttackShow());
-            Data attackData = new Data("AttackOtherPlayer" , this.gameObject.name);
-            socket.ws.Send(JsonUtility.ToJson(attackData));
-        }
-        
+    public void Attack()
+    {
+        StartCoroutine(AttackShow());
+        Data attackData = new Data("AttackOtherPlayer", this.gameObject.name);
+        socket.ws.Send(JsonUtility.ToJson(attackData));
     }
     public IEnumerator Moving(Vector2 targetPos)
     {
@@ -112,56 +124,64 @@ public class MoveObject : MonoBehaviour
         SetAnimation(State.IDLE);
         Debug.Log("EndCorutain");
     }
-    public IEnumerator AttackShow(){
+    public IEnumerator AttackShow()
+    {
         SetAnimation(State.ATTACK);
         attackShow.SetActive(true);
         yield return new WaitForSeconds(.5f);
         attackShow.SetActive(false);
         SetAnimation(State.IDLE);
-    } 
+    }
 
-    public Vector2 GetPosition(){
+    public Vector2 GetPosition()
+    {
         return transform.position;
     }
 
-    void OnTriggerEnter2D(Collider2D other) {
-        if(other.tag == "Enemy"){
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Enemy")
+        {
             //other.GetComponent<Animator>().SetTrigger("IsHit");
             //other.GetComponent<EnemyAi>().state = State.HURT;
             Data data = new Data("HitEnemy");
             data.id = other.name.Split(' ')[1];
             data.this_player = this_player_info;
             socket.ws.Send(JsonUtility.ToJson(data));
-            
-            
+
+
         }
     }
 
-    
+
 
     ///<summary>
     /// 애니메이션을 STATE로 SET해주는 함수
     ///</summary>
-    public void SetAnimation(State state){
+    public void SetAnimation(State state)
+    {
         this.state = state;
-        
-        if(state == State.ATTACK){
-            ani.SetTrigger("IsAttack");
-        }
-        if(state == State.MOVE || state == State.IDLE){
-            ani.SetInteger("IsRun" , Math.Abs((int)moveX) + Math.Abs((int)moveY));
+
+
+        if (state == State.MOVE || state == State.IDLE)
+        {
+            ani.SetInteger("IsRun", Math.Abs((int)moveX) + Math.Abs((int)moveY));
         }
 
-        if(moveX < 0){
+        if (moveX < 0)
+        {
             sp.flipX = true;
             playerHand.flipX = true;
-        }else if(moveX > 0){
+        }
+        else if (moveX > 0)
+        {
             sp.flipX = false;
             playerHand.flipX = false;
         }
     }
 }
-public enum State{
+public enum State
+{
     IDLE,
     ATTACK,
     MOVE,
