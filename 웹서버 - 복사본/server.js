@@ -33,7 +33,35 @@ app.post('/getData', (req, res) => {
 
 })
 
-
+app.post('/inventoryData' , (req , res) => {
+    var result = req.body;
+    console.log(result);
+    let who = userStateChange(result)
+    var query = 'Select * from user_inventory where id = ?'
+    var params = [userList[who].name]
+    console.log(userList[who].name);
+    db.query(query , params , function(err , rows , fields) {
+        var data = {
+            item : rows[0].item,
+            gold : rows[0].gold
+        }
+        res.send(data);
+    })
+})
+app.post('/saveinventoryData' , (req , res) => {
+    var result = req.body;
+    
+    result = JSON.parse(result.item);
+    let who = userStateChange(result);
+    var query = 'update user_inventory set item = JSON_SET(item , ? , ?) where id = ?'
+    var params = [ `$."${result.Key}"` , result.Value , userList[who].name];
+    
+    db.query(query , params , function(err , rows , fields){
+        if(err) err
+        res.send("su")
+    });
+    
+}) 
 app.post('/mapData', (req, res) => {
     var reslut = req.body;
     var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
@@ -79,25 +107,39 @@ app.post('/login', (req, res) => {
 
 app.post('/setNickName', (req, res) => {
     var reslut = req.body;
-    console.log(reslut);
     var query = "Update user_info set nick_name = ? where id = ?";
     var params = [reslut.NickName, id];
 
     var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats) values (? , ? , ? , ? , ?)";
     var insertparmas = [id, 100, 100, 1, 1]
 
+    var inventoryquery = "Insert Into user_inventory (id , item , gold) values (? , ? , ?)";
+    var inventoryparams = [id , JSON.stringify({})  , 0]
 
+    var inventoryInitQuery = "UPDATE user_inventory SET item = JSON_SET(item"
+    for (let i = 1; i <= 30; i++) {
+        inventoryInitQuery += `, '$."${i}"', 0`;
+      }
+    inventoryInitQuery += ') WHERE id = ?';
+    inventoryInitParams = [id]
     db.query(query, params, function (err, rows, fields) {
         if (err) {
             console.log(err)
         }
         console.log("user_info 업데이트 성공");
         userId = params[0];
-        db.query(insertquery, insertparmas, function (err, rows, fields) {
+        db.query(inventoryquery , inventoryparams , function(err , rows , fields) {
+            if(err) {
+                console.log(err)
+            }
+            console.log("Inventory 생성 완");
+            db.query(inventoryInitQuery , inventoryInitParams);
+        })
+        db.query(insertquery, insertparmas, function(err, rows, fields) {
             if (err) {
                 console.log(err)
             }
-            console.log("Insert 완");
+            console.log("UserData 생성 완");
             res.send("로그인 성공.")
         })
     })
@@ -117,14 +159,12 @@ wss.on('connection', async (ws, req) => {
     await init(ws);
 
     let who = userStateChange(ws);
-    console.log(userList[who])
     var data1 = JSON.stringify({
         title: "Init",
         id: userId,
         this_player: userList[who],
         enemyList: enemyList
     });
-    console.log(userList)
     ws.send(data1);
 
     ws.on('close', () => {
@@ -152,7 +192,6 @@ wss.on('connection', async (ws, req) => {
 
         data = JSON.parse(data)
         if (data.title == "SaveData") {
-            ;
             let who = userStateChange(ws);
             var query = "UPDATE user_status Set hp = ? , mp = ? , strstats = ? , intstats = ? , exp = ? , Level = ? where id = ?";
             var params = [data.this_player.hp, data.this_player.mp, data.this_player.strStats, data.this_player.intStats, data.this_player.exp, data.this_player.Level, userList[who].name];
@@ -167,15 +206,27 @@ wss.on('connection', async (ws, req) => {
         }
         if (data.title == "PlayerMove") {
             var data2 = { title: "CheckMove", id: ws.id, x: data.x, y: data.y, moveXY: data.moveXY }
-
             let who = userStateChange(ws);
+            
             userList[who].x = data.x;
             userList[who].y = data.y;
 
             without_player_response(data2, ws)
         }
+        if(data.title == "GetCoin"){
+            let who = userStateChange(ws);
+            var query = "select * from user_inventory where id = ?";
+            var params = [userList[who].name]
 
-        if (data.title == "HitEnemy") {
+            db.query(query , params , function(err , rows , fields) {
+                var result = rows[0].gold + 1;
+                var query = "Update user_inventory set gold = ? where id = ?";
+                var params =  [result, userList[who].name]
+    
+                db.query(query , params)
+            })
+        }
+        if (data.title == "HitEnemy") {  
             enemyList.forEach(element => {
                 if (element.id == data.id) {
                     element.Hp -= 10 * data.this_player.strStats;
@@ -186,7 +237,12 @@ wss.on('connection', async (ws, req) => {
                             data.this_player.Level++;
                             data.this_player.exp -= data.this_player.maxExp;
                             data.this_player.maxExp = data.this_player.Level * 100;
-   
+                        }
+                        var isDropItem = GetRandomInt(0 , 4)
+                        var DropItem = 0;
+                        
+                        if(isDropItem == 3){
+                            DropItem = GetRandomInt(1 , 4)
                         }
                         if (!element.isDie) {
                             let RespawnId = setInterval(() => {EnemyRespawn(element)}, 5000);
@@ -194,10 +250,10 @@ wss.on('connection', async (ws, req) => {
                             element.isDie = true;
                         }
                         element.FollowTarger = null;
-                        all_player_response({ title: "EnemyDie", enemy: element, this_player: data.this_player });
+                        all_player_response({title: "EnemyDie", enemy: element, this_player: data.this_player, dropItem : DropItem})
                     } else {
                         element.state = "Hit"
-                        all_player_response({ title: "EnemyHit", enemyList: enemyList, this_player: data.this_player });
+                        all_player_response({title: "EnemyHit", enemy: element, this_player: data.this_player});
                     }
 
                 }
@@ -206,6 +262,7 @@ wss.on('connection', async (ws, req) => {
         }
 
         if (data.title == "AttackOtherPlayer") {
+            console.log("attackPlayer : " + data.id);
             var data2 = {
                 title: "CheckAttack",
                 id: data.id,
@@ -249,7 +306,6 @@ function EnemyChangeState() {
                 else if (Math.sqrt(dx * dx + dy * dy) < 1) {
                     enemyList[i].state = "AttackAroundInUser"
                     if(!enemyList[i].isAttack){
-                        console.log(`start Attack Interval : ${enemyList[i].id}`)
                         let AttackId = setInterval(() => {EnemyAttack(enemyList[i])} , enemyList[i].AttackTime * 1000);
                         AttackInterval.set(enemyList[i].id , AttackId);
                         enemyList[i].isAttack = true;
@@ -260,7 +316,6 @@ function EnemyChangeState() {
             }
             if(enemyList[i].state != "AttackAroundInUser"){
                 if(AttackInterval.has(enemyList[i].id)){
-                    console.log(`enemy interval stop : ${enemyList[i].id}`)
                     clearInterval(AttackInterval.get(enemyList[i].id))
                     AttackInterval.delete(enemyList[i].id)
                     enemyList[i].isAttack = false;
@@ -292,7 +347,6 @@ function EnemyChangeState() {
                     let enemyDy = enemyList[i].y - enemyList[j].y;
                     //console.log("enemy"+i + "  enemy" + j+ "  Distance " + Math.sqrt((enemyDx * enemyDx) + (enemyDy * enemyDy)));
                     if (Math.sqrt((enemyDx * enemyDx) + (enemyDy * enemyDy)) < 0.5) {
-                        console.log("회피")
                         enemyList[i].x += Math.random() * 2 - 1
                         enemyList[i].y += Math.random() * 2 - 1
                     }
@@ -317,11 +371,9 @@ function EnemyChangeState() {
     })
 }
 function EnemyAttack(enemy){
-    console.log(`enemyAttack : ${enemy.id}`)
     all_player_response({title : "EnemyAttack" , enemy : enemy})
 }
 function EnemyRespawn(enemy) {
-    console.log("Respawn Enemy : " + enemy.id);
     enemy.state = "MoveAround";
     enemy.Hp = enemy.MaxHp;
     enemy.x = enemy.spawnPos.x
@@ -343,7 +395,6 @@ function all_player_response(data) {
 }
 
 function without_player_response(data) {
-
     wss.clients.forEach(function each(client) {
         if (data.id != client.id) {
             client.send(JSON.stringify(data))
@@ -351,6 +402,7 @@ function without_player_response(data) {
     })
 }
 function EnemyInit() {
+
     for (let i = 0; i < 3; i++) {
         let x = 5;
         let y = 3 * i + 0.5;
@@ -386,7 +438,6 @@ function init(ws) {
     return new Promise((resolve, rejects) => {
 
         var getUserDataquery = "select user_info.id , hp , mp , strStats , intStats , exp , nick_name , Level from user_status , user_info where user_status.id = ? && user_info.id = ?";
-        console.log(id);
         var getUserDataparams = [id, id];
 
         db.query(getUserDataquery, getUserDataparams, function (err, rows, fields) {
@@ -403,11 +454,12 @@ function init(ws) {
                 Level: rows[0].Level,
                 maxExp: rows[0].Level * 100
             })
-            ws.id = rows[0].nick_name
+            ws.id = rows[0].nick_name;
             resolve();
         })
 
     })
-
-
 }
+function GetRandomInt(min , max){
+    return Math.floor(Math.random() * (max - min)) + min;
+} 
