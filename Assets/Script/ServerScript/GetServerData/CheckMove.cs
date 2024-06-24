@@ -11,7 +11,7 @@ public class CheckMove : ISocket
     
     public GameObject[] movingPlayer;
     public MoveObject movingPlayerMoveObj;
-    private StateMachine stateMachine;
+
     public override void RunNetworkCode(Data data)
     {
         
@@ -20,8 +20,7 @@ public class CheckMove : ISocket
             if (socket.other[i].name == data.id.ToString())
             {
                 OtherPlayerMove moveObject = socket.other[i].GetComponent<OtherPlayerMove>(); 
-                stateMachine = new StateMachine(moveObject);
-                stateMachine.Transition(new MoveState() , new Vector2(data.x , data.y));
+                moveObject.stateMachine.Transition(new MoveState() , new Vector2(data.x , data.y));
                 break;
             }
         }

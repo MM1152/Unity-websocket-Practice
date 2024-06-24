@@ -5,19 +5,18 @@ using UnityEngine;
 
 public class AttackShowingGameObjectTransform : MonoBehaviour
 {
-    MoveObject moveObject;
+    public MoveObject moveObject;
     Vector2 attackPosition;
      float z = 0;
     // Start is called before the first frame update
     void Awake()
     {
-        moveObject = gameObject.transform.parent.GetComponent<MoveObject>();
+        
         this.gameObject.SetActive(false);
     }
 
     void OnEnable() {
-       
-
+        moveObject ??= gameObject.transform.parent.GetComponent<MoveObject>();
         if(moveObject.sp.flipX){
             attackPosition = new Vector2(-1f , 0f);
             z = 180f;

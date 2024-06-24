@@ -37,6 +37,7 @@ public class TileMap2D : MonoBehaviour
     }
     public void GetData(string result)
     {
+        Debug.Log(result);
         GetData mapdata = JsonUtility.FromJson<GetData>(result);
         var mapData = mapdata.mapData[0];
         int y = 0;

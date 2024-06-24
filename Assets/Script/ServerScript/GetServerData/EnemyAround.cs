@@ -14,7 +14,6 @@ public class EnemyAround : ISocket
         {
             int thisEnemyIndex = int.Parse(enemy.name.Split(' ')[1]);
             EnemyAi enemyAi = enemy.GetComponent<EnemyAi>();
-            enemyAi.Hpbar.value = data.enemyList[thisEnemyIndex].Hp;
             enemyAi.FindUser.SetActive(false);
 
 
@@ -25,10 +24,6 @@ public class EnemyAround : ISocket
             if(!enemyAi.IsAttack){
                 enemyAi.stateMachine.Transition(new MoveState() , new Vector2(data.enemyList[thisEnemyIndex].x , data.enemyList[thisEnemyIndex].y));
             }
-            
-            
-
-
         }
     }
 }

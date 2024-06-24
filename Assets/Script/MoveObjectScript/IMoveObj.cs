@@ -17,8 +17,6 @@ public abstract class IMoveObj : MonoBehaviour {
         stateMachine.Init(new IdleState());
         IsAttack = false;
         rg = GetComponent<Rigidbody2D>();
-        stateMachine = new StateMachine(this);
-        stateMachine.Init(new IdleState());
     }
     
     public abstract void Move();

@@ -27,7 +27,7 @@ public class EnemyAi : IMoveObj
     public bool returnSpawnPos;
     public Vector2 target;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Init();
         coinPooling = GameObject.Find("CoinPooling").GetComponent<CoinPooling>();
@@ -52,23 +52,17 @@ public class EnemyAi : IMoveObj
         }
         stateMachine.Transition(new IdleState());
     }
-    public void Hit(){
-        if(state != State.ATTACK){
-            ani.SetTrigger("IsHit");
-        }
-    }
 
-    public IEnumerator Die(UserData user){
+    public IEnumerator Die(Data user){
         ani.SetBool("IsDie" , true);
-
-        MoveObject userMoveObject;    
-        userMoveObject = GameObject.Find(user.id).GetComponent<MoveObject>();
-        userMoveObject.setUserExp(user);
+  
+        MoveObject userMoveObject = GameObject.Find(user.this_player.id).GetComponent<MoveObject>();
+        userMoveObject?.setUserExp(user.this_player);
         
         yield return new WaitUntil(() => ani.GetCurrentAnimatorStateInfo(0).IsName("EnemyDie") && ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
-        coinPooling.MakeCoin(this.gameObject.transform , userMoveObject.transform);
         this.gameObject.SetActive(false);
     }
+
     public void flipX(Vector3 targetPos)
     {
         if (targetPos.x - this.gameObject.transform.position.x < 0f)
@@ -80,6 +74,7 @@ public class EnemyAi : IMoveObj
             sp.flipX = false;
         }
     }
+
     public IEnumerator StartAttack(){
         IsAttack = true;
         ani.SetTrigger("IsAttack");
@@ -89,7 +84,6 @@ public class EnemyAi : IMoveObj
     }
 
     public override void Move(){ }
-
     public override void Move(Vector2 targetPos)
     {
         StartCoroutine(StartMove(targetPos));
@@ -99,4 +93,5 @@ public class EnemyAi : IMoveObj
     {
         StartCoroutine(StartAttack());
     }
+
 }

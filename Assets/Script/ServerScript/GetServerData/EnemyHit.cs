@@ -4,7 +4,9 @@ public class EnemyHit : ISocket
 {
     public override void RunNetworkCode(Data data)
     {
-        EnemyAi enemy = GameObject.Find(data.id).GetComponent<EnemyAi>();
-        enemy.Hit();
+        Debug.Log(data.enemy.id);
+        EnemyAi enemyAi = enemyCount.Enemys[data.enemy.id].GetComponentInChildren<EnemyAi>();
+        enemyAi.Hpbar.value = data.enemy.Hp;
+        enemyAi.stateMachine.Transition(new HitState());
     }
 }

@@ -1,5 +1,6 @@
 const WebSocket = require('ws')
 const express = require("express")
+const util = require('util')
 const path = require('path');
 const bodyParser = require("body-parser")
 const app = express()
@@ -12,7 +13,7 @@ const { spawn } = require('child_process');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("public"))
-
+db.query = util.promisify(db.query);
 
 var userId
 var enemyList = []
@@ -23,45 +24,44 @@ app.listen(8001, () => {
 })
 
 app.post('/getData', (req, res) => {
-    var result = req.body
-
-    var query = 'INSERT INTO mapData (mapSizeX , mapSizeY , mapValue , mapName , decoValue) Values (? , ? , ? ,? , ?)';
-    var params = [result.mapSize.x, result.mapSize.y, JSON.stringify(result.mapData), result.mapName, JSON.stringify(result.DecoData)];
+    var result = req.body // mapName,  mapSize(x , y) , mapData(List) , DecoData(List) , EnemyData(List)
+    console.log(result);
+    var query = 'INSERT INTO mapData (mapSizeX , mapSizeY , mapValue , mapName , decoValue , enemyValue) Values (? , ? , ? ,? , ? , ?)';
+    var params = [result.mapSize.x, result.mapSize.y, JSON.stringify(result.mapData), result.mapName, JSON.stringify(result.DecoData), JSON.stringify(result.EnemyData)];
     db.query(query, params, function (err, rows, fields) {
         if (err) console.log(err)
     });
-
 })
 
-app.post('/inventoryData' , (req , res) => {
+app.post('/inventoryData', (req, res) => {
     var result = req.body;
     console.log(result);
     let who = userStateChange(result)
     var query = 'Select * from user_inventory where id = ?'
     var params = [userList[who].name]
     console.log(userList[who].name);
-    db.query(query , params , function(err , rows , fields) {
+    db.query(query, params, function (err, rows, fields) {
         var data = {
-            item : rows[0].item,
-            gold : rows[0].gold
+            item: rows[0].item,
+            gold: rows[0].gold
         }
         res.send(data);
     })
 })
-app.post('/saveinventoryData' , (req , res) => {
+app.post('/saveinventoryData', (req, res) => {
     var result = req.body;
-    
+
     result = JSON.parse(result.item);
     let who = userStateChange(result);
     var query = 'update user_inventory set item = JSON_SET(item , ? , ?) where id = ?'
-    var params = [ `$."${result.Key}"` , result.Value , userList[who].name];
-    
-    db.query(query , params , function(err , rows , fields){
-        if(err) err
+    var params = [`$."${result.Key}"`, result.Value, userList[who].name];
+
+    db.query(query, params, function (err, rows, fields) {
+        if (err) err
         res.send("su")
     });
-    
-}) 
+
+})
 app.post('/mapData', (req, res) => {
     var reslut = req.body;
     var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
@@ -114,12 +114,12 @@ app.post('/setNickName', (req, res) => {
     var insertparmas = [id, 100, 100, 1, 1]
 
     var inventoryquery = "Insert Into user_inventory (id , item , gold) values (? , ? , ?)";
-    var inventoryparams = [id , JSON.stringify({})  , 0]
+    var inventoryparams = [id, JSON.stringify({}), 0]
 
     var inventoryInitQuery = "UPDATE user_inventory SET item = JSON_SET(item"
     for (let i = 1; i <= 30; i++) {
         inventoryInitQuery += `, '$."${i}"', 0`;
-      }
+    }
     inventoryInitQuery += ') WHERE id = ?';
     inventoryInitParams = [id]
     db.query(query, params, function (err, rows, fields) {
@@ -128,14 +128,14 @@ app.post('/setNickName', (req, res) => {
         }
         console.log("user_info 업데이트 성공");
         userId = params[0];
-        db.query(inventoryquery , inventoryparams , function(err , rows , fields) {
-            if(err) {
+        db.query(inventoryquery, inventoryparams, function (err, rows, fields) {
+            if (err) {
                 console.log(err)
             }
             console.log("Inventory 생성 완");
-            db.query(inventoryInitQuery , inventoryInitParams);
+            db.query(inventoryInitQuery, inventoryInitParams);
         })
-        db.query(insertquery, insertparmas, function(err, rows, fields) {
+        db.query(insertquery, insertparmas, function (err, rows, fields) {
             if (err) {
                 console.log(err)
             }
@@ -155,7 +155,7 @@ let RespawnInterval = new Map();
 EnemyInit()
 
 wss.on('connection', async (ws, req) => {
-
+    console.log(enemyList);
     await init(ws);
 
     let who = userStateChange(ws);
@@ -207,26 +207,26 @@ wss.on('connection', async (ws, req) => {
         if (data.title == "PlayerMove") {
             var data2 = { title: "CheckMove", id: ws.id, x: data.x, y: data.y, moveXY: data.moveXY }
             let who = userStateChange(ws);
-            
+
             userList[who].x = data.x;
             userList[who].y = data.y;
 
             without_player_response(data2, ws)
         }
-        if(data.title == "GetCoin"){
+        if (data.title == "GetCoin") {
             let who = userStateChange(ws);
             var query = "select * from user_inventory where id = ?";
             var params = [userList[who].name]
 
-            db.query(query , params , function(err , rows , fields) {
+            db.query(query, params, function (err, rows, fields) {
                 var result = rows[0].gold + 1;
                 var query = "Update user_inventory set gold = ? where id = ?";
-                var params =  [result, userList[who].name]
-    
-                db.query(query , params)
+                var params = [result, userList[who].name]
+
+                db.query(query, params)
             })
         }
-        if (data.title == "HitEnemy") {  
+        if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
                 if (element.id == data.id) {
                     element.Hp -= 10 * data.this_player.strStats;
@@ -238,27 +238,27 @@ wss.on('connection', async (ws, req) => {
                             data.this_player.exp -= data.this_player.maxExp;
                             data.this_player.maxExp = data.this_player.Level * 100;
                         }
-                        var isDropItem = GetRandomInt(0 , 4)
+                        var isDropItem = GetRandomInt(0, 4)
                         var DropItem = 0;
-                        
-                        if(isDropItem == 3){
-                            DropItem = GetRandomInt(1 , 4)
+
+                        if (isDropItem == 3) {
+                            DropItem = GetRandomInt(1, 4)
                         }
                         if (!element.isDie) {
-                            let RespawnId = setInterval(() => {EnemyRespawn(element)}, 5000);
+                            let RespawnId = setInterval(() => { EnemyRespawn(element) }, 5000);
                             RespawnInterval.set(element.id, RespawnId);
                             element.isDie = true;
                         }
                         element.FollowTarger = null;
-                        all_player_response({title: "EnemyDie", enemy: element, this_player: data.this_player, dropItem : DropItem})
+                        all_player_response({ title: "EnemyDie", enemy: element, this_player: data.this_player, dropItem: DropItem })
                     } else {
                         element.state = "Hit"
-                        all_player_response({title: "EnemyHit", enemy: element, this_player: data.this_player});
+                        all_player_response({ title: "EnemyHit", enemy: element, this_player: data.this_player });
                     }
 
                 }
             });
-            
+
         }
 
         if (data.title == "AttackOtherPlayer") {
@@ -286,11 +286,13 @@ function EnemyChangeState() {
         if (enemyList[i].state != "Hit" && enemyList[i].state != "Die") {
             if (enemyList[i].FollowTarger == null) { // 유저 찾아오기
                 userList.forEach(user => {
-                    let dx = user.x - enemyList[i].x
-                    let dy = user.y - enemyList[i].y
-                    //console.log(`user<->enemy${i} Distance ${Math.abs((user.x - enemyList[i].x) + (user.y - enemyList[i].y))}`);
-                    if (Math.sqrt(dx * dx + dy * dy) < 5) {
-                        enemyList[i].FollowTarger = user;
+                    if (enemyList[i].EnemySpawnMapName == user.mapName) {
+                        let dx = user.x - enemyList[i].x
+                        let dy = user.y - enemyList[i].y
+                        //console.log(`user<->enemy${i} Distance ${Math.abs((user.x - enemyList[i].x) + (user.y - enemyList[i].y))}`);
+                        if (Math.sqrt(dx * dx + dy * dy) < 5) {
+                            enemyList[i].FollowTarger = user;
+                        }
                     }
                 });
             }
@@ -305,17 +307,17 @@ function EnemyChangeState() {
                 }
                 else if (Math.sqrt(dx * dx + dy * dy) < 1) {
                     enemyList[i].state = "AttackAroundInUser"
-                    if(!enemyList[i].isAttack){
-                        let AttackId = setInterval(() => {EnemyAttack(enemyList[i])} , enemyList[i].AttackTime * 1000);
-                        AttackInterval.set(enemyList[i].id , AttackId);
+                    if (!enemyList[i].isAttack) {
+                        let AttackId = setInterval(() => { EnemyAttack(enemyList[i]) }, enemyList[i].AttackTime * 1000);
+                        AttackInterval.set(enemyList[i].id, AttackId);
                         enemyList[i].isAttack = true;
                     }
                 } else if (Math.sqrt(dx * dx + dy * dy) < 5) {
                     enemyList[i].state = "FollowUser";
                 }
             }
-            if(enemyList[i].state != "AttackAroundInUser"){
-                if(AttackInterval.has(enemyList[i].id)){
+            if (enemyList[i].state != "AttackAroundInUser") {
+                if (AttackInterval.has(enemyList[i].id)) {
                     clearInterval(AttackInterval.get(enemyList[i].id))
                     AttackInterval.delete(enemyList[i].id)
                     enemyList[i].isAttack = false;
@@ -370,8 +372,8 @@ function EnemyChangeState() {
         client.send(JSON.stringify({ title: "EnemyAround", enemyList: enemyList }));
     })
 }
-function EnemyAttack(enemy){
-    all_player_response({title : "EnemyAttack" , enemy : enemy})
+function EnemyAttack(enemy) {
+    all_player_response({ title: "EnemyAttack", enemy: enemy })
 }
 function EnemyRespawn(enemy) {
     enemy.state = "MoveAround";
@@ -385,7 +387,7 @@ function EnemyRespawn(enemy) {
     enemy.isDie = false;
     clearInterval(RespawnInterval.get(enemy.id));
     RespawnInterval.delete(enemy.id)
-    
+
 }
 
 function all_player_response(data) {
@@ -401,30 +403,124 @@ function without_player_response(data) {
         }
     })
 }
-function EnemyInit() {
+async function EnemyInit() {
+    try {
+        let EnemySpawnPos = {};
 
-    for (let i = 0; i < 3; i++) {
-        let x = 5;
-        let y = 3 * i + 0.5;
-        enemyList.push({
-            id: i,
-            type: 1,
-            x: 5,
-            y: 3 * (i + 0.5),
-            spawnPos: { x, y },
-            FollowTarger: null,
-            movePos: 1,
-            state: "MoveAround",
-            Hp: 100,
-            MaxHp: 100,
-            AttackTime: 2,
-            DropExp: 50,
-            isDie: false,
-            isAttack : false
-        })
+        var query = "select mapSizeX, mapSizeY, mapName, enemyValue from mapData";
+        var query1 = "select * from enemy_info where type = ?";
+        var id = 0;
+        const rows = await db.query(query);
+        for (let i = 0; i < rows.length; i++) {
+            let xPos = 0;
+            let yPos = 0;
+
+            for (let j = 0; j < rows[i].enemyValue.length; j++) {
+                if (xPos % rows[i].mapSizeX === 0 && xPos !== 0) {
+                    yPos++;
+                    xPos = 0;
+                }
+                xPos++;
+                if (rows[i].enemyValue[j] === 0) continue;
+
+                const enemyRows = await db.query(query1, [rows[i].enemyValue[j]]);
+
+                enemyList.push({
+                    id: id,
+                    type: enemyRows[0].type,
+                    x: xPos,
+                    y: yPos,
+                    spawnPos: { x: xPos, y: yPos },
+                    FollowTarger: null,
+                    movePos: 1,
+                    state: "MoveAround",
+                    Hp: enemyRows[0].maxHp,
+                    MaxHp: enemyRows[0].maxHp,
+                    AttackTime: enemyRows[0].attackTime,
+                    DropExp: enemyRows[0].dropExp,
+                    DropGold: enemyRows[0].dropGold,
+                    EnemySpawnMapName: rows[i].mapName,
+                    isDie: false,
+                    isAttack: false
+                });
+                id++;
+            }
+        }
+    } catch (err) {
+        console.error(err);
     }
-
 }
+/*
+async function EnemyInit() {
+    let EnemySpawnPos = {};
+
+    var query = "select mapSizeX , mapSizeY , mapName , enemyValue from mapData"
+    var query1 = "select * from enemy_info where type = ?";
+    await db.query(query , function(err , rows , fields){
+        var result = rows;
+        for(let i = 0 ; i < rows.length; i++){
+            let xPos = 0;
+            let yPos = 0;
+            var id = 0;
+            for(let j = 0; j < rows[i].enemyValue.length; j++){
+                if(xPos % rows[i].mapSizeX == 0 && xPos != 0){
+                    yPos++;
+                    xPos = 0;
+                }
+                xPos++;
+                if(rows[i].enemyValue[j] == 0) continue;
+
+                await db.query(query1 , rows[i].enemyValue[j] , function(err , rows , fields) {
+                    enemyList.push({
+                        id : id,
+                        type : rows[0].type,
+                        x: xPos,
+                        y: yPos,
+                        spawnPos: { xPos, yPos },
+                        FollowTarger: null,
+                        movePos: 1,
+                        state: "MoveAround",
+                        Hp: rows[0].maxHp,
+                        MaxHp: rows[0].maxHp,
+                        AttackTime: rows[0].attackTime,
+                        DropExp: rows[0].dropExp,
+                        DropGold: rows[0].dropGold,
+                        EnemySpawnMapName : result[i].mapName,
+                        isDie: false,
+                        isAttack : false
+                    })
+                    id++;
+                })
+                
+            }
+
+        }
+    })
+   */
+
+/*for (let i = 0; i < 3; i++) {
+    let x = 5;
+    let y = 3 * i + 0.5;
+    enemyList.push({
+        id: i,
+        type: 1,
+        x: 5,
+        y: 3 * (i + 0.5),
+        spawnPos: { x, y },
+        FollowTarger: null,
+        movePos: 1,
+        state: "MoveAround",
+        Hp: 100,
+        MaxHp: 100,
+        AttackTime: 2,
+        DropExp: 50,
+        isDie: false,
+        isAttack : false
+    })
+}
+ 
+}
+*/
 function userStateChange(ws) {
     for (let i = 0; i < userList.length; i++) {
 
@@ -452,7 +548,8 @@ function init(ws) {
                 intStats: rows[0].intStats,
                 exp: rows[0].exp,
                 Level: rows[0].Level,
-                maxExp: rows[0].Level * 100
+                maxExp: rows[0].Level * 100,
+                mapName: "첫번째 맵"
             })
             ws.id = rows[0].nick_name;
             resolve();
@@ -460,6 +557,6 @@ function init(ws) {
 
     })
 }
-function GetRandomInt(min , max){
+function GetRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 } 

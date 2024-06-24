@@ -5,9 +5,8 @@ using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class RotaionCoin : MonoBehaviour
+public class RotaionItem : MonoBehaviour
 {
-    Transform targetPos;
     float z = 0;   
     bool isThreading;
     Thread thread;
@@ -17,7 +16,7 @@ public class RotaionCoin : MonoBehaviour
     Vector3 p4;
     Vector3 p5;
     Vector3 movePos;
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -31,13 +30,7 @@ public class RotaionCoin : MonoBehaviour
             this.gameObject.transform.rotation = Quaternion.Euler(0 , 0, 0);  
         }
 
-        if(targetPos != null){
-            transform.position += (targetPos.position - transform.position).normalized * Time.deltaTime;
-            if(Vector2.Distance(transform.position ,targetPos.position) < 0.5f){
-                gameObject.SetActive(false);
-                targetPos = null;
-            }
-        }
+
     }
     void OnEnable(){
         p1 = this.gameObject.transform.position;
@@ -68,14 +61,5 @@ public class RotaionCoin : MonoBehaviour
         }
         isThreading = false;
     }
-    private void OnTriggerEnter2D(Collider2D other) {
-        if(other.tag == "Player"){
-            this.gameObject.SetActive(false);
-        }    
-    }
-    
-    public IEnumerator AbsorbCoin(Transform userPos){
-        yield return new WaitForSeconds(1.3f);
-        targetPos = userPos;
-    }
+
 }

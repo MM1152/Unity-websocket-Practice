@@ -8,7 +8,6 @@ public class StateMachine{
     private IMoveObj moveObject;
 
     public StateMachine(IMoveObj moveObject){
-       
         this.moveObject = moveObject;
     }
     public void Init(Istate state){
@@ -16,12 +15,12 @@ public class StateMachine{
         CurrentState.Enter(moveObject);
     }
     public void Transition(Istate nextState){
-        CurrentState.Exit();
+        CurrentState?.Exit();
         CurrentState = nextState;
         CurrentState.Enter(moveObject);
     } 
     public void Transition(Istate nextState , Vector2 targetPos){
-        CurrentState.Exit();
+        CurrentState?.Exit();
         CurrentState = nextState;
         CurrentState.Enter(moveObject, targetPos);
     }

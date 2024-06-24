@@ -35,13 +35,12 @@ public class Socket : MonoBehaviour
     {
         get{
             if(socket== null){
-                return null;
+                socket = new Socket();
             }
             return socket;
         }
     }
     private void Awake(){
-        socket = this;
         QualitySettings.vSyncCount = 0; 
         Application.targetFrameRate = 120;
         components = ServerManager.GetComponents<Component>();

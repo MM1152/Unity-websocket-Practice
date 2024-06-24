@@ -21,6 +21,5 @@ public class OpenUi : MonoBehaviour
             Status.SetActive(!Status.activeSelf);
         }
     }
-
     
 }

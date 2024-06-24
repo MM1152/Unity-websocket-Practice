@@ -10,6 +10,7 @@ public class EnemyRespawn : ISocket
         EnemyAi enemyAi = enemy.GetComponent<EnemyAi>();
 
         enemy.transform.position = new Vector3(data.enemy.x , data.enemy.y);
+        enemyAi.stateMachine.Transition(new IdleState());
         enemyAi.Hpbar.value = data.enemy.Hp;
         enemy.SetActive(true);
     }

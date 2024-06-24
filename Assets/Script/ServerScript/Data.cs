@@ -15,6 +15,7 @@ public class Data{
     public State state;
     public EnemyData[] enemyList;
     public EnemyData enemy;
+    public int dropItem;
 
     public Data(string title){
         this.title = title;

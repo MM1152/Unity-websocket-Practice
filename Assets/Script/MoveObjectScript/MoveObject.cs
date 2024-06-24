@@ -10,6 +10,7 @@ public class MoveObject : IMoveObj
 {
     public SetStatsUI stat;
     [Header("Component")]
+    private GameObject UI;
     public ExpBarUI exp;
     public Collider2D attackingPlayer;
     public GameObject attackShow;
@@ -48,13 +49,15 @@ public class MoveObject : IMoveObj
         exp.setMaxExp(this_player_info.maxExp);
         exp.setcurrentExp(this_player_info.exp);
     }
-    void Update()
-    {
-        stateMachine.Update();
+    private void Update() {
+        stateMachine?.Update();
     }
+    
+    
     public void Awake()
     {
-        Init(); 
+        
+        UI = gameObject.transform.Find("InventoryANDstatus").gameObject;
         text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
         attackShow = gameObject.transform.Find("Attack").gameObject;
         playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
@@ -62,14 +65,15 @@ public class MoveObject : IMoveObj
         exp.gameObject.SetActive(true);
         stat = gameObject.transform.Find("InventoryANDstatus").Find("Status").GetComponent<SetStatsUI>();
         speed = 3f;
+        Init(); 
     }
     void Start(){
-        text.text = this_player_info.id;
         
+        text.text = this_player_info.id;
+        UI.SetActive(true);
     }
     public override void Move()
     {
-        
         moveX = Input.GetAxisRaw("Horizontal");
         moveY = Input.GetAxisRaw("Vertical");
         FlipX();
@@ -89,8 +93,7 @@ public class MoveObject : IMoveObj
     public override void Attack()
     {
         StartCoroutine(AttackShow());
-        Data attackData = new Data("AttackOtherPlayer", this.gameObject.name);
-        socket.ws.Send(JsonUtility.ToJson(attackData));
+        Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("AttackOtherPlayer" , gameObject.name)));
     }
 
     public IEnumerator AttackShow()
@@ -117,8 +120,6 @@ public class MoveObject : IMoveObj
             data.id = other.name.Split(' ')[1];
             data.this_player = this_player_info;
             socket.ws.Send(JsonUtility.ToJson(data));
-
-
         }
     }
 

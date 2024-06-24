@@ -24,7 +24,7 @@ public class HttpRequest : MonoBehaviour
     }
 
     public IEnumerator Request(string url , string FiledName ,  string jsonData , Action<string> callback){     
-        
+        Debug.Log(url);
         WWWForm form = new WWWForm();
         form.AddField(FiledName , jsonData);
         UnityWebRequest request = UnityWebRequest.Post(url , form);
@@ -34,6 +34,7 @@ public class HttpRequest : MonoBehaviour
          if (request.error == null)
         {
             string result = request.downloadHandler.text;
+            Debug.Log("StartCallback : " + callback.ToString());
             callback(result);
             //callback(request.downloadHandler.text);
         }else {

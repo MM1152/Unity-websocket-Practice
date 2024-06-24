@@ -9,6 +9,7 @@ public class OtherPlayerMove : IMoveObj
     [SerializeField]
     private UserData userData;
     SpriteRenderer playerHand;
+    public GameObject attackShow;
     public UserData UserData
     {
         get
@@ -24,6 +25,7 @@ public class OtherPlayerMove : IMoveObj
     private void Awake()
     {
         Init();
+        attackShow = gameObject.transform.Find("Attack").gameObject;
         radio = 0.02f;
         text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
         playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
@@ -50,11 +52,23 @@ public class OtherPlayerMove : IMoveObj
             
             transform.position = targetPos;
         }
-        stateMachine.Transition(new IdleState());
+        if(!IsAttack){
+            stateMachine.Transition(new IdleState());
+        }
+        
     }
     public override void Attack()
     {
+        StartCoroutine(AttackShow());
+    }
 
+    public IEnumerator AttackShow()
+    {
+        IsAttack = true;
+        attackShow.SetActive(true);
+        yield return new WaitForSeconds(.5f);
+        IsAttack = false;
+        attackShow.SetActive(false);
     }
     public void FlipX(Vector2 targetPos)
     {

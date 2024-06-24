@@ -11,7 +11,9 @@ public class SetStatsUI : MonoBehaviour
     [SerializeField] private Button[] UpgradeButton;
     [SerializeField] private Text statsPoint;
 
-
+    private void Awake() {
+        moveObject = transform.root.GetComponent<MoveObject>();
+    }
     public void SetStats(UserData userData){
         stats[0].text = userData.strStats.ToString();
         stats[1].text = userData.intStats.ToString();

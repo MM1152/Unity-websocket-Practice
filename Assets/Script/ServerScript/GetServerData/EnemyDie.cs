@@ -4,12 +4,16 @@ public class EnemyDie : ISocket
 {
     public override void RunNetworkCode(Data data)
     {
-        Debug.Log($"EnemyDie {data.id}");
+        Debug.Log($"DropItem {data.dropItem}");
 
         EnemyAi enemy = enemyCount.Enemys[data.enemy.id].GetComponent<EnemyAi>();   
         Transform killUserPos = GameObject.Find(data.this_player.id).transform;
         if(enemy.gameObject.activeSelf){
-             StartCoroutine(enemy.Die(data.this_player));
+            StartCoroutine(enemy.Die(data));
+        }
+        if(socket.this_player.name == data.this_player.id){
+            ItemPooling.Instance?.MakeItem(enemy.transform , killUserPos , data.dropItem);
+            CoinPooling.Instance?.MakeCoin(enemy.transform , killUserPos);
         }
     
 
