@@ -62,6 +62,7 @@ public class UserData{
     public int exp;
     public int Level;
     public int maxExp;
+    public string mapName;
 }
 [Serializable]
 public class Enemys{

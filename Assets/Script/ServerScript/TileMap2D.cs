@@ -44,16 +44,13 @@ public class TileMap2D : MonoBehaviour
             MapData mapdata = JsonUtility.FromJson<MapData>(e.Data);
             
             if(mapdata.title.Equals("changeMap")){
-                Debug.Log("ChangeMap");
                 Socket.Instance.queue.Enqueue(() => GetData(e.Data.ToString()));
-                
             }
 
         };
     }
     public void GetData(string result)
     {  
-        
         for(int i = 0; i < mapSpawn.childCount; i++){
             Destroy(mapSpawn.GetChild(i).gameObject);
         }
@@ -63,7 +60,7 @@ public class TileMap2D : MonoBehaviour
         
         GetData mapdata = JsonUtility.FromJson<GetData>(result);
         
-        Debug.Log(mapdata.mapData[0].id);
+        
         var mapData = mapdata.mapData[0];
         int y = 0;
         int bottomX = -mapData.mapSizeX / 2;
@@ -95,8 +92,9 @@ public class TileMap2D : MonoBehaviour
         if(!firstIn){
             Socket.Instance.ws.Connect();
         }
-        Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("CheckThisMapEnemy")));
         StartCoroutine(ChangeMap());
+        Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("CheckThisMapEnemy")));
+        
     }
     
     IEnumerator ChangeMap(){

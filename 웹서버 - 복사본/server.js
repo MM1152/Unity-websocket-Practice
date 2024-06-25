@@ -25,7 +25,6 @@ app.listen(8001, () => {
 
 app.post('/getData', (req, res) => {
     var result = req.body // mapName,  mapSize(x , y) , mapData(List) , DecoData(List) , EnemyData(List)
-    console.log(result);
     var query = 'INSERT INTO mapData (mapSizeX , mapSizeY , mapValue , mapName , decoValue , enemyValue) Values (? , ? , ? ,? , ? , ?)';
     var params = [result.mapSize.x, result.mapSize.y, JSON.stringify(result.mapData), result.mapName, JSON.stringify(result.DecoData), JSON.stringify(result.EnemyData)];
     db.query(query, params, function (err, rows, fields) {
@@ -35,11 +34,9 @@ app.post('/getData', (req, res) => {
 
 app.post('/inventoryData', (req, res) => {
     var result = req.body;
-    console.log(result);
     let who = userStateChange(result)
     var query = 'Select * from user_inventory where id = ?'
     var params = [userList[who].name]
-    console.log(userList[who].name);
     db.query(query, params, function (err, rows, fields) {
         var data = {
             item: rows[0].item,
@@ -67,21 +64,19 @@ app.post('/mapData', (req, res) => {
     var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
     var parmas = reslut.NeedMapName;
     thisMapEnemyList = [];
+    thisMapUserList =[];
     db.query(query, parmas, function (err, rows, fields) {
         var data = {
             "mapData": rows
         }
-        
-        for(let i = 0; i < firstMapEnemy[rows[0].mapName].length; i++){
-            console.log(firstMapEnemy[rows[0].mapName][i])
-            thisMapEnemyList.push(enemyList[i]);
-        }
-        userList.forEach(user => {
-            
+        firstMapEnemy[rows[0].mapName].forEach(enemy => {
+            thisMapEnemyList.push(enemyList[enemy])
         });
-        
-        console.log(thisMapEnemyList)
-        
+        for(let i = 0 ; i < userList.length; i++){
+            if(userList[i].mapName == rows[0].mapName){
+                thisMapUserList.push(userList[i])
+            }
+        }
         res.send(data);
     })
 })
@@ -170,6 +165,7 @@ var firstMapEnemy = {};
 var thisMapEnemyList = [];
 var thisMapUserList =[];
 wss.on('connection', async (ws, req) => {
+    console.log(firstMapEnemy);
     
     await init(ws);
 
@@ -207,12 +203,15 @@ wss.on('connection', async (ws, req) => {
 
         data = JSON.parse(data)
         if(data.title == "CheckThisMapEnemy"){
-            console.log(data.title);
+            let who = userStateChange(ws);
             wss.clients.forEach(function each(client) {
-                if(ws.id == client.id) {
-                    ws.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList}))
-                }
 
+                if(ws.id == client.id) {
+                    client.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList , users : thisMapUserList}))
+                }
+                else if(ws.id != client.id) {
+                    client.send(JSON.stringify({title : "UserChangeMap" , this_player : userList[who]}))
+                }
             })
         }
         if(data.title == "changeMap"){
@@ -220,18 +219,26 @@ wss.on('connection', async (ws, req) => {
             var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
             var parmas = result.mapName;
             thisMapEnemyList = [];
-            
+            thisMapUserList = [];
             db.query(query, parmas, function (err, rows, fields) {
-                console.log(rows);
-                for(let i = 0; i < firstMapEnemy[rows[0].mapName].length; i++){
-                    thisMapEnemyList.push(enemyList[i]);
-                }
                 
-                console.log(thisMapEnemyList)
                 let who = userStateChange(ws);
                 userList[who].mapName = result.mapName;
+                
+                
+                for(let i = 0; i < firstMapEnemy[rows[0].mapName].length; i++){
+                    thisMapEnemyList.push(enemyList[i]);
+                }                
+                for(let i = 0 ; i < userList.length; i++){
+                    console.log(userList[i].id + " " + userList[i].mapName);
+                    if(userList[i].mapName == rows[0].mapName){
+                        thisMapUserList.push(userList[i])
+                    }
+                }
+                console.log(thisMapUserList)
                 wss.clients.forEach(function each(client) {
                     if(client.id == ws.id){
+                        console.log(ws.id + "changeMap 에게 데이터 전송")
                         ws.send(JSON.stringify({
                             title : "changeMap" ,
                             mapData : rows
@@ -495,7 +502,7 @@ async function EnemyInit() {
                     isDie: false,
                     isAttack: false
                 });
-
+                
                 firstMapEnemy[rows[i].mapName].push(id);
                     
                 
@@ -608,6 +615,7 @@ function init(ws) {
                 mapName: "첫번째 맵"
             })
             ws.id = rows[0].nick_name;
+
             resolve();
         })
 
