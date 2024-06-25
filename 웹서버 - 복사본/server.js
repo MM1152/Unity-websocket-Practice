@@ -66,10 +66,22 @@ app.post('/mapData', (req, res) => {
     var reslut = req.body;
     var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
     var parmas = reslut.NeedMapName;
+    thisMapEnemyList = [];
     db.query(query, parmas, function (err, rows, fields) {
         var data = {
             "mapData": rows
         }
+        
+        for(let i = 0; i < firstMapEnemy[rows[0].mapName].length; i++){
+            console.log(firstMapEnemy[rows[0].mapName][i])
+            thisMapEnemyList.push(enemyList[i]);
+        }
+        userList.forEach(user => {
+            
+        });
+        
+        console.log(thisMapEnemyList)
+        
         res.send(data);
     })
 })
@@ -132,7 +144,7 @@ app.post('/setNickName', (req, res) => {
             if (err) {
                 console.log(err)
             }
-            console.log("Inventory 생성 완");
+            console.log("Inventory 생성 완"); 
             db.query(inventoryInitQuery, inventoryInitParams);
         })
         db.query(insertquery, insertparmas, function (err, rows, fields) {
@@ -154,19 +166,22 @@ const wss = new WebSocket.Server({ port: 8000 }, () => {
 let RespawnInterval = new Map();
 EnemyInit()
 
+var firstMapEnemy = {};
+var thisMapEnemyList = [];
+var thisMapUserList =[];
 wss.on('connection', async (ws, req) => {
-    console.log(enemyList);
+    
     await init(ws);
 
     let who = userStateChange(ws);
-    var data1 = JSON.stringify({
+    var data1 = JSON.stringify({ 
         title: "Init",
         id: userId,
         this_player: userList[who],
-        enemyList: enemyList
+        enemyList: thisMapEnemyList
     });
-    ws.send(data1);
 
+    ws.send(data1);
     ws.on('close', () => {
         for (let i = 0; i < userList.length; i++) {
             if (userList[i].id == ws.id) {
@@ -191,6 +206,41 @@ wss.on('connection', async (ws, req) => {
     ws.on('message', function message(data) {
 
         data = JSON.parse(data)
+        if(data.title == "CheckThisMapEnemy"){
+            console.log(data.title);
+            wss.clients.forEach(function each(client) {
+                if(ws.id == client.id) {
+                    ws.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList}))
+                }
+
+            })
+        }
+        if(data.title == "changeMap"){
+            var result = data;
+            var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
+            var parmas = result.mapName;
+            thisMapEnemyList = [];
+            
+            db.query(query, parmas, function (err, rows, fields) {
+                console.log(rows);
+                for(let i = 0; i < firstMapEnemy[rows[0].mapName].length; i++){
+                    thisMapEnemyList.push(enemyList[i]);
+                }
+                
+                console.log(thisMapEnemyList)
+                let who = userStateChange(ws);
+                userList[who].mapName = result.mapName;
+                wss.clients.forEach(function each(client) {
+                    if(client.id == ws.id){
+                        ws.send(JSON.stringify({
+                            title : "changeMap" ,
+                            mapData : rows
+                        }))
+                    }
+                })
+            })
+            
+        }
         if (data.title == "SaveData") {
             let who = userStateChange(ws);
             var query = "UPDATE user_status Set hp = ? , mp = ? , strstats = ? , intstats = ? , exp = ? , Level = ? where id = ?";
@@ -412,9 +462,11 @@ async function EnemyInit() {
         var id = 0;
         const rows = await db.query(query);
         for (let i = 0; i < rows.length; i++) {
-            let xPos = 0;
+            let xPos = 0; 
             let yPos = 0;
-
+            if(!(rows[i].mapName in firstMapEnemy)){
+                firstMapEnemy[rows[i].mapName] = [];
+            }
             for (let j = 0; j < rows[i].enemyValue.length; j++) {
                 if (xPos % rows[i].mapSizeX === 0 && xPos !== 0) {
                     yPos++;
@@ -443,6 +495,10 @@ async function EnemyInit() {
                     isDie: false,
                     isAttack: false
                 });
+
+                firstMapEnemy[rows[i].mapName].push(id);
+                    
+                
                 id++;
             }
         }

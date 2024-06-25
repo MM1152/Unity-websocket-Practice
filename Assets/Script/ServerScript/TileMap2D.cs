@@ -1,44 +1,69 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
+using UnityEngine.UI;
 [Serializable]
 public class MapData
 {
+    public string title;
     public int id;
     public int mapSizeX;
     public int mapSizeY;
     public int[] mapValue;
     public int[] decoValue;
     public string mapName;
-
+    public void ToString(){
+        Debug.Log($"title : {title} , id : {id} , mapSizeX : {mapSizeX} , mapSizeY : {mapSizeY} , mapName : {mapName}");
+    }
 }
 [Serializable]
 public class GetData
 {
+    public string title;
     public List<MapData> mapData;
 }
 
 public class TileMap2D : MonoBehaviour
 {
-
+    [SerializeField] private Image ChangeScene;
     public Sprite[] mapImage;
     private HttpRequest httpRequest;
     public Sprite[] decoImage;
     public Transform mapSpawn;
     public Transform decoSpawn;
     public GameObject Tile;
-    
+    private bool firstIn;
     private void Awake()
     {
         httpRequest = HttpRequest.HttpRequests;
-        StartCoroutine(httpRequest.Request("http://localhost:8001/mapData", "NeedMapName", "첫번째 맵", (value) => GetData(value)));
+        StartCoroutine(httpRequest.Request("http://localhost:8001/mapData", "NeedMapName", "첫번째 맵", (value) => GetData(value) , new Vector2(0,0)));
+        Socket.Instance.ws.OnMessage += (sender , e) => {
+            MapData mapdata = JsonUtility.FromJson<MapData>(e.Data);
+            
+            if(mapdata.title.Equals("changeMap")){
+                Debug.Log("ChangeMap");
+                Socket.Instance.queue.Enqueue(() => GetData(e.Data.ToString()));
+                
+            }
+
+        };
     }
     public void GetData(string result)
-    {
-        Debug.Log(result);
+    {  
+        
+        for(int i = 0; i < mapSpawn.childCount; i++){
+            Destroy(mapSpawn.GetChild(i).gameObject);
+        }
+        for(int i = 0; i < decoSpawn.childCount; i++){
+            Destroy(decoSpawn.GetChild(i).gameObject);
+        }
+        
         GetData mapdata = JsonUtility.FromJson<GetData>(result);
+        
+        Debug.Log(mapdata.mapData[0].id);
         var mapData = mapdata.mapData[0];
         int y = 0;
         int bottomX = -mapData.mapSizeX / 2;
@@ -66,7 +91,21 @@ public class TileMap2D : MonoBehaviour
             spawnDeco.GetComponent<SpriteRenderer>().sprite = decoImage[mapData.decoValue[x]];
             spawnDeco.transform.position = (Vector3)position + new Vector3(0f, 0f, spawnDeco.transform.parent.transform.position.z);
         }
+        
+        if(!firstIn){
+            Socket.Instance.ws.Connect();
+        }
+        Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("CheckThisMapEnemy")));
+        StartCoroutine(ChangeMap());
     }
     
-    
+    IEnumerator ChangeMap(){
+        ChangeScene.color = new Color(0f, 0f ,0f , 1);
+        yield return new WaitForSeconds(0.5f);
+        for(float Alpha = 1.0f; Alpha >= 0f; Alpha -= 0.01f){
+            ChangeScene.color = new Color(0f, 0f ,0f , Alpha);
+            yield return null;
+        }
+        
+    }
 }

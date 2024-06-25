@@ -70,7 +70,8 @@ public class Socket : MonoBehaviour
                 };
             }
             
-        ws.Connect();
+        
+        //ws.Connect();
       
         } catch(Exception e){
             Debug.LogError("서버 연결 실패");
