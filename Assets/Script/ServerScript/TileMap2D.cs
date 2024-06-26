@@ -29,6 +29,7 @@ public class GetData
 public class TileMap2D : MonoBehaviour
 {
     [SerializeField] private Image ChangeScene;
+    [SerializeField] private Text mapNameText;
     public Sprite[] mapImage;
     private HttpRequest httpRequest;
     public Sprite[] decoImage;
@@ -62,6 +63,7 @@ public class TileMap2D : MonoBehaviour
         
         
         var mapData = mapdata.mapData[0];
+        mapNameText.text = mapData.mapName;
         int y = 0;
         int bottomX = -mapData.mapSizeX / 2;
         int bottonY = -mapData.mapSizeY / 2;
@@ -98,10 +100,12 @@ public class TileMap2D : MonoBehaviour
     }
     
     IEnumerator ChangeMap(){
-        ChangeScene.color = new Color(0f, 0f ,0f , 1);
+        ChangeScene.color = new Color(0f, 0f ,0f , 1f);
+        mapNameText.color = new Color(1f, 1f, 1f , 1f);
         yield return new WaitForSeconds(0.5f);
         for(float Alpha = 1.0f; Alpha >= 0f; Alpha -= 0.01f){
             ChangeScene.color = new Color(0f, 0f ,0f , Alpha);
+            mapNameText.color = new Color(1f, 1f , 1f ,Alpha);
             yield return null;
         }
         

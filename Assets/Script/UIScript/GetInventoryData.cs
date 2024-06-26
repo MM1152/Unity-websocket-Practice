@@ -39,6 +39,7 @@ public class GetInventoryData : MonoBehaviour
             for(int i = 0; i < items.Items.Length; i++){
                 if(items.Items[i].GetComponent<SetItemInfo>().type == inven.item[item]){
                     createItem.GetComponent<Image>().sprite = items.Items[i].GetComponent<SpriteRenderer>().sprite;
+                    createItem.name = items.Items[i].name;
                     break;
                 }
             }
