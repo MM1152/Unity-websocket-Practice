@@ -56,6 +56,7 @@ public class HttpRequest : MonoBehaviour
             string result = request.downloadHandler.text;
             callback(result);
             Socket.Instance.this_player.transform.position = targetPos;
+           
             //callback(request.downloadHandler.text);
         }else {
             Debug.Log("Connection Fail");

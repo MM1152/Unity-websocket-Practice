@@ -9,11 +9,12 @@ public class GetInventoryData : MonoBehaviour
     [SerializeField] private ItemList items;
     [SerializeField] private GameObject itemTab;
     [SerializeField] private Transform inventorySize;
+    ShowItemUi showItemUi;
     HttpRequest httpRequest;
     InventoryData inven;
     Socket socket;
     SaveInvenData saveData;
-
+    int slotIndex = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,11 +28,13 @@ public class GetInventoryData : MonoBehaviour
     void GetData(string Data)
     {
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
-        Debug.Log(inven);
+        Debug.Log(Data);
         
         foreach (var item in inven.item.Keys)
         {
             GameObject createItem = Instantiate(itemTab, inventorySize);
+            createItem.name = slotIndex++.ToString();
+            createItem.GetComponent<ShowItemUi>().thisSlotItemType = 0;
             if (inven.item[item] == 0)
             {
                 continue;
@@ -39,7 +42,7 @@ public class GetInventoryData : MonoBehaviour
             for(int i = 0; i < items.Items.Length; i++){
                 if(items.Items[i].GetComponent<SetItemInfo>().type == inven.item[item]){
                     createItem.GetComponent<Image>().sprite = items.Items[i].GetComponent<SpriteRenderer>().sprite;
-                    createItem.name = items.Items[i].name;
+                    createItem.GetComponent<ShowItemUi>().thisSlotItemType = inven.item[item];
                     break;
                 }
             }
@@ -61,12 +64,15 @@ public class GetInventoryData : MonoBehaviour
                     if (item == itemType)
                     {
                         image.sprite = itemImage;
+                        showItemUi.thisSlotItemType = itemType;
+                        inventorySize.transform.GetChild(i).GetComponent<ShowItemUi>().thisSlotItemType = itemType;
                         saveData.Key = (i + 1).ToString();
                         saveData.Value = itemType;
                         string jsonData = JsonUtility.ToJson(saveData);
                         StartCoroutine(httpRequest.Request("http://localhost:8001/saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem)));  
                         break;
                     }
+                    
                 }
                 break;
             }

@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using Newtonsoft.Json;
 using UnityEngine;
-using UnityEngine.UI;
 
 
 [Serializable]
@@ -22,4 +19,5 @@ public class InventoryData
 //class GetData
 public class InventoryUI : MonoBehaviour
 {
+
 }

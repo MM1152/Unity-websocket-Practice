@@ -1,10 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,7 +13,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     GameObject moveItemSlot;
     static bool isDrag;
     Sprite thisSlotImage;
-    string thisSlotName;
+    public int thisSlotItemType;
 
     private void Start() {
         itemUI = transform.parent.parent.Find("ItemUI").gameObject;
@@ -31,11 +24,12 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(isDrag){
+        if(isDrag || gameObject.GetComponent<Image>().sprite == null){
+            
             return;
         }
         foreach (var item in itemList.Items){
-            if(item.name == this.gameObject.name){
+            if(item.GetComponent<SpriteRenderer>().sprite == GetComponent<Image>().sprite){
                 SetItemInfo info = item.GetComponent<SetItemInfo>();
                 itemNameText.text += info.name;
                 itemDamageText.text += info.damage.ToString();
@@ -64,18 +58,15 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     {
         isDrag = true;
         thisSlotImage = gameObject.GetComponent<Image>().sprite;
-        thisSlotName = gameObject.name;
+        
         if(thisSlotImage == null){
             return;
         }
         gameObject.GetComponent<Image>().sprite = null;
-        
         itemUI.SetActive(false);
         moveItemSlot = Instantiate(gameObject , gameObject.transform.parent.parent) as GameObject;
         moveItemSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(30f , 30f);
         moveItemSlot.GetComponent<Image>().sprite = thisSlotImage;
-        moveItemSlot.GetComponent<Image>().raycastTarget = false;
-        Destroy(moveItemSlot.GetComponent<BoxCollider2D>());
         moveItemSlot.layer = 5;
         moveItemSlot.transform.position = eventData.position;
     }
@@ -84,26 +75,40 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     {   
         Vector3 ray = (Vector3)eventData.position + (Vector3.back * 10f); 
         Vector3 direction = Vector3.forward * 100f;
-        RaycastHit2D hit = Physics2D.Raycast(ray, direction, Mathf.Infinity);
+        Image thisSlot = GetComponent<Image>();
+        RaycastHit2D hit = Physics2D.Raycast(ray, direction, Mathf.Infinity , LayerMask.GetMask("InventoryUI"));
 
         if(hit.collider != null){
             Debug.Log(hit.collider.gameObject);
             if(hit.collider.GetComponent<Image>().sprite != null){
                 Destroy(moveItemSlot);
-                gameObject.GetComponent<Image>().sprite = thisSlotImage;
+                thisSlot.sprite = thisSlotImage;
             }
             else {
                 GameObject colliderObj = hit.collider.gameObject;
+                ShowItemUi showItemUi = colliderObj.GetComponent<ShowItemUi>();
+                showItemUi.thisSlotItemType = thisSlotItemType;
+                thisSlotItemType = 0;
                 colliderObj.GetComponent<Image>().sprite = thisSlotImage;
-                colliderObj.name = thisSlotName;
+                ChangeItemSlot(gameObject.name , thisSlotItemType , colliderObj.name , showItemUi.thisSlotItemType);
                 Destroy(moveItemSlot);
             }
         }else {
             Destroy(moveItemSlot);
-            gameObject.GetComponent<Image>().sprite = thisSlotImage;
+            thisSlot.sprite = thisSlotImage;
         }
         moveItemSlot = null;
         isDrag = false;
     }
+    private void ChangeItemSlot(string changedSlotKey , int changedSlotValue , string changeSlotKey , int changeSlotValue){
+        SaveInvenData saveData = new SaveInvenData();
+        saveData.id = Socket.Instance.this_player.name;
+        saveData.Key = changedSlotKey;
+        saveData.Value = changedSlotValue;
+        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData) , (value) => Debug.Log("saveInventory"))); 
 
+        saveData.Key = changeSlotKey;
+        saveData.Value = changeSlotValue;
+        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData) , (value) => Debug.Log("saveInventory")));
+    }
 }

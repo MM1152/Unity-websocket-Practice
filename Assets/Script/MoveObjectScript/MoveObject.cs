@@ -8,18 +8,14 @@ using UnityEngine.UI;
 
 public class MoveObject : IMoveObj
 {
-    public SetStatsUI stat;
-    [Header("Component")]
+    private SetStatsUI stat;
     private GameObject UI;
-    public ExpBarUI exp;
-    public Collider2D attackingPlayer;
-    public GameObject attackShow;
-    public SpriteRenderer playerHand; // 이동방향마다 같이 flipX 해줘야됌
+    private ExpBarUI exp;
+    private GameObject attackShow;
+    private SpriteRenderer playerHand; // 이동방향마다 같이 flipX 해줘야됌
     public Text text;
-    [Space(9)]
-    [Header("Charector Status")]
     [SerializeField]
-    private UserData this_player_info;
+    private UserData this_player_info ;
     public float speed;
     public float radio;
     public float pushPower;
@@ -27,10 +23,6 @@ public class MoveObject : IMoveObj
     public float moveY;
     public bool isAttackSussecs;
     public bool firstSendMoveData;
-    [Space(9)]
-
-    [Header("Character Name")]
-    [SerializeField] private string userName;
 
     public void setUserData(UserData userData){
         this.this_player_info = userData;
@@ -52,11 +44,8 @@ public class MoveObject : IMoveObj
     private void Update() {
         stateMachine?.Update();
     }
-    
-    
     public void Awake()
-    {
-        
+    {   
         UI = gameObject.transform.Find("InventoryANDstatus").gameObject;
         text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
         attackShow = gameObject.transform.Find("Attack").gameObject;
@@ -67,8 +56,7 @@ public class MoveObject : IMoveObj
         speed = 3f;
         Init(); 
     }
-    void Start(){
-        
+    void Start(){   
         text.text = this_player_info.id;
         UI.SetActive(true);
     }
@@ -142,13 +130,4 @@ public class MoveObject : IMoveObj
         }
     }
     public override void Move(Vector2 targetPos){ }
-}
-public enum State
-{
-    IDLE,
-    ATTACK,
-    MOVE,
-    FINDENEMY,
-    HURT
-
 }

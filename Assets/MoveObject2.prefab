@@ -3200,6 +3200,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c5737d7509e95a489034d2c5b3a7137, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userData:
+    id: 
+    x: 0
+    y: 0
+    hp: 0
+    mp: 0
+    strStats: 0
+    intStats: 0
+    exp: 0
+    Level: 0
+    maxExp: 0
+    mapName: 
   moveObject: {fileID: 0}
   stats:
   - {fileID: 2761614314331534455}

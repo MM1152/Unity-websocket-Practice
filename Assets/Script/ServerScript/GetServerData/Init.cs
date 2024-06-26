@@ -34,8 +34,6 @@ public class Init : ISocket
         
         socket.this_player_MoveObject.setUserData(data.this_player);
         socket.this_player_MoveObject.setUserExp(data.this_player);
-        socket.this_player_MoveObject.stat.SetStats(data.this_player);
-        socket.this_player_MoveObject.stat.SetStatsPoint(data.this_player);
         data = new Data("Connection");
         
         enemyCount.setEnemys();

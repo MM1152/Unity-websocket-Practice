@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SetStatsUI : MonoBehaviour
 {
-    private UserData userData;
+    [SerializeField] private UserData userData;
     [SerializeField] private MoveObject moveObject;
     [SerializeField] private Text[] stats;
     [SerializeField] private Button[] UpgradeButton;
@@ -13,6 +13,9 @@ public class SetStatsUI : MonoBehaviour
 
     private void Awake() {
         moveObject = transform.root.GetComponent<MoveObject>();
+        userData = moveObject.getUserData();
+        SetStats(userData);
+        SetStatsPoint(userData);
     }
     public void SetStats(UserData userData){
         stats[0].text = userData.strStats.ToString();

@@ -12,7 +12,6 @@ public class Data{
     public Vector2 moveXY;
     public float x;
     public float y;
-    public State state;
     public EnemyData[] enemyList;
     public EnemyData enemy;
     public int dropItem;
@@ -29,13 +28,6 @@ public class Data{
         this.id = id;
         this.x = x;
         this.y = y;
-    }
-    public Data(string title , string id, float x , float y , State state){
-        this.title = title;
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.state = state;
     }
     public Data(string title , string id, float x , float y , Vector2 moveXY){
         this.title = title;

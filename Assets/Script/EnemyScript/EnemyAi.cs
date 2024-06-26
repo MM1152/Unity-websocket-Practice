@@ -18,7 +18,6 @@ public class EnemyAi : IMoveObj
     public float searchUserRadius;
     public float findUserRadious;
     public float moveAway;
-    public State state;
     public Vector2 spawnPos;
     public CircleCollider2D FindUserRadious;
     public float pos;
@@ -36,18 +35,16 @@ public class EnemyAi : IMoveObj
 
     public IEnumerator StartMove(Vector2 targetPos)
     {
-        if ((Vector2)transform.position != targetPos && state != State.ATTACK)
+        if ((Vector2)transform.position != targetPos)
         {
             
             Vector2 startPos = transform.position;
-            state = State.MOVE;
             flipX(targetPos);
             for (float radio = 0f; radio < 1f; radio += pos)
             {
                 this.gameObject.transform.position = Vector2.Lerp(startPos, targetPos, radio);
                 yield return null;
             }
-            state = State.IDLE;
             transform.position = targetPos;
         }
         stateMachine.Transition(new IdleState());

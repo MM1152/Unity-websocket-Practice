@@ -47,7 +47,7 @@ app.post('/inventoryData', (req, res) => {
 })
 app.post('/saveinventoryData', (req, res) => {
     var result = req.body;
-
+    console.log(result);
     result = JSON.parse(result.item);
     let who = userStateChange(result);
     var query = 'update user_inventory set item = JSON_SET(item , ? , ?) where id = ?'
