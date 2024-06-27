@@ -24,9 +24,11 @@ app.listen(8001, () => {
 })
 
 app.post('/getData', (req, res) => {
+    
     var result = req.body // mapName,  mapSize(x , y) , mapData(List) , DecoData(List) , EnemyData(List)
-    var query = 'INSERT INTO mapData (mapSizeX , mapSizeY , mapValue , mapName , decoValue , enemyValue) Values (? , ? , ? ,? , ? , ?)';
-    var params = [result.mapSize.x, result.mapSize.y, JSON.stringify(result.mapData), result.mapName, JSON.stringify(result.DecoData), JSON.stringify(result.EnemyData)];
+    console.log(result)
+    var query = 'INSERT INTO mapData (mapSizeX , mapSizeY , mapValue , mapName , decoValue , enemyValue , colliderValue , npcvalue) Values (? , ? , ? ,? , ? , ? , ? , ?)';
+    var params = [result.mapSize.x, result.mapSize.y, JSON.stringify(result.mapData), result.mapName, JSON.stringify(result.DecoData), JSON.stringify(result.EnemyData) , JSON.stringify(result.ColliderData) , JSON.stringify(result.NPCData)];
     db.query(query, params, function (err, rows, fields) {
         if (err) console.log(err)
     });
@@ -60,15 +62,16 @@ app.post('/saveinventoryData', (req, res) => {
 
 })
 app.post('/mapData', (req, res) => {
-    var reslut = req.body;
+    var result = req.body;
     var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
-    var parmas = reslut.NeedMapName;
+    var parmas = result.NeedMapName;
     thisMapEnemyList = [];
     thisMapUserList =[];
     db.query(query, parmas, function (err, rows, fields) {
         var data = {
             "mapData": rows
         }
+        console.log(data);
         firstMapEnemy[rows[0].mapName].forEach(enemy => {
             thisMapEnemyList.push(enemyList[enemy])
         });
@@ -113,9 +116,9 @@ app.post('/login', (req, res) => {
 })
 
 app.post('/setNickName', (req, res) => {
-    var reslut = req.body;
+    var result = req.body;
     var query = "Update user_info set nick_name = ? where id = ?";
-    var params = [reslut.NickName, id];
+    var params = [result.NickName, id];
 
     var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats) values (? , ? , ? , ? , ?)";
     var insertparmas = [id, 100, 100, 1, 1]
@@ -162,13 +165,15 @@ let RespawnInterval = new Map();
 EnemyInit()
 
 var firstMapEnemy = {};
+var NpcSpawn = {};
 var thisMapEnemyList = [];
 var thisMapUserList =[];
 wss.on('connection', async (ws, req) => {
-    console.log(firstMapEnemy);
+    
     
     await init(ws);
-
+    console.log(firstMapEnemy);
+    console.log(NpcSpawn);
     let who = userStateChange(ws);
     var data1 = JSON.stringify({ 
         title: "Init",
@@ -225,7 +230,6 @@ wss.on('connection', async (ws, req) => {
                 let who = userStateChange(ws);
                 userList[who].mapName = result.mapName;
                 
-                
                 for(let i = 0; i < firstMapEnemy[rows[0].mapName].length; i++){
                     thisMapEnemyList.push(enemyList[i]);
                 }                
@@ -235,7 +239,8 @@ wss.on('connection', async (ws, req) => {
                         thisMapUserList.push(userList[i])
                     }
                 }
-                console.log(thisMapUserList)
+                
+                console.log(NpcSpawn[rows[0].mapName]);
                 wss.clients.forEach(function each(client) {
                     if(client.id == ws.id){
                         console.log(ws.id + "changeMap 에게 데이터 전송")
@@ -464,32 +469,42 @@ async function EnemyInit() {
     try {
         let EnemySpawnPos = {};
 
-        var query = "select mapSizeX, mapSizeY, mapName, enemyValue from mapData";
+        var query = "select mapSizeX, mapSizeY, mapName, enemyValue , npcValue from mapData";
         var query1 = "select * from enemy_info where type = ?";
+        var query2 = "select * from npc_info where type = ?";
         var id = 0;
         const rows = await db.query(query);
         for (let i = 0; i < rows.length; i++) {
             let xPos = 0; 
             let yPos = 0;
             if(!(rows[i].mapName in firstMapEnemy)){
-                firstMapEnemy[rows[i].mapName] = [];
+                firstMapEnemy[rows[i].mapName] = [];    
             }
+            if(!(rows[i].mapName in NpcSpawn)) {
+                NpcSpawn[rows[i].mapName] = [];
+            }
+
             for (let j = 0; j < rows[i].enemyValue.length; j++) {
                 if (xPos % rows[i].mapSizeX === 0 && xPos !== 0) {
                     yPos++;
                     xPos = 0;
                 }
                 xPos++;
+                if(rows[i].npcValue[j] != 0) {
+                    const npcRows = await db.query(query2 , [rows[i].npcValue[j]]);
+                    NpcSpawn[rows[i].mapName].push({type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : xPos , y : yPos}})
+                }
+
                 if (rows[i].enemyValue[j] === 0) continue;
 
                 const enemyRows = await db.query(query1, [rows[i].enemyValue[j]]);
-
+                
                 enemyList.push({
                     id: id,
                     type: enemyRows[0].type,
-                    x: xPos,
-                    y: yPos,
-                    spawnPos: { x: xPos, y: yPos },
+                    x: xPos / 2,
+                    y: yPos / 2,
+                    spawnPos: { x: xPos / 2, y: yPos / 2 },
                     FollowTarger: null,
                     movePos: 1,
                     state: "MoveAround",
@@ -504,7 +519,7 @@ async function EnemyInit() {
                 });
                 
                 firstMapEnemy[rows[i].mapName].push(id);
-                    
+                
                 
                 id++;
             }
