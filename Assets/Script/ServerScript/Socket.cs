@@ -56,8 +56,11 @@ public class Socket : MonoBehaviour
             using(ws = new WebSocket(url)) {
                 
                 ws.OnMessage += (sender , e) => {
-                    
+                    Debug.Log(e.Data);    
                     Data data = JsonUtility.FromJson<Data>(e.Data);
+                    if(data.title == "Init" ){
+                        Debug.Log(e.Data);
+                    }
                     Action action = null;
                     for(int i = 0; i < Init.Count; i++){
                         if(Init[i].GetType().ToString().Equals(data.title)){

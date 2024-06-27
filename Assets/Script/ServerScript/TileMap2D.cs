@@ -88,7 +88,6 @@ public class TileMap2D : MonoBehaviour
             GameObject spawnTile = Instantiate(Tile, mapSpawn);
             spawnTile.GetComponent<SpriteRenderer>().sprite = mapImage[mapData.mapValue[x]];
             spawnTile.transform.position = (Vector3)position + new Vector3(0f, 0f, spawnTile.transform.parent.transform.position.z);
-            Debug.Log(mapData.colliderValue);
             if(mapData.colliderValue.Length != 0 && mapData.colliderValue[x] != 0){
                 GameObject spawnCollider = Instantiate(Tile , colliderSpawn);
                 spawnCollider.GetComponent<SpriteRenderer>().sprite = colliderImage[mapData.colliderValue[x]];

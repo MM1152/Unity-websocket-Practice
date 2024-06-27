@@ -244,6 +244,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81302586}
   m_CullTransparentMesh: 1
+--- !u!1 &168202459
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 168202461}
+  - component: {fileID: 168202460}
+  m_Layer: 0
+  m_Name: NPCcount
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &168202460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 168202459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a700063fc527b043b4fac997e243b86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &168202461
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 168202459}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &176516526
 GameObject:
   m_ObjectHideFlags: 0
@@ -773,8 +817,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
   enemys:
   - {fileID: 3918039393213041812, guid: fb6f9d8577cc9964cad795fb44bf4c74, type: 3}
+  npcs:
+  - {fileID: 1607115526645348497, guid: 7ad596e9a20eaeb4182494eab42eb126, type: 3}
 --- !u!4 &745822562
 Transform:
   m_ObjectHideFlags: 0
@@ -803,6 +850,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822564
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -816,6 +864,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
   movingPlayer: []
   movingPlayerMoveObj: {fileID: 0}
 --- !u!114 &745822565
@@ -831,6 +880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -844,6 +894,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -857,6 +908,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -870,6 +922,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -883,6 +936,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -896,6 +950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -909,6 +964,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -922,6 +978,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
 --- !u!114 &745822573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -935,6 +992,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+  NPCcount: {fileID: 0}
   text: {fileID: 1796507938}
 --- !u!1 &824650252
 GameObject:
@@ -2015,7 +2073,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Enemys: []
-  prefebEnemy: {fileID: 3918039393213041812, guid: fb6f9d8577cc9964cad795fb44bf4c74, type: 3}
 --- !u!4 &1463282593
 Transform:
   m_ObjectHideFlags: 0
@@ -2808,7 +2865,7 @@ Transform:
   m_GameObject: {fileID: 2130057285}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: 0, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2858,6 +2915,7 @@ SceneRoots:
   - {fileID: 1294891586}
   - {fileID: 1595684605}
   - {fileID: 1463282593}
+  - {fileID: 168202461}
   - {fileID: 1549860827}
   - {fileID: 1632789645}
   - {fileID: 2130057286}

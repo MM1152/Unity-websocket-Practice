@@ -5,7 +5,6 @@ using UnityEngine;
 public class EnemyCount : MonoBehaviour
 {
     public List<GameObject> Enemys;
-    public GameObject prefebEnemy;
     public void setEnemys(){
         for(int i = 0; i < this.gameObject.transform.childCount; i++){
             Enemys.Add(gameObject.transform.GetChild(i).gameObject);

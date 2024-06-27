@@ -166,8 +166,9 @@ EnemyInit()
 
 var firstMapEnemy = {};
 var NpcSpawn = {};
+var NPCList = [];
 var thisMapEnemyList = [];
-var thisMapUserList =[];
+var thisMapUserList = [];
 wss.on('connection', async (ws, req) => {
     
     
@@ -175,11 +176,13 @@ wss.on('connection', async (ws, req) => {
     console.log(firstMapEnemy);
     console.log(NpcSpawn);
     let who = userStateChange(ws);
+    var NpcData = {}
     var data1 = JSON.stringify({ 
         title: "Init",
         id: userId,
         this_player: userList[who],
-        enemyList: thisMapEnemyList
+        enemyList: thisMapEnemyList,
+        NPC : [{NPCList : NPCList}]
     });
 
     ws.send(data1);
@@ -212,7 +215,7 @@ wss.on('connection', async (ws, req) => {
             wss.clients.forEach(function each(client) {
 
                 if(ws.id == client.id) {
-                    client.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList , users : thisMapUserList}))
+                    client.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList , users : thisMapUserList , NPC : NpcSpawn[userList[who].mapName]}))
                 }
                 else if(ws.id != client.id) {
                     client.send(JSON.stringify({title : "UserChangeMap" , this_player : userList[who]}))
@@ -225,14 +228,16 @@ wss.on('connection', async (ws, req) => {
             var parmas = result.mapName;
             thisMapEnemyList = [];
             thisMapUserList = [];
+            
             db.query(query, parmas, function (err, rows, fields) {
                 
                 let who = userStateChange(ws);
                 userList[who].mapName = result.mapName;
-                
+
                 for(let i = 0; i < firstMapEnemy[rows[0].mapName].length; i++){
                     thisMapEnemyList.push(enemyList[i]);
                 }                
+                
                 for(let i = 0 ; i < userList.length; i++){
                     console.log(userList[i].id + " " + userList[i].mapName);
                     if(userList[i].mapName == rows[0].mapName){
@@ -344,6 +349,17 @@ let AttackInterval = new Map();
 
 function EnemyChangeState() {
     for (let i = 0; i < enemyList.length; i++) {
+        if(enemyList[i].FollowTarger != null){
+            userList.forEach(user => {
+                if(user.id == enemyList[i].FollowTarger.id){
+                    if(user.mapName != enemyList[i].EnemySpawnMapName) {
+                        enemyList[i].FollowTarger = null;
+                        enemyList[i].state = "MoveAround";
+                    }
+                }
+            });
+        }
+
         //console.log("┌───────────────────────────────────────┐")
         if (enemyList[i].state != "Hit" && enemyList[i].state != "Die") {
             if (enemyList[i].FollowTarger == null) { // 유저 찾아오기
@@ -358,8 +374,9 @@ function EnemyChangeState() {
                     }
                 });
             }
-
+            
             if (enemyList[i].FollowTarger != null) { // 유저가 비어있지 않으면 그 유저한테로의 상태 설정
+               
                 let dx = enemyList[i].FollowTarger.x - enemyList[i].x
                 let dy = enemyList[i].FollowTarger.y - enemyList[i].y
 
@@ -377,6 +394,7 @@ function EnemyChangeState() {
                 } else if (Math.sqrt(dx * dx + dy * dy) < 5) {
                     enemyList[i].state = "FollowUser";
                 }
+
             }
             if (enemyList[i].state != "AttackAroundInUser") {
                 if (AttackInterval.has(enemyList[i].id)) {
@@ -422,7 +440,7 @@ function EnemyChangeState() {
 
         //console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
         if (enemyList[i].FollowTarger != null) {
-            //console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
+            console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
         }
         //console.log(`\t     EnemyHp : ${enemyList[i].Hp}`)
 
@@ -472,7 +490,8 @@ async function EnemyInit() {
         var query = "select mapSizeX, mapSizeY, mapName, enemyValue , npcValue from mapData";
         var query1 = "select * from enemy_info where type = ?";
         var query2 = "select * from npc_info where type = ?";
-        var id = 0;
+        var enemyID = 0;
+        var NPCID = 0;
         const rows = await db.query(query);
         for (let i = 0; i < rows.length; i++) {
             let xPos = 0; 
@@ -492,7 +511,9 @@ async function EnemyInit() {
                 xPos++;
                 if(rows[i].npcValue[j] != 0) {
                     const npcRows = await db.query(query2 , [rows[i].npcValue[j]]);
-                    NpcSpawn[rows[i].mapName].push({type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : xPos , y : yPos}})
+                    NPCList.push({id : NPCID , type : rows[i].npcValue[j]});
+                    NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : xPos , y : yPos} , talk : npcRows[0].talk})
+                    NPCID++;
                 }
 
                 if (rows[i].enemyValue[j] === 0) continue;
@@ -500,7 +521,7 @@ async function EnemyInit() {
                 const enemyRows = await db.query(query1, [rows[i].enemyValue[j]]);
                 
                 enemyList.push({
-                    id: id,
+                    id: enemyID,
                     type: enemyRows[0].type,
                     x: xPos / 2,
                     y: yPos / 2,
@@ -518,10 +539,10 @@ async function EnemyInit() {
                     isAttack: false
                 });
                 
-                firstMapEnemy[rows[i].mapName].push(id);
+                firstMapEnemy[rows[i].mapName].push(enemyID);
                 
                 
-                id++;
+                enemyID++;
             }
         }
     } catch (err) {

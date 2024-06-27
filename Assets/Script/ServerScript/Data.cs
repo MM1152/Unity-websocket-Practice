@@ -14,6 +14,7 @@ public class Data{
     public float y;
     public EnemyData[] enemyList;
     public EnemyData enemy;
+    public NPCData[] NPC;
     public int dropItem;
 
     public Data(string title){
@@ -69,4 +70,18 @@ public class EnemyData{
     public string state;
     public int Hp;
     public int MaxHp;
+}
+[Serializable]
+public class NPCData{
+    public int id;
+    public int type;
+    public string name;
+    public Vector2 spawnPos;
+    public NPC[] NPCList;
+}
+
+[Serializable]
+public class NPC {
+    public int id;
+    public int type;
 }

@@ -1,5 +1,6 @@
 
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Init : ISocket
@@ -7,12 +8,12 @@ public class Init : ISocket
     [SerializeField]
     private GameObject[] enemys;
     [SerializeField]
+    private GameObject[] npcs;
+    
     //private EnemyCount enemyCount;
-    private void Start() {
-        enemyCount ??= GameObject.Find("EnemyCount").GetComponent<EnemyCount>();    
-    }
     public override void RunNetworkCode(Data data)
     {
+        
         foreach(var enemy in data.enemyList){
 
             GameObject SpawnEnemy = Instantiate(enemys[enemy.type - 1] , enemyCount.transform) as GameObject;
@@ -24,7 +25,12 @@ public class Init : ISocket
                 SpawnEnemy.SetActive(false);
             }
         }
-
+        foreach(var NPC in data.NPC[0].NPCList){
+            GameObject spawnNPC = Instantiate(npcs[NPC.type - 1] , NPCcount.transform);
+            NPCcount.npc_List.Add(NPC.id , spawnNPC);
+            spawnNPC.name = NPC.id.ToString();
+            spawnNPC.SetActive(false);
+        }
         GameObject player = Instantiate(socket.user);
         player.name = data.id;
         player.AddComponent<MoveObject>();
