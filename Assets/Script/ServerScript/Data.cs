@@ -75,6 +75,7 @@ public class EnemyData{
 public class NPCData{
     public int id;
     public int type;
+    public string talk;
     public string name;
     public Vector2 spawnPos;
     public NPC[] NPCList;

@@ -8,6 +8,6 @@ public class MoveUserNameText : MonoBehaviour
     public Transform moveObject;
     public float yPos;
     void Update(){
-        gameObject.transform.position = Camera.main.WorldToScreenPoint(moveObject.transform.position) + Vector3.up * yPos;
+        gameObject.transform.position = Camera.main.WorldToScreenPoint(moveObject.transform.localPosition) + Vector3.up * yPos;
     }
 }
