@@ -71,7 +71,8 @@ app.post('/mapData', (req, res) => {
         var data = {
             "mapData": rows
         }
-        console.log(data);
+        console.log(firstMapEnemy);
+        
         firstMapEnemy[rows[0].mapName].forEach(enemy => {
             thisMapEnemyList.push(enemyList[enemy])
         });
@@ -492,8 +493,12 @@ async function EnemyInit() {
         var query2 = "select * from npc_info where type = ?";
         var enemyID = 0;
         var NPCID = 0;
+        
         const rows = await db.query(query);
+        console.log(rows);
         for (let i = 0; i < rows.length; i++) {
+            var bottomX = -rows[i].mapSizeX / 2;
+            var bottomY = -rows[i].mapSizeY / 2;
             let xPos = 0; 
             let yPos = 0;
             if(!(rows[i].mapName in firstMapEnemy)){
@@ -506,43 +511,43 @@ async function EnemyInit() {
             for (let j = 0; j < rows[i].enemyValue.length; j++) {
                 if (xPos % rows[i].mapSizeX === 0 && xPos !== 0) {
                     yPos++;
-                    xPos = 0;
                 }
-                xPos++;
+                var positionX = xPos % rows[i].mapSizeX + bottomX;
+                var positionY = yPos + bottomY;
+                
                 if(rows[i].npcValue[j] != 0) {
                     const npcRows = await db.query(query2 , [rows[i].npcValue[j]]);
                     NPCList.push({id : NPCID , type : rows[i].npcValue[j]});
-                    NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : xPos , y : yPos} , talk : npcRows[0].talk})
+                    NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : positionX, y : positionY} , talk : npcRows[0].talk})
                     NPCID++;
                 }
 
-                if (rows[i].enemyValue[j] === 0) continue;
-
-                const enemyRows = await db.query(query1, [rows[i].enemyValue[j]]);
+                if (rows[i].enemyValue[j] != 0) {
+                    const enemyRows = await db.query(query1, [rows[i].enemyValue[j]]);
                 
-                enemyList.push({
-                    id: enemyID,
-                    type: enemyRows[0].type,
-                    x: xPos / 2,
-                    y: yPos / 2,
-                    spawnPos: { x: xPos / 2, y: yPos / 2 },
-                    FollowTarger: null,
-                    movePos: 1,
-                    state: "MoveAround",
-                    Hp: enemyRows[0].maxHp,
-                    MaxHp: enemyRows[0].maxHp,
-                    AttackTime: enemyRows[0].attackTime,
-                    DropExp: enemyRows[0].dropExp,
-                    DropGold: enemyRows[0].dropGold,
-                    EnemySpawnMapName: rows[i].mapName,
-                    isDie: false,
-                    isAttack: false
-                });
+                    enemyList.push({
+                        id: enemyID,
+                        type: enemyRows[0].type,
+                        x: positionX,
+                        y: positionY,
+                        spawnPos: { x: positionX, y: positionY },
+                        FollowTarger: null,
+                        movePos: 1,
+                        state: "MoveAround",
+                        Hp: enemyRows[0].maxHp,
+                        MaxHp: enemyRows[0].maxHp,
+                        AttackTime: enemyRows[0].attackTime,
+                        DropExp: enemyRows[0].dropExp,
+                        DropGold: enemyRows[0].dropGold,
+                        EnemySpawnMapName: rows[i].mapName,
+                        isDie: false,
+                        isAttack: false
+                    });
+                    firstMapEnemy[rows[i].mapName].push(enemyID);
+                    enemyID++;
+                }
+                xPos++;
                 
-                firstMapEnemy[rows[i].mapName].push(enemyID);
-                
-                
-                enemyID++;
             }
         }
     } catch (err) {

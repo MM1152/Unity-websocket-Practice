@@ -19,7 +19,7 @@ public class CheckThisMapEnemy : ISocket
         }
         foreach(var NPC in data.NPC){
             GameObject this_npc = NPCcount.npc_List[NPC.id];
-            this_npc.transform.localPosition = NPC.spawnPos - NPC.spawnPos / 2;
+            this_npc.transform.localPosition = NPC.spawnPos;
             this_npc.SetActive(true);
         }
         for(int i = 0; i < enemyCount.Enemys.Count; i++){
