@@ -14,7 +14,9 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     static bool isDrag;
     Sprite thisSlotImage;
     public int thisSlotItemType;
-
+    private void Awake() {
+        itemList = ItemPooling.Instance.itemList;
+    }
     private void Start() {
         itemUI = transform.parent.parent.Find("ItemUI").gameObject;
         itemNameText = itemUI.transform.Find("Name").GetComponent<Text>();
@@ -25,7 +27,6 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     public void OnPointerEnter(PointerEventData eventData)
     {
         if(isDrag || gameObject.GetComponent<Image>().sprite == null){
-            
             return;
         }
         foreach (var item in itemList.Items){

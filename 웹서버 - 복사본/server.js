@@ -47,9 +47,13 @@ app.post('/inventoryData', (req, res) => {
         res.send(data);
     })
 })
-app.post('/saveinventoryData', (req, res) => {
+app.post('/getItemData' , (req , res) => {
     var result = req.body;
     console.log(result);
+    res.send({itemInfos : itemList});
+})
+app.post('/saveinventoryData', (req, res) => {
+    var result = req.body;
     result = JSON.parse(result.item);
     let who = userStateChange(result);
     var query = 'update user_inventory set item = JSON_SET(item , ? , ?) where id = ?'
@@ -71,7 +75,6 @@ app.post('/mapData', (req, res) => {
         var data = {
             "mapData": rows
         }
-        console.log(firstMapEnemy);
         
         firstMapEnemy[rows[0].mapName].forEach(enemy => {
             thisMapEnemyList.push(enemyList[enemy])
@@ -164,7 +167,8 @@ const wss = new WebSocket.Server({ port: 8000 }, () => {
 })
 let RespawnInterval = new Map();
 EnemyInit()
-
+ItemListInit()
+var itemList = [];
 var firstMapEnemy = {};
 var NpcSpawn = {};
 var NPCList = [];
@@ -330,7 +334,6 @@ wss.on('connection', async (ws, req) => {
         }
 
         if (data.title == "AttackOtherPlayer") {
-            console.log("attackPlayer : " + data.id);
             var data2 = {
                 title: "CheckAttack",
                 id: data.id,
@@ -440,9 +443,6 @@ function EnemyChangeState() {
         }
 
         //console.log(`\t${i} EnemyState : ${enemyList[i].state}`)
-        if (enemyList[i].FollowTarger != null) {
-            console.log("\tFollow Target : " + enemyList[i].FollowTarger.id);
-        }
         //console.log(`\t     EnemyHp : ${enemyList[i].Hp}`)
 
         //console.log("└───────────────────────────────────────┘")
@@ -495,7 +495,7 @@ async function EnemyInit() {
         var NPCID = 0;
         
         const rows = await db.query(query);
-        console.log(rows);
+
         for (let i = 0; i < rows.length; i++) {
             var bottomX = -rows[i].mapSizeX / 2;
             var bottomY = -rows[i].mapSizeY / 2;
@@ -633,6 +633,13 @@ function userStateChange(ws) {
         }
     }
     return 'fail'
+}
+async function ItemListInit(){
+    var query = "select * from item_info";
+    const itemDatas = await db.query(query);
+    for(let i = 0; i < itemDatas.length; i++){
+        itemList.push(itemDatas[i]);
+    }
 }
 function init(ws) {
     return new Promise((resolve, rejects) => {

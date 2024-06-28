@@ -14,7 +14,7 @@ public class Item : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.tag == "Player" && targetPos.gameObject == other.gameObject && Input.GetKey(KeyCode.X) && !isPickUp)
+        if (other.tag == "Player" && targetPos.gameObject == other.gameObject && Input.GetKeyDown(KeyCode.X) && !isPickUp)
         {
             inventoryData.SetInventory(GetComponent<SetItemInfo>().type , this.gameObject);
             isPickUp = true;

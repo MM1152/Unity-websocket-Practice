@@ -16,6 +16,7 @@ public class Data{
     public EnemyData enemy;
     public NPCData[] NPC;
     public int dropItem;
+    public ItemInfo item;
 
     public Data(string title){
         this.title = title;

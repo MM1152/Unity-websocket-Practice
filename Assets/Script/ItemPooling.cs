@@ -1,10 +1,30 @@
+using Unity.VisualScripting;
+using UnityEditor.Search;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class ItemPooling : MonoBehaviour
 {
+    [SerializeField]private GameObject itemPrefeb;
     private static ItemPooling itemPooling;
-    [SerializeField] private ItemList itemList;
     private int createItemCount;
+    [SerializeField]public ItemList itemList;
+
+    private void Awake() {
+        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/getItemData", "ItemData", "1" , (value) => SetItemValue(value)));
+        itemPooling = this;
+    }
+    void SetItemValue(string Data){
+        
+        ItemInfos itemDatas = JsonUtility.FromJson<ItemInfos>(Data);
+        
+        foreach(var item in itemDatas.itemInfos){
+            Debug.Log(item.item_id);
+            itemList.AddItemdata(item);
+        }
+        
+    }
+
     public static ItemPooling Instance
     {
         get
@@ -17,10 +37,6 @@ public class ItemPooling : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        itemPooling = this;
-    }
 
     public void MakeItem(Transform dropPos, Transform userPos, int item)
     {
@@ -29,6 +45,9 @@ public class ItemPooling : MonoBehaviour
             
             for (int i = 0; i < this.gameObject.transform.childCount; i++)
             {
+                if(gameObject.transform.GetChild(i).gameObject.activeSelf){
+                    continue;
+                }
                 GameObject thisItem = gameObject.transform.GetChild(i).gameObject;
                 int type = thisItem.gameObject.GetComponent<SetItemInfo>().type;
                 if (type == item)
@@ -40,15 +59,18 @@ public class ItemPooling : MonoBehaviour
                 }
             }
 
-            for(int i = 0; i < itemList.Items.Length; i++){
-                SetItemInfo itemInfo = itemList.Items[i].GetComponent<SetItemInfo>();
-                if(itemInfo.type == item){
-                    GameObject thisItem = Instantiate(itemList.Items[i].gameObject , gameObject.transform);
+            for(int i = 0; i < itemList.itemDatas.Count; i++){
+                if(itemList.itemDatas[i].item_id == item){
+                    GameObject thisItem = Instantiate(itemPrefeb , gameObject.transform);
+
                     thisItem.SetActive(false);
                     thisItem.GetComponent<Item>().SetTarget(userPos);
-                    thisItem.name = itemInfo.name;
+                    thisItem.GetComponent<SpriteRenderer>().sprite = itemList.itemImages[i];
+                    thisItem.GetComponent<SetItemInfo>().setItemData(itemList.itemDatas[i]);
+                    
                     thisItem.transform.position = dropPos.position;
                     thisItem.SetActive(true);
+                    break;
                 }
             }
             createItemCount = 0;
