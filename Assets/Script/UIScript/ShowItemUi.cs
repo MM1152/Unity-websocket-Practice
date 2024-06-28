@@ -6,7 +6,6 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
 {
     [SerializeField] private GameObject itemUI;
     [SerializeField] private Text itemNameText;
-    [SerializeField] private Text itemDamageText;
     [SerializeField] private Image itemImage;
     [SerializeField] private ItemList itemList;
     [SerializeField] private RectTransform itemRectTransForm;
@@ -18,9 +17,10 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
         itemList = ItemPooling.Instance.itemList;
     }
     private void Start() {
-        itemUI = transform.parent.parent.Find("ItemUI").gameObject;
+        if(transform.parent.parent.Find("ItemUI")){
+            itemUI = transform.parent.parent.Find("ItemUI").gameObject;
+        }
         itemNameText = itemUI.transform.Find("Name").GetComponent<Text>();
-        itemDamageText = itemUI.transform.Find("Damage").GetComponent<Text>();
         itemImage = itemUI.transform.Find("ItemImage").GetComponent<Image>();
         itemRectTransForm = itemUI.GetComponent<RectTransform>();
     }
@@ -29,23 +29,33 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
         if(isDrag || gameObject.GetComponent<Image>().sprite == null){
             return;
         }
-        foreach (var item in itemList.Items){
-            if(item.GetComponent<SpriteRenderer>().sprite == GetComponent<Image>().sprite){
-                SetItemInfo info = item.GetComponent<SetItemInfo>();
-                itemNameText.text += info.name;
-                itemDamageText.text += info.damage.ToString();
-                itemImage.sprite = item.GetComponent<SpriteRenderer>().sprite;
+        foreach (var type in itemList.itemDatas){
+            if(type.item_id == thisSlotItemType){
+                
+                itemNameText.text = "이름 : " + type.item_name;
+                
+                if(CheckWord(type.item_damage.ToString())) itemNameText.text += "\n데미지 : " + type.item_damage;
+                if(CheckWord(type.HPrecovery.ToString()))  itemNameText.text += "\n회복량 : " + type.HPrecovery;
+                if(CheckWord(type.MPrecovery.ToString()))  itemNameText.text += "\n회복량 : " + type.MPrecovery;
+    
+                
+                itemImage.sprite = itemList.itemImages[type.item_id - 1];
                 break;
             }
         }
         itemUI.transform.position = eventData.position + new Vector2( itemRectTransForm.rect.width / 2 , itemRectTransForm.rect.height / 2);
         itemUI.SetActive(true);
     }
+    public bool CheckWord(string word){
+        if(word != null && word != "0" && word != ""){
+            return true;
+        }
+        return false;
+    }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        itemNameText.text = "이름 : ";
-        itemDamageText.text = "데미지 : ";
+        itemNameText.text = " ";
         itemUI.SetActive(false);
     }
 
