@@ -181,7 +181,6 @@ wss.on('connection', async (ws, req) => {
     console.log(firstMapEnemy);
     console.log(NpcSpawn);
     let who = userStateChange(ws);
-    var NpcData = {}
     var data1 = JSON.stringify({ 
         title: "Init",
         id: userId,
@@ -189,6 +188,7 @@ wss.on('connection', async (ws, req) => {
         enemyList: thisMapEnemyList,
         NPC : [{NPCList : NPCList}]
     });
+    console.log(data1);
 
     ws.send(data1);
     ws.on('close', () => {
@@ -518,7 +518,7 @@ async function EnemyInit() {
                 if(rows[i].npcValue[j] != 0) {
                     const npcRows = await db.query(query2 , [rows[i].npcValue[j]]);
                     NPCList.push({id : NPCID , type : rows[i].npcValue[j]});
-                    NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : positionX, y : positionY} , talk : npcRows[0].talk})
+                    NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : positionX, y : positionY} , talk : npcRows[0].talk , sellingList : npcRows[0].sellingList})
                     NPCID++;
                 }
 

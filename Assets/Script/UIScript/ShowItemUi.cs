@@ -62,7 +62,6 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     public void OnDrag(PointerEventData eventData)
     {
         moveItemSlot.transform.position = eventData.position;
-
     }
 
     public void OnBeginDrag(PointerEventData eventData)

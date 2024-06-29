@@ -8,6 +8,7 @@ public class MoveUi : MonoBehaviour, IDragHandler , IBeginDragHandler
     private Vector2 movePos;
     public void OnBeginDrag(PointerEventData eventData)
     {
+        Debug.Log(eventData.position);
        movePos = eventData.position;   
     }
 

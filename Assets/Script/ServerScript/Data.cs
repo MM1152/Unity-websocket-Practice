@@ -78,6 +78,7 @@ public class NPCData{
     public string talk;
     public string name;
     public Vector2 spawnPos;
+    public int[] sellingList;
     public NPC[] NPCList;
 }
 
