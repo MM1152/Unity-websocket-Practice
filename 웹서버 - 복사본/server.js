@@ -289,14 +289,15 @@ wss.on('connection', async (ws, req) => {
             let who = userStateChange(ws);
             var query = "select * from user_inventory where id = ?";
             var params = [userList[who].name]
-
             db.query(query, params, function (err, rows, fields) {
-                var result = rows[0].gold + 1;
+                console.log(enemyList[data.enemy.id].DropGold)
+                var result = rows[0].gold + enemyList[data.enemy.id].DropGold;
+                console.log(result);
                 var query = "Update user_inventory set gold = ? where id = ?";
                 var params = [result, userList[who].name]
 
                 db.query(query, params)
-            })
+            })            
         }
         if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
