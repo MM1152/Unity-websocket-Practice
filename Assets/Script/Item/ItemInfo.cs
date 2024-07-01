@@ -7,6 +7,7 @@ public class ItemInfo{
     public int HPrecovery;
     public int MPrecovery;
     public string item_name;
+    public int cost;
 }
 
 [Serializable]

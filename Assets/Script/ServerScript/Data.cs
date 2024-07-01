@@ -13,7 +13,7 @@ public class Data{
     public float x;
     public float y;
     public EnemyData[] enemyList;
-    public EnemyData enemy;
+    public EnemyData enemy = new EnemyData();
     public NPCData[] NPC;
     public int dropItem;
  

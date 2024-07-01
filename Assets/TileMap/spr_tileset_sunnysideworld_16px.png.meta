@@ -118,7 +118,7 @@ TextureImporter:
         width: 41
         height: 42
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 21, y: 21, z: 20, w: 21}
       outline: []
       physicsShape: []
@@ -160,7 +160,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,6 +168,48 @@ TextureImporter:
       bones: []
       spriteID: 039514c7436c9e64fb8d0549658c5ae2
       internalID: -2121711463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nooo
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 243
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 928a2291819843e41a0bf6c60e7a06ed
+      internalID: 1677216648
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Yess
+      rect:
+        serializedVersion: 2
+        x: 706
+        y: 243
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 312121008ae65d046b2ac83fd1ee52aa
+      internalID: 769742524
       vertices: []
       indices: 
       edges: []
@@ -183,6 +225,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
+      Yess: 769742524
+      nooo: 1677216648
       "\uC0C1\uC810_\uBC14\uB2E5": -2121711463
       "\uC0C1\uC810_\uCE74\uD3AB": 1638706136
       "\uC0C1\uC810_\uD0C1\uC790": 1700963822

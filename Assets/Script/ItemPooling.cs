@@ -19,7 +19,6 @@ public class ItemPooling : MonoBehaviour
         ItemInfos itemDatas = JsonUtility.FromJson<ItemInfos>(Data);
         
         foreach(var item in itemDatas.itemInfos){
-            Debug.Log(item.item_id);
             itemList.AddItemdata(item);
         }
         

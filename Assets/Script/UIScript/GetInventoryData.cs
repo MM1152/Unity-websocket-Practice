@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,9 +11,11 @@ public class GetInventoryData : MonoBehaviour
     [SerializeField] private GameObject itemTab;
     [SerializeField] private Transform inventorySize;
     [SerializeField] private ItemList itemList;
+    [SerializeField] private InventoryData inven;
+    public Text gold;
 
     HttpRequest httpRequest;
-    InventoryData inven;
+    
     Socket socket;
     SaveInvenData saveData;
     int slotIndex = 1;
@@ -26,15 +29,25 @@ public class GetInventoryData : MonoBehaviour
         saveData.id = socket.this_player.name;
         itemList = itemPooling.itemList;
         StartCoroutine(httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => GetData(value)));
+
+    }
+    
+    public void ChangeMoney(string Data , GameObject offGameObject){
+        inven = JsonConvert.DeserializeObject<InventoryData>(Data);
+        gold.text = "Gold : " + inven.gold.ToString();
+        offGameObject.SetActive(false);
     }
 
-    void GetData(string Data)
+    public void GetData(string Data)
     {
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
-        Debug.Log(Data);
-
+        gold.text = "Gold : " + inven.gold.ToString();
+        if(inventorySize.transform.childCount != 0){
+                return;
+        }
         foreach (var item in inven.item.Keys)
         {
+            
             GameObject createItem = Instantiate(itemTab, inventorySize);
             createItem.name = slotIndex++.ToString();
             createItem.GetComponent<ShowItemUi>().thisSlotItemType = 0;
@@ -57,6 +70,7 @@ public class GetInventoryData : MonoBehaviour
     }
     public void SetInventory(int item , GameObject thisItem)
     {
+        
         for (int i = 0; i < 30; i++)
         {
             Image image = inventorySize.GetChild(i).GetComponent<Image>();
@@ -89,7 +103,8 @@ public class GetInventoryData : MonoBehaviour
        
     }
     void PickUpItem(GameObject thisItem){
-        Debug.Log(thisItem);
-        thisItem.SetActive(false);
+        if(thisItem != null){
+            thisItem.SetActive(false);
+        }
     }
 }

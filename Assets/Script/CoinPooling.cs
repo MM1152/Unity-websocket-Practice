@@ -40,7 +40,10 @@ public class CoinPooling : MonoBehaviour
             createCoinCount++;
             StartCoroutine(coinprefeb.GetComponent<Coin>().AbsorbCoin(userPos));
         }
-
+        Data coinData = new Data("GetCoin");
+        coinData.enemy.id =  int.Parse(dropPos.gameObject.name.Split(' ')[1]);
+        coinData.id = userPos.gameObject.name;
+        Socket.Instance.ws.Send(JsonUtility.ToJson(coinData));
         createCoinCount = 0;
     }
 }

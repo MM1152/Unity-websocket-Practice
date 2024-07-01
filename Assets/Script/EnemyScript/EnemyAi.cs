@@ -13,7 +13,6 @@ public class EnemyAi : IMoveObj
 
     [Space(10)]
     [Header("적 스태이터스")]
-    public ObjectStatus stat;
     public float speed;
     public float searchUserRadius;
     public float findUserRadious;

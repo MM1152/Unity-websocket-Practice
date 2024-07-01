@@ -1,39 +1,25 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    Transform targetPos;
     Socket socket;
+    [SerializeField] GetInventoryData setGold;
     private void Awake() {
         socket ??= Socket.Instance;
+        setGold = socket.this_player.GetComponent<MoveObject>().UI.GetComponent<GetInventoryData>();
     }
-    private void Update()
-    {
-        if (targetPos != null)
-        {
-            transform.position += (targetPos.position - transform.position).normalized * Time.deltaTime;
-            if (Vector2.Distance(transform.position, targetPos.position) < 0.5f && gameObject.name.Equals("Coin(Clone)"))
-            {
-                socket.ws.Send(JsonUtility.ToJson(new Data("GetCoin", targetPos.gameObject.name)));
-                gameObject.SetActive(false);
-                targetPos = null;
-            }
-        }
-    }
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "Player")
-        {
-            this.gameObject.SetActive(false);
-        }
-    }
-
     public IEnumerator AbsorbCoin(Transform userPos)
-    {
+    {   
+        
         yield return new WaitForSeconds(1.3f);
-        targetPos = userPos;
+        
+        for(float radio = 0f; radio <= 1f; radio += 0.005f){
+            transform.position = Vector3.Lerp(transform.position , userPos.position  , radio);
+            yield return null;
+        }
+        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => setGold.ChangeMoney(value , this.gameObject)));
+        
     }
 
 

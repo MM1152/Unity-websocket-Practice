@@ -9,7 +9,8 @@ using UnityEngine.UI;
 public class MoveObject : IMoveObj
 {
     private SetStatsUI stat;
-    private GameObject UI;
+    public GameObject UI;
+    
     private ExpBarUI exp;
     private GameObject attackShow;
     private SpriteRenderer playerHand; // 이동방향마다 같이 flipX 해줘야됌

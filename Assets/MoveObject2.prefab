@@ -516,6 +516,7 @@ MonoBehaviour:
     Items: []
     itemDatas: []
     itemImages: []
+  gold: {fileID: 8849497266472747796}
 --- !u!1 &1009949543300860697
 GameObject:
   m_ObjectHideFlags: 0
@@ -1932,7 +1933,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Gold : 0'
+  m_Text: 'Gold : '
 --- !u!1 &3973022850678701133
 GameObject:
   m_ObjectHideFlags: 0
