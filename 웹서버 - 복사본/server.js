@@ -39,11 +39,13 @@ app.post('/inventoryData', (req, res) => {
     let who = userStateChange(result)
     var query = 'Select * from user_inventory where id = ?'
     var params = [userList[who].name]
+    
     db.query(query, params, function (err, rows, fields) {
         var data = {
             item: rows[0].item,
             gold: rows[0].gold
         }
+        console.log(data);
         res.send(data);
     })
 })
@@ -299,6 +301,29 @@ wss.on('connection', async (ws, req) => {
                 db.query(query, params)
             })            
         }
+
+        if(data.title == "BuyItem") { 
+            let who = userStateChange(ws);
+            var query = "select * from user_inventory where id = ?";
+            var params = [userList[who].name]
+            db.query(query, params, function (err, rows, fields) {
+                console.log("buy item");
+                var result = rows[0].gold - itemList[data.id - 1].cost;
+                console.log(result);
+                var query = "Update user_inventory set gold = ? where id = ?";
+                var params = [result, userList[who].name]
+
+                db.query(query, params);
+                var data1 = {
+                    title : "BuyItem",
+                    id : ws
+                }
+
+                only_player_respose(data1)
+            })  
+            
+            
+        }
         if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
                 if (element.id == data.id) {
@@ -470,6 +495,14 @@ function EnemyRespawn(enemy) {
     clearInterval(RespawnInterval.get(enemy.id));
     RespawnInterval.delete(enemy.id)
 
+}
+
+function only_player_respose(data){
+    wss.clients.forEach(function each(client) {
+        if(data.id == client.id){
+            client.send(JSON.stringify(data))
+        }
+    })
 }
 
 function all_player_response(data) {
