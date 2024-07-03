@@ -27,7 +27,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4563073019351153382}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 7066e0747291df44fa5c2bf93bee3a6e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -91,10 +91,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemUI: {fileID: 0}
   itemNameText: {fileID: 0}
-  itemDamageText: {fileID: 0}
   itemImage: {fileID: 0}
-  itemList: {fileID: 11400000, guid: 927d50e9de7133142bad38d8077cecc3, type: 2}
+  itemList:
+    Items: []
+    itemDatas: []
+    itemImages: []
   itemRectTransForm: {fileID: 0}
+  InitImage: {fileID: 21300000, guid: 7066e0747291df44fa5c2bf93bee3a6e, type: 3}
+  thisSlotItemType: 0
 --- !u!61 &7198181705369906344
 BoxCollider2D:
   m_ObjectHideFlags: 0

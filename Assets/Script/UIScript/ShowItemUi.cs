@@ -9,6 +9,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     [SerializeField] private Image itemImage;
     [SerializeField] private ItemList itemList;
     [SerializeField] private RectTransform itemRectTransForm;
+    [SerializeField] private Sprite InitImage;
     GameObject moveItemSlot;
     static bool isDrag;
     Sprite thisSlotImage;
@@ -26,7 +27,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(isDrag || gameObject.GetComponent<Image>().sprite == null){
+        if(isDrag || gameObject.GetComponent<ShowItemUi>().thisSlotItemType == 0){
             return;
         }
         foreach (var type in itemList.itemDatas){
@@ -61,7 +62,9 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
 
     public void OnDrag(PointerEventData eventData)
     {
-        moveItemSlot.transform.position = eventData.position;
+        if(moveItemSlot != null){
+            moveItemSlot.transform.position = eventData.position;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -69,10 +72,10 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
         isDrag = true;
         thisSlotImage = gameObject.GetComponent<Image>().sprite;
         
-        if(thisSlotImage == null){
+        if(thisSlotItemType == 0 || gameObject.transform.parent.parent.name == "MapUI"){
             return;
         }
-        gameObject.GetComponent<Image>().sprite = null;
+        gameObject.GetComponent<Image>().sprite = InitImage;
         itemUI.SetActive(false);
         moveItemSlot = Instantiate(gameObject , gameObject.transform.parent.parent) as GameObject;
         moveItemSlot.GetComponent<RectTransform>().sizeDelta = new Vector2(30f , 30f);
@@ -89,8 +92,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
         RaycastHit2D hit = Physics2D.Raycast(ray, direction, Mathf.Infinity , LayerMask.GetMask("InventoryUI"));
 
         if(hit.collider != null){
-            Debug.Log(hit.collider.gameObject);
-            if(hit.collider.GetComponent<Image>().sprite != null){
+            if(hit.collider.GetComponent<ShowItemUi>().thisSlotItemType != 0){
                 Destroy(moveItemSlot);
                 thisSlot.sprite = thisSlotImage;
             }
@@ -105,7 +107,8 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
             }
         }else {
             Destroy(moveItemSlot);
-            thisSlot.sprite = thisSlotImage;
+            ChangeItemSlot(gameObject.name , 0 , null , 0);
+            thisSlot.sprite = InitImage;
         }
         moveItemSlot = null;
         isDrag = false;

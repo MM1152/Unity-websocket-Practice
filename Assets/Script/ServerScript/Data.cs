@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
 /// Type (string title , int id , int[] users , float x , float y)
@@ -70,6 +71,8 @@ public class EnemyData{
     public string state;
     public int Hp;
     public int MaxHp;
+    public string mapName;
+    public List<int> dropItemList;
 }
 [Serializable]
 public class NPCData{

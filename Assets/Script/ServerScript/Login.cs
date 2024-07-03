@@ -49,6 +49,7 @@ public class Login : MonoBehaviour
         }
         if(data.Equals("로그인 성공.")){
             SceneManager.LoadScene("SampleScene");
+            AudioManager.Instance.SetBgmSound(SoundClip.상점);
         }
     }
 

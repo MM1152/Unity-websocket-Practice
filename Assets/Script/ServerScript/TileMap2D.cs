@@ -39,14 +39,14 @@ public class TileMap2D : MonoBehaviour
     public Transform mapSpawn;
     public Transform decoSpawn;
     public Transform colliderSpawn;
-
+    private bool mapDownLoad;
     public GameObject Tile;
     private bool firstIn;
     private void Awake()
     {
         httpRequest = HttpRequest.HttpRequests;
         Debug.Log("StartMapDataCorutine");
-        StartCoroutine(httpRequest.Request("http://localhost:8001/mapData", "NeedMapName", "첫번째 맵", (value) => GetData(value)));
+        StartCoroutine(httpRequest.Request("http://localhost:8001/mapData", "NeedMapName", "상점", (value) => GetData(value)));
         Socket.Instance.ws.OnMessage += (sender , e) => {
             MapData mapdata = JsonUtility.FromJson<MapData>(e.Data);
             
@@ -58,6 +58,7 @@ public class TileMap2D : MonoBehaviour
     }
     public void GetData(string result)
     {  
+        StartCoroutine(ChangeMap());
         for(int i = 0; i < mapSpawn.childCount; i++){
             Destroy(mapSpawn.GetChild(i).gameObject);
         }
@@ -104,11 +105,11 @@ public class TileMap2D : MonoBehaviour
             }
 
         }
-        
+        mapDownLoad = true;
         if(!firstIn){
             Socket.Instance.ws.Connect();
         }
-        StartCoroutine(ChangeMap());
+        
         Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("CheckThisMapEnemy")));
         
     }
@@ -116,7 +117,8 @@ public class TileMap2D : MonoBehaviour
     IEnumerator ChangeMap(){
         ChangeScene.color = new Color(0f, 0f ,0f , 1f);
         mapNameText.color = new Color(1f, 1f, 1f , 1f);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => mapDownLoad);
+        yield return new WaitForSeconds(0.3f);
         for(float Alpha = 1.0f; Alpha >= 0f; Alpha -= 0.01f){
             ChangeScene.color = new Color(0f, 0f ,0f , Alpha);
             mapNameText.color = new Color(1f, 1f , 1f ,Alpha);

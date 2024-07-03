@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class EnemyAi : IMoveObj
 {
     [Header("적 인스펙터")]
+    public EnemyData enemyData;
     public CoinPooling coinPooling;
     public GameObject User;
     public GameObject FindUser;

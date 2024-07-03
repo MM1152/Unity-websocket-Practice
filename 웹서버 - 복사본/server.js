@@ -187,7 +187,7 @@ wss.on('connection', async (ws, req) => {
         title: "Init",
         id: userId,
         this_player: userList[who],
-        enemyList: thisMapEnemyList,
+        enemyList: enemyList,
         NPC : [{NPCList : NPCList}]
     });
     console.log(data1);
@@ -380,14 +380,16 @@ let AttackInterval = new Map();
 function EnemyChangeState() {
     for (let i = 0; i < enemyList.length; i++) {
         if(enemyList[i].FollowTarger != null){
-            userList.forEach(user => {
-                if(user.id == enemyList[i].FollowTarger.id){
-                    if(user.mapName != enemyList[i].EnemySpawnMapName) {
+            for(let j = 0; j < userList.length; j++){
+                console.log(enemyList[i].id + " " + enemyList[i].FollowTarger.id);
+                if(userList[j].id == enemyList[i].FollowTarger.id){
+                    if(userList[j].mapName != enemyList[i].EnemySpawnMapName) {
                         enemyList[i].FollowTarger = null;
                         enemyList[i].state = "MoveAround";
+                        break;
                     }
                 }
-            });
+            }
         }
 
         //console.log("┌───────────────────────────────────────┐")
@@ -575,7 +577,9 @@ async function EnemyInit() {
                         DropGold: enemyRows[0].dropGold,
                         EnemySpawnMapName: rows[i].mapName,
                         isDie: false,
-                        isAttack: false
+                        isAttack: false,
+                        mapName : rows[i].mapName,
+                        dropItemList : enemyRows[0].dropItemList
                     });
                     firstMapEnemy[rows[i].mapName].push(enemyID);
                     enemyID++;

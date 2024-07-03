@@ -12,10 +12,9 @@ public class GetInventoryData : MonoBehaviour
     [SerializeField] private Transform inventorySize;
     [SerializeField] private ItemList itemList;
     [SerializeField] private InventoryData inven;
-    public Text gold;
-
+    [SerializeField] private Text gold;
+    public int[] itemsNumber;
     HttpRequest httpRequest;
-    
     Socket socket;
     SaveInvenData saveData;
     int slotIndex = 1;
@@ -28,6 +27,7 @@ public class GetInventoryData : MonoBehaviour
         httpRequest = HttpRequest.HttpRequests;
         saveData.id = socket.this_player.name;
         itemList = itemPooling.itemList;
+        itemsNumber = new int[itemList.itemDatas.Count];
         StartCoroutine(httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => GetData(value)));
 
     }
@@ -41,13 +41,13 @@ public class GetInventoryData : MonoBehaviour
     public void GetData(string Data)
     {
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
+        Debug.Log(inven.gold);
         gold.text = "Gold : " + inven.gold.ToString();
         if(inventorySize.transform.childCount != 0){
-                return;
+            return;
         }
         foreach (var item in inven.item.Keys)
         {
-            
             GameObject createItem = Instantiate(itemTab, inventorySize);
             createItem.name = slotIndex++.ToString();
             createItem.GetComponent<ShowItemUi>().thisSlotItemType = 0;
@@ -55,6 +55,7 @@ public class GetInventoryData : MonoBehaviour
             {
                 continue;
             }
+            itemsNumber[inven.item[item] - 1]++;
             for(int i = 0; i < itemList.itemDatas.Count; i++){
                 ItemInfo iteminfo = itemList.itemDatas[i];
                 Sprite itemImage = itemList.itemImages[i];
@@ -75,7 +76,7 @@ public class GetInventoryData : MonoBehaviour
         {
             Image image = inventorySize.GetChild(i).GetComponent<Image>();
             ShowItemUi showItemUi = inventorySize.GetChild(i).GetComponent<ShowItemUi>();
-            if (image.sprite == null)
+            if (showItemUi.thisSlotItemType == 0)
             {
                 
                 for (int j = 0; j < itemList.itemDatas.Count; j++)

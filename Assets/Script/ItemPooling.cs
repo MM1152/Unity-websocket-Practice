@@ -1,18 +1,19 @@
-using Unity.VisualScripting;
-using UnityEditor.Search;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class ItemPooling : MonoBehaviour
 {
     [SerializeField]private GameObject itemPrefeb;
+    [SerializeField]private EnemyCount enemyCount;
     private static ItemPooling itemPooling;
     private int createItemCount;
     [SerializeField]public ItemList itemList;
+    [SerializeField]public Dictionary<string , List<int>> dropItemList = new Dictionary<string , List<int>>();
 
     private void Awake() {
         StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/getItemData", "ItemData", "1" , (value) => SetItemValue(value)));
         itemPooling = this;
+
     }
     void SetItemValue(string Data){
         

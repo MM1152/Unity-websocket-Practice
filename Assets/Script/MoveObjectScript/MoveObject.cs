@@ -10,7 +10,7 @@ public class MoveObject : IMoveObj
 {
     private SetStatsUI stat;
     public GameObject UI;
-    
+    private GameObject PosionSlot;
     private ExpBarUI exp;
     private GameObject attackShow;
     private SpriteRenderer playerHand; // 이동방향마다 같이 flipX 해줘야됌
@@ -52,8 +52,11 @@ public class MoveObject : IMoveObj
         attackShow = gameObject.transform.Find("Attack").gameObject;
         playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
         exp = gameObject.transform.Find("Canvas").Find("ExpBar").GetComponent<ExpBarUI>();
-        exp.gameObject.SetActive(true);
         stat = gameObject.transform.Find("InventoryANDstatus").Find("Status").GetComponent<SetStatsUI>();
+        PosionSlot =  gameObject.transform.Find("Canvas").Find("PositionSlot").gameObject;
+
+        PosionSlot.SetActive(true);
+        exp.gameObject.SetActive(true);
         speed = 3f;
         Init(); 
     }
