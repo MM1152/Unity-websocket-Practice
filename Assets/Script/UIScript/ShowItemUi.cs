@@ -14,10 +14,8 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     static bool isDrag;
     Sprite thisSlotImage;
     public int thisSlotItemType;
-    private void Awake() {
-        itemList = ItemPooling.Instance.itemList;
-    }
     private void Start() {
+        itemList = ItemPooling.Instance.itemList;
         if(transform.parent.parent.Find("ItemUI")){
             itemUI = transform.parent.parent.Find("ItemUI").gameObject;
         }

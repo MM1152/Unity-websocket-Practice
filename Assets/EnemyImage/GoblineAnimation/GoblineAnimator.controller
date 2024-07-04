@@ -43,7 +43,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 5bdd732c97a61ed4cbc85a6ec1e13d29, type: 2}
+  m_Motion: {fileID: 7400000, guid: 35c980bec74782348b2149f931622091, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -152,7 +152,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\uC801 \uB300\uAE30_0"
+  m_Name: GoblineAnimator
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: IsRun
@@ -239,7 +239,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: bc87182632de5ad4e87b6d1cb7ed6754, type: 2}
+  m_Motion: {fileID: 7400000, guid: 5184081d0838b5d40866d3959d29328a, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -313,7 +313,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: f3b410cd02d67c843844c3d396700612, type: 2}
+  m_Motion: {fileID: 7400000, guid: a8ccc2fc86a70934eb2971e88b98400e, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -401,7 +401,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 5bb8a8d3520b4aa4995bd29f9755f3bb, type: 2}
+  m_Motion: {fileID: 7400000, guid: addbf6fa7a5ae6d41b8a4e8a9d9292d2, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -429,7 +429,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 1dd39ac56c6a2fd468e9da5d0dba3e28, type: 2}
+  m_Motion: {fileID: 7400000, guid: eec5b34f50b487b4cb06058c74c26818, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

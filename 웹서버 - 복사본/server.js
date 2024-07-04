@@ -26,7 +26,6 @@ app.listen(8001, () => {
 app.post('/getData', (req, res) => {
     
     var result = req.body // mapName,  mapSize(x , y) , mapData(List) , DecoData(List) , EnemyData(List)
-    console.log(result)
     var query = 'INSERT INTO mapData (mapSizeX , mapSizeY , mapValue , mapName , decoValue , enemyValue , colliderValue , npcvalue) Values (? , ? , ? ,? , ? , ? , ? , ?)';
     var params = [result.mapSize.x, result.mapSize.y, JSON.stringify(result.mapData), result.mapName, JSON.stringify(result.DecoData), JSON.stringify(result.EnemyData) , JSON.stringify(result.ColliderData) , JSON.stringify(result.NPCData)];
     db.query(query, params, function (err, rows, fields) {
@@ -77,7 +76,6 @@ app.post('/mapData', (req, res) => {
         var data = {
             "mapData": rows
         }
-        
         firstMapEnemy[rows[0].mapName].forEach(enemy => {
             thisMapEnemyList.push(enemyList[enemy])
         });
@@ -246,7 +244,6 @@ wss.on('connection', async (ws, req) => {
                 }                
                 
                 for(let i = 0 ; i < userList.length; i++){
-                    console.log(userList[i].id + " " + userList[i].mapName);
                     if(userList[i].mapName == rows[0].mapName){
                         thisMapUserList.push(userList[i])
                     }
@@ -698,7 +695,7 @@ function init(ws) {
                 exp: rows[0].exp,
                 Level: rows[0].Level,
                 maxExp: rows[0].Level * 100,
-                mapName: "첫번째 맵"
+                mapName: "상점"
             })
             ws.id = rows[0].nick_name;
 

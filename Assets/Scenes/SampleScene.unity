@@ -1126,6 +1126,7 @@ MonoBehaviour:
   NPCcount: {fileID: 0}
   enemys:
   - {fileID: 3918039393213041812, guid: fb6f9d8577cc9964cad795fb44bf4c74, type: 3}
+  - {fileID: 3918039393213041812, guid: 6eac5b6cec475644a90e6ac8bd1f6476, type: 3}
   npcs:
   - {fileID: 1607115526645348497, guid: 7ad596e9a20eaeb4182494eab42eb126, type: 3}
 --- !u!4 &745822562
@@ -1229,6 +1230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: 
   NPCcount: {fileID: 0}
+  mapName: {fileID: 1796507938}
 --- !u!114 &745822569
 MonoBehaviour:
   m_ObjectHideFlags: 0

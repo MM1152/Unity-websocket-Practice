@@ -68,10 +68,11 @@ public class TileMap2D : MonoBehaviour
         for(int i = 0; i < colliderSpawn.childCount; i++){
             Destroy(colliderSpawn.GetChild(i).gameObject);
         }
-        
+
         GetData mapdata = JsonUtility.FromJson<GetData>(result);
         var mapData = mapdata.mapData[0];
         mapNameText.text = mapData.mapName;
+        
         int y = 0;
         int bottomX = -mapData.mapSizeX / 2;
         int bottonY = -mapData.mapSizeY / 2;

@@ -17,6 +17,14 @@ public class MoveObject : IMoveObj
     public Text text;
     [SerializeField]
     private UserData this_player_info ;
+    public string playerMap {
+        get {
+            return this_player_info.mapName;
+        }
+        set {
+            this_player_info.mapName = value;
+        }
+    }
     public float speed;
     public float radio;
     public float pushPower;

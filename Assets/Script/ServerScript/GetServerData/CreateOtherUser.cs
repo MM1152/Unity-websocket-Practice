@@ -7,6 +7,7 @@ public class CreateOtherUser : ISocket
     public override void RunNetworkCode(Data data)
     {
         socket.other = GameObject.FindGameObjectsWithTag("Player");
+        
         if(socket.other.Length != data.users.Length){
             
             for(int i = 0; i < data.users.Length; i++){
@@ -22,6 +23,9 @@ public class CreateOtherUser : ISocket
                     createUser.AddComponent<OtherPlayerMove>();
                     createUser.name = data.users[i].id.ToString();
                     createUser.GetComponent<OtherPlayerMove>().UserData = data.users[i];
+                    if(data.users[i].mapName != socket.this_player_MoveObject.playerMap){
+                        createUser.SetActive(false);
+                    }
                 }
             }
         }

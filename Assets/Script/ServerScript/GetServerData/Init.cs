@@ -32,7 +32,7 @@ public class Init : ISocket
             spawnNPC.name = NPC.id.ToString();
             spawnNPC.SetActive(true);
         }
-
+        
         GameObject player = Instantiate(socket.user);
         player.name = data.id;
         player.AddComponent<MoveObject>();

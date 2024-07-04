@@ -57,7 +57,7 @@ public class Socket : MonoBehaviour
                 
                 ws.OnMessage += (sender , e) => {
                     Data data = JsonUtility.FromJson<Data>(e.Data);
-                    if(data.title == "Init" ){
+                    if(data.title == "CreateOtherUser" ){
                         Debug.Log(e.Data);
                     }
                     Action action = null;

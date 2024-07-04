@@ -23,16 +23,14 @@ public class CheckThisMapEnemy : ISocket
             this_npc.GetComponent<NpcAi>().NpcData = NPC;
             this_npc.SetActive(true);
         }
+
         for(int i = 0; i < enemyCount.Enemys.Count; i++){
-            
-            if(data.enemyList.Length != 0 && data.enemyList[count].id.ToString() == enemyCount.Enemys[i].name.Split(' ')[1]){
-                enemyCount.Enemys[i].SetActive(true);
-                count++;
-            }
-            else {
-                enemyCount.Enemys[i].SetActive(false);
-            }
+            enemyCount.Enemys[i].SetActive(false);
         }
+        for(int i = data.enemyList[0].id ; i < data.enemyList[0].id + data.enemyList.Length; i++){
+            enemyCount.Enemys[i].SetActive(true);
+        }
+
         foreach(var other in socket.other){
             other.SetActive(false);
         }
