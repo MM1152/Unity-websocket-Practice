@@ -12,17 +12,17 @@ public class MoveObject : IMoveObj
     public GameObject UI;
     private GameObject PosionSlot;
     private ExpBarUI exp;
+    private GameObject levelUI;
     private GameObject attackShow;
     private SpriteRenderer playerHand; // 이동방향마다 같이 flipX 해줘야됌
     public Text text;
     [SerializeField]
-    private UserData this_player_info ;
     public string playerMap {
         get {
-            return this_player_info.mapName;
+            return UserData.mapName;
         }
         set {
-            this_player_info.mapName = value;
+            UserData.mapName = value;
         }
     }
     public float speed;
@@ -34,27 +34,28 @@ public class MoveObject : IMoveObj
     public bool firstSendMoveData;
 
     public void setUserData(UserData userData){
-        this.this_player_info = userData;
+        this.UserData = userData;
     }
     public UserData getUserData()
     {
-        return this_player_info;
+        return UserData;
     }
     public void setUserExp(UserData data)
     {
-        if (this_player_info.Level != data.Level)
+        if (UserData.Level != data.Level)
         {
             stat.SetStatsPoint(data);
         }
-        this_player_info = data;
-        exp.setMaxExp(this_player_info.maxExp);
-        exp.setcurrentExp(this_player_info.exp);
+        UserData = data;
+        exp.setMaxExp(UserData.maxExp);
+        exp.setcurrentExp(UserData.exp);
     }
     private void Update() {
         stateMachine?.Update();
     }
     public void Awake()
     {   
+        
         UI = gameObject.transform.Find("InventoryANDstatus").gameObject;
         text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
         attackShow = gameObject.transform.Find("Attack").gameObject;
@@ -62,14 +63,18 @@ public class MoveObject : IMoveObj
         exp = gameObject.transform.Find("Canvas").Find("ExpBar").GetComponent<ExpBarUI>();
         stat = gameObject.transform.Find("InventoryANDstatus").Find("Status").GetComponent<SetStatsUI>();
         PosionSlot =  gameObject.transform.Find("Canvas").Find("PositionSlot").gameObject;
-
+        levelUI = UI.transform.Find("Level").gameObject;
         PosionSlot.SetActive(true);
         exp.gameObject.SetActive(true);
+        levelUI.SetActive(true);
+
+        
         speed = 3f;
         Init(); 
     }
     void Start(){   
-        text.text = this_player_info.id;
+        text.text = UserData.id;
+        levelUI.GetComponent<Text>().text = "Level " + UserData.Level;
         UI.SetActive(true);
     }
     public override void Move()
@@ -118,7 +123,7 @@ public class MoveObject : IMoveObj
             //other.GetComponent<EnemyAi>().state = State.HURT;
             Data data = new Data("HitEnemy");
             data.id = other.name.Split(' ')[1];
-            data.this_player = this_player_info;
+            data.this_player = UserData;
             socket.ws.Send(JsonUtility.ToJson(data));
         }
     }

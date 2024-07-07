@@ -7,20 +7,10 @@ public class OtherPlayerMove : IMoveObj
     private float radio;
     public Text text;
     [SerializeField]
-    private UserData userData;
+
     SpriteRenderer playerHand;
     public GameObject attackShow;
-    public UserData UserData
-    {
-        get
-        {
-            return userData;
-        }
-        set
-        {
-            userData = value;
-        }
-    }
+
 
     private void Awake()
     {
@@ -32,7 +22,7 @@ public class OtherPlayerMove : IMoveObj
     }
     private void Start()
     {
-        text.text = userData.id;
+        text.text = UserData.id;
     }
     public override void Move(Vector2 targetPos)
     {

@@ -460,24 +460,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c82fa63265dc80489f4a1ef210053b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ani: {fileID: 0}
+  sp: {fileID: 0}
+  IsAttack: 0
+  rg: {fileID: 0}
+  userData:
+    id: 
+    x: 0
+    y: 0
+    hp: 0
+    mp: 0
+    strStats: 0
+    intStats: 0
+    exp: 0
+    Level: 0
+    maxExp: 0
+    mapName: 
+  enemyData:
+    type: 0
+    id: 0
+    x: 0
+    y: 0
+    state: 
+    Hp: 0
+    MaxHp: 0
+    mapName: 
+    dropItemList: 
+    FollowTarger:
+      id: 
+      x: 0
+      y: 0
+      hp: 0
+      mp: 0
+      strStats: 0
+      intStats: 0
+      exp: 0
+      Level: 0
+      maxExp: 0
+      mapName: 
+  coinPooling: {fileID: 0}
   User: {fileID: 0}
   FindUser: {fileID: 8715525629363311121}
   SearchingUser: {fileID: 6779282147637955513}
-  ani: {fileID: 0}
-  sp: {fileID: 0}
   Hpbar: {fileID: 2279304956692819231}
-  stat: {fileID: 11400000, guid: c4d719625da64ca469e630c597eacc96, type: 2}
   speed: 2
   searchUserRadius: 10
   findUserRadious: 5
   moveAway: 0
-  Enemyani: {fileID: 0}
-  state: 0
   spawnPos: {x: 0, y: 0}
   FindUserRadious: {fileID: 0}
   pos: 0
   isDie: 0
   returnSpawnPos: 0
+  target: {x: 0, y: 0}
 --- !u!1 &4713939132519039746
 GameObject:
   m_ObjectHideFlags: 0

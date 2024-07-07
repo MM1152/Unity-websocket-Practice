@@ -10,6 +10,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
     [SerializeField] private ItemList itemList;
     [SerializeField] private RectTransform itemRectTransForm;
     [SerializeField] private Sprite InitImage;
+    [SerializeField]private GetInventoryData inventoryData;
     GameObject moveItemSlot;
     static bool isDrag;
     Sprite thisSlotImage;
@@ -19,6 +20,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
         if(transform.parent.parent.Find("ItemUI")){
             itemUI = transform.parent.parent.Find("ItemUI").gameObject;
         }
+        inventoryData = transform.parent.parent.parent.GetComponent<GetInventoryData>();
         itemNameText = itemUI.transform.Find("Name").GetComponent<Text>();
         itemImage = itemUI.transform.Find("ItemImage").GetComponent<Image>();
         itemRectTransForm = itemUI.GetComponent<RectTransform>();
@@ -106,6 +108,8 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler , IPointerExitHand
         }else {
             Destroy(moveItemSlot);
             ChangeItemSlot(gameObject.name , 0 , null , 0);
+            inventoryData.itemsNumber[thisSlotItemType - 1]--;
+            thisSlotItemType = 0;
             thisSlot.sprite = InitImage;
         }
         moveItemSlot = null;

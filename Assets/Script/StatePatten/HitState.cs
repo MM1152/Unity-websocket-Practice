@@ -14,6 +14,11 @@ public class HitState : Istate
 
     public void Exit() { }
 
-    public void Update() { return; }
+    public void Update() { 
+        
+        if(moveObject.ani.GetCurrentAnimatorStateInfo(0).IsName("PlayerHit") && moveObject.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= .9f){
+            moveObject.stateMachine.Transition(new IdleState());
+        }
+    }
 
 }

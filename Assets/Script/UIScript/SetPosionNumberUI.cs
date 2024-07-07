@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +11,7 @@ public class SetPosionNumberUI : MonoBehaviour
     [SerializeField]private Text mpPosionNumText;
     private int hp_posion;
     private int mp_postion;
-    [SerializeField]private int HP_Posion {
+    private int HP_Posion {
         get {
             return hp_posion;
         }
@@ -19,7 +20,7 @@ public class SetPosionNumberUI : MonoBehaviour
             hpPosionNumText.text = value.ToString();
         }
     }
-    [SerializeField]private int MP_Posion {
+    private int MP_Posion {
         get {
             return mp_postion;
         }

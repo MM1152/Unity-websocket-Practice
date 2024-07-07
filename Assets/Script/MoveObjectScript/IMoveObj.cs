@@ -8,6 +8,19 @@ public abstract class IMoveObj : MonoBehaviour {
     protected Socket socket;
     public bool IsAttack;
     public Rigidbody2D rg;
+    
+    [SerializeField] private UserData userData;
+    public UserData UserData
+    {
+        get
+        {
+            return userData;
+        }
+        set
+        {
+            userData = value;
+        }
+    }
 
     public void Init(){
         ani = GetComponent<Animator>();
@@ -18,8 +31,11 @@ public abstract class IMoveObj : MonoBehaviour {
         IsAttack = false;
         rg = GetComponent<Rigidbody2D>();
     }
-    
+    public void SetUserData(UserData userData){
+
+    }
     public abstract void Move();
     public abstract void Move(Vector2 targetPos);
     public abstract void Attack();
+    
 }

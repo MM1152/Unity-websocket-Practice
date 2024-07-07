@@ -7,16 +7,10 @@ public class CheckThisMapEnemy : ISocket
     
     public override void RunNetworkCode(Data data)
     {
-        int count = 0;
-        if(data.NPC.Length != 0){
-            Debug.Log(data.NPC[0].id);
-        }
-        
-
         foreach(GameObject npc in NPCcount.npc_List.Values){
-            
             npc.SetActive(false);
         }
+
         foreach(var NPC in data.NPC){
             GameObject this_npc = NPCcount.npc_List[NPC.id];
             this_npc.transform.localPosition = NPC.spawnPos;
@@ -27,6 +21,7 @@ public class CheckThisMapEnemy : ISocket
         for(int i = 0; i < enemyCount.Enemys.Count; i++){
             enemyCount.Enemys[i].SetActive(false);
         }
+        
         for(int i = data.enemyList[0].id ; i < data.enemyList[0].id + data.enemyList.Length; i++){
             enemyCount.Enemys[i].SetActive(true);
         }

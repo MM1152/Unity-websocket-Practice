@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public enum SoundClip{
@@ -10,11 +11,11 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance; 
     public AudioSource audioSource;
-    public float bgmVolum;
+    public Slider bgmVolum;
 
     [Header("#BGM")]
     public AudioClip[] bgmClip;
-
+    
     private void Awake() {
         if(Instance == null){
             Instance = this;
@@ -27,13 +28,13 @@ public class AudioManager : MonoBehaviour
     public void Init(){
         audioSource.clip = bgmClip[0];
         audioSource.loop = true;
-        audioSource.Play();
+        audioSource.Play(); 
     }
     public void SetBgmSound(SoundClip sound){
         audioSource.clip = bgmClip[(int)sound];
         audioSource.Play();
     }
     private void Update() {
-        audioSource.volume = bgmVolum;
+       audioSource.volume = bgmVolum.value;
     }
 }

@@ -73,6 +73,7 @@ public class EnemyData{
     public int MaxHp;
     public string mapName;
     public List<int> dropItemList;
+    public UserData FollowTarger;
 }
 [Serializable]
 public class NPCData{
