@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
 /// Type (string title , int id , int[] users , float x , float y)
 /// </summary>
 [Serializable]
 public class Data{
+    public Data() {}
     public string title;
     public string id;
     public UserData[] users;
@@ -57,6 +59,9 @@ public class UserData{
     public int Level;
     public int maxExp;
     public string mapName;
+    public int defense;
+    public int attack;
+    public Dictionary<string , int> equipItem;
 }
 [Serializable]
 public class Enemys{

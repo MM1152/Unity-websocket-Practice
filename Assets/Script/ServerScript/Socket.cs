@@ -6,6 +6,7 @@ using WebSocketSharp;
 using System.Threading;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Newtonsoft.Json;
 
 /// <summary>
 /// ws://localhost:8000 연결 
@@ -56,7 +57,9 @@ public class Socket : MonoBehaviour
             using(ws = new WebSocket(url)) {
                 
                 ws.OnMessage += (sender , e) => {
-                    Data data = JsonUtility.FromJson<Data>(e.Data);
+                    try {
+                    Data data =  JsonConvert.DeserializeObject<Data>(e.Data);
+
                     if(data.title == "CreateOtherUser" ){
                         Debug.Log(e.Data);
                     }
@@ -69,6 +72,10 @@ public class Socket : MonoBehaviour
                     }
                     
                     addQueue(action);
+                    } 
+                    catch(Exception ex) {
+                        Debug.LogError(ex.Message);
+                    }
                 };
             }
             

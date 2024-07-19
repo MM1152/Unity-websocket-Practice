@@ -7,6 +7,7 @@ public class OpenUi : MonoBehaviour
     Socket socket;
     [SerializeField] private GameObject Inventory;
     [SerializeField] private GameObject Status;
+    [SerializeField] private GameObject Equip;
 
     void Start(){
         socket = Socket.Instance;
@@ -19,6 +20,9 @@ public class OpenUi : MonoBehaviour
         }
         if(Input.GetKeyDown(KeyCode.U) && socket.this_player == this.gameObject.transform.root.gameObject){
             Status.SetActive(!Status.activeSelf);
+        }
+        if(Input.GetKeyDown(KeyCode.E) && socket.this_player == this.gameObject.transform.root.gameObject){
+            Equip.SetActive(!Equip.activeSelf);
         }
     }
     

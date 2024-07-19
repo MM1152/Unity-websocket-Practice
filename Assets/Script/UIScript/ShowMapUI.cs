@@ -16,6 +16,9 @@ public class ShowMapUI : MonoBehaviour , IPointerEnterHandler , IPointerExitHand
     private void Awake() {
         changeMap = GetComponent<ChangeMap>();
         size = MapUI.GetComponent<RectTransform>();
+        
+    }
+    private void Start() {
         parent = transform.parent.gameObject;
     }
     public void OnPointerEnter(PointerEventData eventData)

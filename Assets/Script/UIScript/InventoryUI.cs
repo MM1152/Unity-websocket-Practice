@@ -14,6 +14,7 @@ public class SaveInvenData
 public class InventoryData
 {
     public Dictionary<string , int> item = new Dictionary<string, int>();
+    public Dictionary<string , int> equip = new Dictionary<string, int>();
     public int gold;
 }
 //class GetData

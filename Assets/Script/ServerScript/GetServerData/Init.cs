@@ -13,7 +13,6 @@ public class Init : ISocket
     //private EnemyCount enemyCount;
     public override void RunNetworkCode(Data data)
     {
-        Debug.Log(data);
         foreach(var enemy in data.enemyList){
             
             GameObject SpawnEnemy = Instantiate(enemys[enemy.type - 1] , enemyCount.transform) as GameObject;

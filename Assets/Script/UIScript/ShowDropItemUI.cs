@@ -11,15 +11,18 @@ public class ShowDropItemUI : MonoBehaviour
     void Awake()
     {
         
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 15; i++){
             GameObject dropItem = Instantiate(dropItemPrefeb , transform);
-            dropItem.GetComponent<ShowItemUi>().thisSlotItemType = 0;
+            dropItem.GetComponent<ShowItemUi>().ThisSlotItemType = 0;
             dropItem.SetActive(false);
         }
         transform.parent.gameObject.SetActive(false);
     }
 
     public void SetDropItem(string mapName){
+        for(int i = 0 ; i < gameObject.transform.childCount; i++){
+            if(gameObject.transform.GetChild(i).gameObject.activeSelf) gameObject.transform.GetChild(i).gameObject.SetActive(false);
+        }
         for(int i = 0; i < ItemPooling.Instance.dropItemList[mapName].Count; i++){
             Debug.Log( ItemPooling.Instance.dropItemList[mapName][i]);
             gameObject.transform.GetChild(i).GetComponent<Image>().sprite = ItemPooling.Instance.itemList.itemImages[ItemPooling.Instance.dropItemList[mapName][i] - 1];

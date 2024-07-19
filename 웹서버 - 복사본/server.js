@@ -42,10 +42,40 @@ app.post('/inventoryData', (req, res) => {
     db.query(query, params, function (err, rows, fields) {
         var data = {
             item: rows[0].item,
-            gold: rows[0].gold
+            gold: rows[0].gold,
+            equip : rows[0].equipItemSlot
         }
+        console.log(data)
         res.send(data);
     })
+})
+app.post('/equipData', (req , res) => {
+    var result = req.body
+    let who = userStateChange(result)
+    var query = "Select "
+})
+app.post('/saveEquipItem' , (req , res) => {
+    var result = JSON.parse(req.body.Equip);
+    let who = userStateChange(result);
+    var query = "update user_inventory set equipItemSlot = Json_Set(equipItemSlot , ? , ?) where id = ?";
+    var params = [`$."${result.Key}"` , result.Value , userList[who].name];
+
+    db.query(query , params , function(err , rows) {
+    
+        if(userList[who].equipItem[result.Key] != 0){
+            userList[who].attack -= itemList[userList[who].equipItem[result.Key] - 1].item_damage;
+            userList[who].defense -= itemList[userList[who].equipItem[result.Key] - 1].item_defense;
+        }
+        
+        userList[who].equipItem[result.Key] = result.Value;
+        if(result.Value != 0){
+            userList[who].attack += itemList[result.Value - 1].item_damage;
+            userList[who].defense += itemList[result.Value - 1].item_defense;
+        }
+       
+        console.log(`User attack : ${userList[who].attack}  User defense : ${userList[who].defense}`);
+    })
+
 })
 app.post('/getItemData' , (req , res) => {
     var result = req.body;
@@ -125,8 +155,8 @@ app.post('/setNickName', (req, res) => {
     var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats) values (? , ? , ? , ? , ?)";
     var insertparmas = [id, 100, 100, 1, 1]
 
-    var inventoryquery = "Insert Into user_inventory (id , item , gold) values (? , ? , ?)";
-    var inventoryparams = [id, JSON.stringify({}), 0]
+    var inventoryquery = "Insert Into user_inventory (id , item , gold , EquipItemSlot) values (? , ? , ? , ?)";
+    var inventoryparams = [id, JSON.stringify({}), 0 , JSON.stringify({})]
 
     var inventoryInitQuery = "UPDATE user_inventory SET item = JSON_SET(item"
     for (let i = 1; i <= 30; i++) {
@@ -134,6 +164,15 @@ app.post('/setNickName', (req, res) => {
     }
     inventoryInitQuery += ') WHERE id = ?';
     inventoryInitParams = [id]
+
+    var equipList = ['Ring' , 'Armor' , 'Shoes' , 'Gloves' , 'Helmet' , 'Shield' , 'Weapon' , 'Bracelet'];
+    var equipItemInitQuery = "Update user_inventory set EquipItemSlot = Json_set(EquipItemSlot"
+    for(let i = 0; i < equipList.length; i++){
+        equipItemInitQuery += `, '$."${equipList[i]}"' , 0`;
+    }
+    equipItemInitQuery += ') where id = ?';
+    equipItemInitParams = [id];
+    
     db.query(query, params, function (err, rows, fields) {
         if (err) {
             console.log(err)
@@ -146,6 +185,7 @@ app.post('/setNickName', (req, res) => {
             }
             console.log("Inventory 생성 완"); 
             db.query(inventoryInitQuery, inventoryInitParams);
+            db.query(equipItemInitQuery , equipItemInitParams);
         })
         db.query(insertquery, insertparmas, function (err, rows, fields) {
             if (err) {
@@ -678,14 +718,24 @@ async function ItemListInit(){
     for(let i = 0; i < itemDatas.length; i++){
         itemList.push(itemDatas[i]);
     }
+
 }
 function init(ws) {
     return new Promise((resolve, rejects) => {
-
-        var getUserDataquery = "select user_info.id , hp , mp , strStats , intStats , exp , nick_name , Level from user_status , user_info where user_status.id = ? && user_info.id = ?";
-        var getUserDataparams = [id, id];
+        
+        var getUserDataquery = "select user_info.id , hp , mp , strStats , intStats , exp , nick_name , user_inventory.equipItemSlot , Level from user_status , user_info , user_inventory where user_status.id = ? && user_info.id = ? && user_inventory.id = ?";
+        var getUserDataparams = [id, id , id];
 
         db.query(getUserDataquery, getUserDataparams, function (err, rows, fields) {
+            let defenseValue = 0;
+            let attackValue = 0;
+            for(var key in rows[0].equipItemSlot){
+                if(rows[0].equipItemSlot[key] != 0) {
+                    attackValue += itemList[rows[0].equipItemSlot[key] - 1].item_damage ;
+                    defenseValue += itemList[rows[0].equipItemSlot[key] - 1].item_defense;
+                }
+            }
+
             userList.push({
                 name: rows[0].id,
                 id: rows[0].nick_name,
@@ -698,8 +748,12 @@ function init(ws) {
                 exp: rows[0].exp,
                 Level: rows[0].Level,
                 maxExp: rows[0].Level * 100,
-                mapName: "상점"
+                mapName: "상점",
+                equipItem : rows[0].equipItemSlot,
+                defense : defenseValue,
+                attack : attackValue + (rows[0].strStats * 10)
             })
+
             ws.id = rows[0].nick_name;
 
             resolve();

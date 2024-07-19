@@ -14,7 +14,6 @@ public class ItemPooling : MonoBehaviour
     {
         StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/getItemData", "ItemData", "1", (value) => SetItemValue(value)));
         itemPooling = this;
-
     }
     void SetItemValue(string Data)
     {
@@ -25,7 +24,6 @@ public class ItemPooling : MonoBehaviour
         {
             itemList.AddItemdata(item);
         }
-
     }
 
     public static ItemPooling Instance

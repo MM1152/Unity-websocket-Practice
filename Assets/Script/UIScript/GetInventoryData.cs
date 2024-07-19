@@ -28,8 +28,7 @@ public class GetInventoryData : MonoBehaviour
         saveData.id = socket.this_player.name;
         itemList = itemPooling.itemList;
         itemsNumber = new int[itemList.itemDatas.Count];
-        StartCoroutine(httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => GetData(value)));
-
+        StartCoroutine(httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => InitInventory(value)));
     }
     
     public void ChangeMoney(string Data , GameObject offGameObject){
@@ -38,7 +37,7 @@ public class GetInventoryData : MonoBehaviour
         offGameObject.SetActive(false);
     }
 
-    public void GetData(string Data)
+    public void InitInventory(string Data)
     {
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
         Debug.Log(inven.gold);
@@ -46,27 +45,21 @@ public class GetInventoryData : MonoBehaviour
         if(inventorySize.transform.childCount != 0){
             return;
         }
+
+        foreach(var equip in inven.equip.Keys){
+            transform.Find("Equip").Find(equip).transform.GetChild(0).GetComponent<ShowItemUi>().ThisSlotItemType = inven.equip[equip];
+        }
         foreach (var item in inven.item.Keys)
         {
             GameObject createItem = Instantiate(itemTab, inventorySize);
-            createItem.name = slotIndex++.ToString();
-            createItem.GetComponent<ShowItemUi>().thisSlotItemType = 0;
+            createItem.name = slotIndex++.ToString();  
+            createItem.GetComponent<ShowItemUi>().ThisSlotItemType = 0;
             if (inven.item[item] == 0)
             {
                 continue;
             }
             itemsNumber[inven.item[item] - 1]++;
-            for(int i = 0; i < itemList.itemDatas.Count; i++){
-                ItemInfo iteminfo = itemList.itemDatas[i];
-                Sprite itemImage = itemList.itemImages[i];
-
-                if(iteminfo.item_id == inven.item[item]){
-                    createItem.GetComponent<Image>().sprite = itemImage;
-                    createItem.GetComponent<ShowItemUi>().thisSlotItemType = inven.item[item];
-                    break;
-                }
-            }
-            
+            createItem.GetComponent<ShowItemUi>().ThisSlotItemType = inven.item[item];
         }
     }
     public void SetInventory(int item , GameObject thisItem)
@@ -74,11 +67,9 @@ public class GetInventoryData : MonoBehaviour
         
         for (int i = 0; i < 30; i++)
         {
-            Image image = inventorySize.GetChild(i).GetComponent<Image>();
             ShowItemUi showItemUi = inventorySize.GetChild(i).GetComponent<ShowItemUi>();
-            if (showItemUi.thisSlotItemType == 0)
+            if (showItemUi.ThisSlotItemType == 0)
             {
-                
                 for (int j = 0; j < itemList.itemDatas.Count; j++)
                 {
                     ItemInfo iteminfo = itemList.itemDatas[j];
@@ -86,9 +77,8 @@ public class GetInventoryData : MonoBehaviour
                     int itemType = itemList.itemDatas[j].item_id;
                     if (item == itemType)
                     {
-                        image.sprite = itemImage;
-                        showItemUi.thisSlotItemType = itemType;
-                        inventorySize.transform.GetChild(i).GetComponent<ShowItemUi>().thisSlotItemType = itemType;
+                        showItemUi.ThisSlotItemType = itemType;
+                        inventorySize.transform.GetChild(i).GetComponent<ShowItemUi>().ThisSlotItemType = itemType;
                         saveData.Key = (i + 1).ToString();
                         saveData.Value = itemType;
                         string jsonData = JsonUtility.ToJson(saveData);
