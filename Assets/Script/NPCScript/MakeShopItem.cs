@@ -16,7 +16,6 @@ public class MakeShopItem : MonoBehaviour
 
     public void MakeShop() {
         if(itemList.transform.childCount == 0){
-            Debug.Log(npcAi.NpcData.sellingList[0]);
             foreach(var type in npcAi.NpcData.sellingList) {
                 foreach(var checktype in items.itemDatas){
                     if(type == checktype.item_id){

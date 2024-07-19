@@ -22,8 +22,8 @@ public class CheckThisMapEnemy : ISocket
             enemyCount.Enemys[i].SetActive(false);
         }
         
-        for(int i = data.enemyList[0].id ; i < data.enemyList[0].id + data.enemyList.Length; i++){
-            enemyCount.Enemys[i].SetActive(true);
+        foreach(var enemy in data.enemyList){
+            enemyCount.Enemys[enemy.id].SetActive(true);
         }
 
         foreach(var other in socket.other){

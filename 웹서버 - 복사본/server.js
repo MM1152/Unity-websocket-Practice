@@ -518,7 +518,9 @@ function EnemyChangeState() {
 function EnemyAttack(enemy) {
     if(enemy.FollowTarger != null){
         let who = userStateChange(enemy.FollowTarger);
-        userList[who].hp -= enemy.damage;
+        
+        if(userList[who].defense >= enemy.damage) userList[who].hp -= 1;
+        else userList[who].hp -= enemy.damage - userList[who].defense;
 
         all_player_response({ title: "EnemyAttack", enemy: enemy , this_player : userList[who]})
     }
