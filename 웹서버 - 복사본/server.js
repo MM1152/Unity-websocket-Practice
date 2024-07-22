@@ -43,39 +43,46 @@ app.post('/inventoryData', (req, res) => {
         var data = {
             item: rows[0].item,
             gold: rows[0].gold,
-            equip : rows[0].equipItemSlot
+            equip : rows[0].equipItemSlot,
+            equipItemTab : rows[0].equipItemTab
         }
-        console.log(data)
         res.send(data);
     })
-})
-app.post('/equipData', (req , res) => {
-    var result = req.body
-    let who = userStateChange(result)
-    var query = "Select "
 })
 app.post('/saveEquipItem' , (req , res) => {
     var result = JSON.parse(req.body.Equip);
     let who = userStateChange(result);
     var query = "update user_inventory set equipItemSlot = Json_Set(equipItemSlot , ? , ?) where id = ?";
-    var params = [`$."${result.Key}"` , result.Value , userList[who].name];
+    var params = [`$."${result.Key}"` , result.Value[0] , userList[who].name];
 
     db.query(query , params , function(err , rows) {
-    
+        
         if(userList[who].equipItem[result.Key] != 0){
             userList[who].attack -= itemList[userList[who].equipItem[result.Key] - 1].item_damage;
             userList[who].defense -= itemList[userList[who].equipItem[result.Key] - 1].item_defense;
         }
         
-        userList[who].equipItem[result.Key] = result.Value;
-        if(result.Value != 0){
-            userList[who].attack += itemList[result.Value - 1].item_damage;
-            userList[who].defense += itemList[result.Value - 1].item_defense;
+        userList[who].equipItem[result.Key] = result.Value[0];
+        
+        if(result.Value[0] != 0){
+            userList[who].attack += itemList[result.Value[0] - 1].item_damage;
+            userList[who].defense += itemList[result.Value[0] - 1].item_defense;
         }
        
         console.log(`User attack : ${userList[who].attack}  User defense : ${userList[who].defense}`);
     })
+})
 
+app.post('/saveEquipItemTab' , (req , res) => {
+    var result = JSON.parse(req.body.EquipItemTab);
+    let who = userStateChange(result);
+    var query = "update user_inventory set equipItemTab = JSON_SET(equipItemTab , ? , ?) where id = ?";
+    var params = [`$."${result.Key}"` , result.ItemSlotIndex , userList[who].name];
+
+    db.query(query , params , function(err) {
+        if(err) console.log(err)
+        else console.log(`Save EquipItemTab\n -UpdateData is {${result.Key} : ${result.ItemSlotIndex}} ChangeUser is ${userList[who].name}`)
+    })
 })
 app.post('/getItemData' , (req , res) => {
     var result = req.body;
@@ -85,7 +92,7 @@ app.post('/saveinventoryData', (req, res) => {
     var result = req.body;
     result = JSON.parse(result.item);
     let who = userStateChange(result);
-    var query = 'update user_inventory set item = JSON_SET(item , ? , ?) where id = ?'
+    var query = 'update user_inventory set item = JSON_SET(item , ? , JSON_ARRAY(?)) where id = ?'
     var params = [`$."${result.Key}"`, result.Value, userList[who].name];
 
     db.query(query, params, function (err, rows, fields) {
@@ -155,22 +162,26 @@ app.post('/setNickName', (req, res) => {
     var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats) values (? , ? , ? , ? , ?)";
     var insertparmas = [id, 100, 100, 1, 1]
 
-    var inventoryquery = "Insert Into user_inventory (id , item , gold , EquipItemSlot) values (? , ? , ? , ?)";
-    var inventoryparams = [id, JSON.stringify({}), 0 , JSON.stringify({})]
+    var inventoryquery = "Insert Into user_inventory (id , item , gold , EquipItemSlot , equipItemTab) values (? , ? , ? , ? , ?)";
+    var inventoryparams = [id, JSON.stringify({}), 0 , JSON.stringify({}) , JSON.stringify({})]
 
     var inventoryInitQuery = "UPDATE user_inventory SET item = JSON_SET(item"
     for (let i = 1; i <= 30; i++) {
-        inventoryInitQuery += `, '$."${i}"', 0`;
+        inventoryInitQuery += `, '$."${i}"', JSON_ARRAY(0,0)`;
     }
     inventoryInitQuery += ') WHERE id = ?';
     inventoryInitParams = [id]
 
     var equipList = ['Ring' , 'Armor' , 'Shoes' , 'Gloves' , 'Helmet' , 'Shield' , 'Weapon' , 'Bracelet'];
+    var equipItemTabQuery = "Update user_inventory set equipItemTab = Json_set(EquipItemTab"; 
     var equipItemInitQuery = "Update user_inventory set EquipItemSlot = Json_set(EquipItemSlot"
     for(let i = 0; i < equipList.length; i++){
+        equipItemTabQuery += `, '$."${equipList[i]}"' , 0`;
         equipItemInitQuery += `, '$."${equipList[i]}"' , 0`;
     }
+    equipItemTabQuery  += ') where id = ?';
     equipItemInitQuery += ') where id = ?';
+
     equipItemInitParams = [id];
     
     db.query(query, params, function (err, rows, fields) {
@@ -186,6 +197,7 @@ app.post('/setNickName', (req, res) => {
             console.log("Inventory 생성 완"); 
             db.query(inventoryInitQuery, inventoryInitParams);
             db.query(equipItemInitQuery , equipItemInitParams);
+            db.query(equipItemTabQuery , equipItemInitParams);
         })
         db.query(insertquery, insertparmas, function (err, rows, fields) {
             if (err) {
@@ -216,8 +228,6 @@ wss.on('connection', async (ws, req) => {
     
     
     await init(ws);
-    console.log(firstMapEnemy);
-    console.log(NpcSpawn);
     let who = userStateChange(ws);
     var data1 = JSON.stringify({ 
         title: "Init",
@@ -226,7 +236,6 @@ wss.on('connection', async (ws, req) => {
         enemyList: enemyList,
         NPC : [{NPCList : NPCList}]
     });
-    console.log(data1);
 
     ws.send(data1);
     ws.on('close', () => {
@@ -358,35 +367,35 @@ wss.on('connection', async (ws, req) => {
         if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
                 if (element.id == data.id) {
-                    element.Hp -= 10 * data.this_player.strStats;
+                    element.Hp -= data.this_player.attack;
                     if (element.Hp < 0) {
                         element.state = "Die"
-                        data.this_player.exp += element.DropExp;
-                        if (data.this_player.exp >= data.this_player.maxExp) {
-                            data.this_player.Level++;
-                            data.this_player.exp -= data.this_player.maxExp;
-                            data.this_player.maxExp = data.this_player.Level * 100;
+                        let who = userStateChange(data.this_player);
+                        userList[who].exp += element.DropExp;
+                        if (userList[who].exp >= userList[who].maxExp) {
+                            userList[who].Level++;
+                            userList[who].exp -= userList[who].maxExp;
+                            userList[who].maxExp = userList[who].Level * 100;
                         }
                         //fix !
                         var isDropItem = GetRandomInt(0, 2)
-                        console.log(element.dropItemList.length);
-                        console.log("isDropItem : " + isDropItem);
+
                         var DropItem = 0;
 
                         if (isDropItem == 1){
                             DropItem = element.dropItemList[Math.floor(Math.random() * element.dropItemList.length)];
                         }
-                        console.log("DropItem : " + DropItem)
+
                         if (!element.isDie) {
                             let RespawnId = setInterval(() => { EnemyRespawn(element) }, 5000);
                             RespawnInterval.set(element.id, RespawnId);
                             element.isDie = true;
                         }
                         element.FollowTarger = null;
-                        all_player_response({ title: "EnemyDie", enemy: element, this_player: data.this_player, dropItem: DropItem })
+                        all_player_response({ title: "EnemyDie", enemy: element, this_player: userList[who], dropItem: DropItem })
                     } else {
                         element.state = "Hit"
-                        all_player_response({ title: "EnemyHit", enemy: element, this_player: data.this_player });
+                        all_player_response({ title: "EnemyHit", enemy: element, this_player: userList[who] });
                     }
 
                 }

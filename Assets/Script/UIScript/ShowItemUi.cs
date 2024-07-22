@@ -1,29 +1,49 @@
 using System;
+using Unity.VisualScripting;
+using UnityEditor.MPE;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler , IPointerClickHandler
 {
-    [SerializeField] private GameObject itemUI;
-    [SerializeField] private Text itemNameText;
-    [SerializeField] private Image itemImage;
-    [SerializeField] private RectTransform itemRectTransForm;
-    [SerializeField] private Sprite InitImage;
-    [SerializeField] private GetInventoryData inventoryData;
+    [SerializeField] private Text itemSlotCountText;
+    [SerializeField] Image thisSlotImage;
+    [SerializeField] private int thisSlotItemType;
     [SerializeField] private GameObject equipText;
-    [SerializeField] private GameObject equipAbleSlot;
+    private GameObject itemUI;
+    private Text itemNameText;
+    private Image itemImage;
+    private RectTransform itemRectTransForm;
+    [SerializeField] private Sprite InitImage;
+    private GetInventoryData inventoryData;
+    
+    private GameObject equipAbleSlot;
     /// <summary>
     /// EquipItemInfo 를 집어 넣었놓는 변수 , 존재하면 해당 인벤토리의 위치가 변경되었을 때 , EquipItemInfo의 EquipItemInfo에 접근해 변경된 인벤토리 위치를 저장시켜줌
     /// </summary>
-    [SerializeField] EquipItemInfo equipItemInfo;
-
+    EquipItemInfo equipItemInfo;
+    
     GameObject moveItemSlot;
     static bool isDrag;
+
     Sprite curImage;
-    [SerializeField] Image thisSlotImage;
-    [SerializeField] private int thisSlotItemType;
-    
+
+    [SerializeField]private int slotCount;
+    /// <summary>
+    /// 해당 슬릇에 몇개가 들어가있는지 판단하는 변수
+    /// </summary>
+    public int thisSlotCount {
+        get {
+            return slotCount;
+        }
+        set {
+            if(value != 0) itemSlotCountText.gameObject.SetActive(true);
+            else itemSlotCountText.gameObject.SetActive(false);
+            slotCount = value;
+            itemSlotCountText.text = slotCount.ToString();
+        }
+    }
     public int ThisSlotItemType {
         get {
             return thisSlotItemType;
@@ -33,9 +53,13 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if(thisSlotImage == null) thisSlotImage = GetComponent<Image>();
             if(thisSlotItemType == 0){
                 thisSlotImage.sprite = InitImage;
+                thisSlotCount = 0;
                 return;
             }
             try {   
+                if(thisSlotItemType != 0 && thisSlotItemType != 4 && thisSlotItemType != 5){
+                     equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
+                }
                 thisSlotImage.sprite = ItemPooling.Instance.itemList.itemImages[thisSlotItemType - 1];
             } catch (Exception ex){
                 Debug.LogError("Fail Set Item Image\n " + ex.Message);
@@ -58,14 +82,17 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if (transform.parent.parent.Find("ItemUI"))
         {
             itemUI = transform.parent.parent.Find("ItemUI").gameObject;
+            itemNameText = itemUI.transform.Find("Name").GetComponent<Text>();
+            itemImage = itemUI.transform.Find("ItemImage").GetComponent<Image>();
+            itemRectTransForm = itemUI.GetComponent<RectTransform>();
         }
         if(thisSlotItemType != 0 && thisSlotItemType != 4 && thisSlotItemType != 5){
             equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
         }
         inventoryData = transform.parent.parent.parent.GetComponent<GetInventoryData>();
-        itemNameText = itemUI.transform.Find("Name").GetComponent<Text>();
-        itemImage = itemUI.transform.Find("ItemImage").GetComponent<Image>();
-        itemRectTransForm = itemUI.GetComponent<RectTransform>();
+        
+        
+        
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -103,7 +130,6 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        itemNameText.text = " ";
         itemUI.SetActive(false);
     }
     public void OnDrag(PointerEventData eventData)
@@ -153,21 +179,29 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         if (hit.collider != null)
         {
-            if (hit.collider.GetComponent<ShowItemUi>().thisSlotItemType != 0)
+            ShowItemUi hitShowItemUi = hit.collider.GetComponent<ShowItemUi>();
+            if (hitShowItemUi.thisSlotItemType != 0)
             {
+                if((hitShowItemUi.ThisSlotItemType == 4 || hitShowItemUi.ThisSlotItemType == 5) &&  hitShowItemUi.ThisSlotItemType == ThisSlotItemType && hitShowItemUi.thisSlotCount < 99 ){
+                    hitShowItemUi.thisSlotCount += thisSlotCount;
+                    thisSlotCount = 0;
+                    ThisSlotItemType = 0;
+                    ChangeItemSlot(gameObject.name, new int[] {thisSlotItemType , thisSlotCount}, hitShowItemUi.gameObject.name, new int[] {hitShowItemUi.thisSlotItemType , hitShowItemUi.thisSlotCount});                }else {
+                    thisSlot.sprite = curImage;
+                }
                 Destroy(moveItemSlot);
-                thisSlot.sprite = curImage;
+                
             }   
             else
             {
                 GameObject colliderObj = hit.collider.gameObject;
-                ShowItemUi showItemUi = colliderObj.GetComponent<ShowItemUi>();
                 
-                showItemUi.thisSlotItemType = thisSlotItemType;
-                showItemUi.equipItem = equipItem;                
+                hitShowItemUi.ThisSlotItemType = ThisSlotItemType;
+                hitShowItemUi.thisSlotCount = thisSlotCount;
+                hitShowItemUi.equipItem = equipItem;                
                 equipItem = false;
                 if(equipItemInfo != null){
-                    showItemUi.equipItemInfo = equipItemInfo;
+                    hitShowItemUi.equipItemInfo = equipItemInfo;
                     
                     equipItem = false;
                     equipItemInfo.EquipItemSlot = colliderObj;
@@ -175,19 +209,17 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     
                 }
 
-                thisSlotItemType = 0;
-                colliderObj.GetComponent<Image>().sprite = curImage;
-                ChangeItemSlot(gameObject.name, thisSlotItemType, colliderObj.name, showItemUi.thisSlotItemType);
+                ThisSlotItemType = 0;
+                ChangeItemSlot(gameObject.name, new int[] {thisSlotItemType , thisSlotCount}, colliderObj.name, new int[] {hitShowItemUi.thisSlotItemType , hitShowItemUi.thisSlotCount});
                 Destroy(moveItemSlot);
             }
         }
         else
         {
             Destroy(moveItemSlot);
-            ChangeItemSlot(gameObject.name, 0, null, 0);
+            ChangeItemSlot(gameObject.name, new int[] {0, 0} , null, new int[] {0 ,0});
             inventoryData.itemsNumber[thisSlotItemType - 1]--;
-            thisSlotItemType = 0;
-            thisSlot.sprite = InitImage;
+            ThisSlotItemType = 0;
         }
     }
     bool EquipItemSlot(Vector3 ray, Vector3 direction)
@@ -212,7 +244,6 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             showItemUi.GetComponent<Image>().sprite = curImage;
             gameObject.GetComponent<Image>().sprite = curImage;
    
-            EquipItem(gameObject.name, thisSlotItemType, colliderObj.name, showItemUi.thisSlotItemType);
             
             Destroy(moveItemSlot);
             return true;
@@ -220,25 +251,22 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         return false;
     }
-    private void ChangeItemSlot(string changedSlotKey, int changedSlotValue, string changeSlotKey, int changeSlotValue)
+    private void ChangeItemSlot(string changedSlotKey, int[] changedSlotValue, string curSlotKey, int[] curSlotValue)
     {
+        if(int.Parse(changedSlotKey) > 30){
+            return;
+        }
         SaveInvenData saveData = new SaveInvenData();
         saveData.id = Socket.Instance.this_player.name;
         saveData.Key = changedSlotKey;
         saveData.Value = changedSlotValue;
-        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory")));
-
-        saveData.Key = changeSlotKey;
-        saveData.Value = changeSlotValue;
-        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory")));
-    }
-    private void EquipItem(string key, int value , string key1 , int value1)
-    {
-        SaveInvenData saveData = new SaveInvenData();
-        saveData.id = Socket.Instance.this_player.name;
-        saveData.Key = key;
-        saveData.Value = value;
-        //StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("Equip Item")));
+        HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory"));
+        if(curSlotKey == null){
+            return;
+        }
+        saveData.Key = curSlotKey;
+        saveData.Value = curSlotValue;
+        HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory"));
     }
     public void OnPointerClick(PointerEventData eventData)
     {

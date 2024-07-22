@@ -5,14 +5,22 @@ using UnityEngine.UI;
 
 public class EquipItemInfo : MonoBehaviour
 {
-    GameObject equipItemSlot;
-    public GameObject EquipItemSlot{
-        get {
-            return equipItemSlot;
-        }
+    public GameObject equipItemSlot;
+    public GameObject EquipItemSlot {
+        get { return equipItemSlot; }
         set {
             equipItemSlot = value;
-        }
+
+            SaveInvenData saveData = new SaveInvenData();
+            saveData.id = Socket.Instance.this_player.name;
+            saveData.Key = this.gameObject.name;
+
+            if(equipItemSlot == null) saveData.ItemSlotIndex = 0; 
+            else saveData.ItemSlotIndex = int.Parse(value.name);
+            
+            gameObject.SetActive(true);
+            HttpRequest.HttpRequests.Request("http://localhost:8001/saveEquipItemTab" , "EquipItemTab" , JsonUtility.ToJson(saveData) ,(value) => Debug.Log($"Save EquipItemTab\nData Key : {saveData.Key}\nData Value : {saveData.Value}"));
+         }   
     }
     ShowItemUi showItemUi;
     Image image;
@@ -31,9 +39,10 @@ public class EquipItemInfo : MonoBehaviour
             SaveInvenData saveData = new SaveInvenData();
             saveData.id = Socket.Instance.this_player.name ;
             saveData.Key = this.gameObject.name;
-            saveData.Value = value;
+            saveData.Value[0] = value;
+            saveData.Value[1] = 0;
 
-            StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/saveEquipItem" , "Equip" , JsonUtility.ToJson(saveData) , (value) => Debug.Log($"Save Equip Data\n Data Key : {saveData.Key}\n Data Value : {saveData.Value}")));
+            HttpRequest.HttpRequests.Request("http://localhost:8001/saveEquipItem" , "Equip" , JsonUtility.ToJson(saveData) , (value) => Debug.Log($"Save Equip Data\n Data Key : {saveData.Key}\n Data Value : {saveData.Value}"));
         }
     }
     void Start()

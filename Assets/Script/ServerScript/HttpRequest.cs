@@ -22,8 +22,13 @@ public class HttpRequest : MonoBehaviour
         httpRequests = this;
         DontDestroyOnLoad(gameObject);
     }
-
-    public IEnumerator Request(string url , string FiledName ,  string jsonData , Action<string> callback){     
+    public void Request(string url , string FiledName ,  string jsonData , Action<string> callback){
+        StartCoroutine(Casting(url , FiledName , jsonData , callback));
+    }
+    public void Request(string url , string FiledName ,  string jsonData , Action<string> callback , Vector2 targetPos){
+        StartCoroutine(Casting(url , FiledName , jsonData,callback , targetPos));
+    }
+    public IEnumerator Casting(string url , string FiledName ,  string jsonData , Action<string> callback){     
         WWWForm form = new WWWForm();
         form.AddField(FiledName , jsonData);
         UnityWebRequest request = UnityWebRequest.Post(url , form);
@@ -39,7 +44,7 @@ public class HttpRequest : MonoBehaviour
             Debug.Log("Connection Fail");
         }
     }
-    public IEnumerator Request(string url , string FiledName ,  string jsonData , Action<string> callback , Vector2 targetPos){     
+    public IEnumerator Casting(string url , string FiledName ,  string jsonData , Action<string> callback , Vector2 targetPos){     
         Debug.Log(url);
         
         WWWForm form = new WWWForm();

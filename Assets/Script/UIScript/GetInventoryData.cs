@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using Newtonsoft.Json;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,7 +26,7 @@ public class GetInventoryData : MonoBehaviour
         saveData.id = socket.this_player.name;
         itemList = itemPooling.itemList;
         itemsNumber = new int[itemList.itemDatas.Count];
-        StartCoroutine(httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => InitInventory(value)));
+        httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => InitInventory(value));
     }
     
     public void ChangeMoney(string Data , GameObject offGameObject){
@@ -42,25 +40,14 @@ public class GetInventoryData : MonoBehaviour
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
         Debug.Log(inven.gold);
         gold.text = "Gold : " + inven.gold.ToString();
+
         if(inventorySize.transform.childCount != 0){
             return;
         }
-
-        foreach(var equip in inven.equip.Keys){
-            transform.Find("Equip").Find(equip).transform.GetChild(0).GetComponent<ShowItemUi>().ThisSlotItemType = inven.equip[equip];
-        }
-        foreach (var item in inven.item.Keys)
-        {
-            GameObject createItem = Instantiate(itemTab, inventorySize);
-            createItem.name = slotIndex++.ToString();  
-            createItem.GetComponent<ShowItemUi>().ThisSlotItemType = 0;
-            if (inven.item[item] == 0)
-            {
-                continue;
-            }
-            itemsNumber[inven.item[item] - 1]++;
-            createItem.GetComponent<ShowItemUi>().ThisSlotItemType = inven.item[item];
-        }
+        SetInventoryItem(inven);
+        SetEquipItem(inven);
+        SetEquipItemTab(inven);
+        
     }
     public void SetInventory(int item , GameObject thisItem)
     {
@@ -70,23 +57,14 @@ public class GetInventoryData : MonoBehaviour
             ShowItemUi showItemUi = inventorySize.GetChild(i).GetComponent<ShowItemUi>();
             if (showItemUi.ThisSlotItemType == 0)
             {
-                for (int j = 0; j < itemList.itemDatas.Count; j++)
-                {
-                    ItemInfo iteminfo = itemList.itemDatas[j];
-                    Sprite itemImage = itemList.itemImages[j];
-                    int itemType = itemList.itemDatas[j].item_id;
-                    if (item == itemType)
-                    {
-                        showItemUi.ThisSlotItemType = itemType;
-                        inventorySize.transform.GetChild(i).GetComponent<ShowItemUi>().ThisSlotItemType = itemType;
-                        saveData.Key = (i + 1).ToString();
-                        saveData.Value = itemType;
-                        string jsonData = JsonUtility.ToJson(saveData);
-                        StartCoroutine(httpRequest.Request("http://localhost:8001/saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem)));  
-                        break;
-                    }
-                    
-                }
+                showItemUi.ThisSlotItemType = item;
+                showItemUi.thisSlotCount++;
+
+                saveData.Key = (i + 1).ToString();
+                saveData.Value[0] = item;
+                saveData.Value[1] = 1;
+                string jsonData = JsonUtility.ToJson(saveData);
+                httpRequest.Request("http://localhost:8001/saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
                 break;
             }
         }
@@ -96,6 +74,50 @@ public class GetInventoryData : MonoBehaviour
     void PickUpItem(GameObject thisItem){
         if(thisItem != null){
             thisItem.SetActive(false);
+        }
+    }
+    /// <summary>
+    /// 장착한 아이템 정보 설정
+    /// </summary>
+    /// <param name="inven">서버로부터 받아온 장착 정보데이터</param>
+    private void SetEquipItem(InventoryData inven){
+        foreach(var equip in inven.equip.Keys){
+            transform.Find("Equip").Find(equip).transform.GetChild(0).GetComponent<ShowItemUi>().ThisSlotItemType = inven.equip[equip];
+        }
+    }
+    /// <summary>
+    /// 인벤토리에서 장착된 아이템 정보 설정
+    /// </summary>
+    /// <param name="inven">서버로부터 받아온 장착된 아이템인벤토리 슬릇</param>
+    private void SetEquipItemTab(InventoryData inven){
+        
+        foreach(var equipItemTab in inven.equipItemTab.Keys) {
+            Debug.Log(inven.equipItemTab[equipItemTab]);
+            if(inven.equipItemTab[equipItemTab] != 0){
+                GameObject equipItemSlot = inventorySize.GetChild(inven.equipItemTab[equipItemTab] - 1).gameObject;
+                equipItemSlot.GetComponent<ShowItemUi>().equipItem = true;
+                transform.Find("Equip").Find(equipItemTab).GetComponent<EquipItemInfo>().equipItemSlot = equipItemSlot;
+            }
+        }
+    }
+    /// <summary>
+    /// 인벤토리 데이터 설정
+    /// </summary>
+    /// <param name="inven">서버로부터 받아온 인벤토리 데이터</param>
+    private void SetInventoryItem(InventoryData inven){
+        foreach (var item in inven.item.Keys)
+        {
+            GameObject createItem = Instantiate(itemTab, inventorySize);
+            ShowItemUi createItemShowItemUI = createItem.GetComponent<ShowItemUi>();
+            createItem.name = slotIndex++.ToString();  
+            createItemShowItemUI.ThisSlotItemType = 0;
+            if (inven.item[item][0] == 0)
+            {
+                continue;
+            }
+            itemsNumber[inven.item[item][0] - 1]++;
+            createItemShowItemUI.thisSlotCount = inven.item[item][1];
+            createItemShowItemUI.ThisSlotItemType = inven.item[item][0];
         }
     }
 }

@@ -12,7 +12,7 @@ public class ItemPooling : MonoBehaviour
 
     private void Awake()
     {
-        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/getItemData", "ItemData", "1", (value) => SetItemValue(value)));
+        HttpRequest.HttpRequests.Request("http://localhost:8001/getItemData", "ItemData", "1", (value) => SetItemValue(value));
         itemPooling = this;
     }
     void SetItemValue(string Data)

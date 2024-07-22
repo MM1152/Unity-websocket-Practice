@@ -29,7 +29,7 @@ public class Login : MonoBehaviour
         if (loginData.ID != null && loginData.Password != null)
         {
             string JsonData = JsonUtility.ToJson(loginData);
-            StartCoroutine(httpRequest.Request("http://localhost:8001/login", "Login", JsonData, (value) => GetData(value)));
+            httpRequest.Request("http://localhost:8001/login", "Login", JsonData, (value) => GetData(value));
         }
     }
     public void NickNameMakeButtonPush(){
@@ -37,7 +37,7 @@ public class Login : MonoBehaviour
         string jsonData = nick_name_text.text;
         Debug.Log(jsonData);
         if(jsonData != null){
-            StartCoroutine(httpRequest.Request("http://localhost:8001/setNickName" , "NickName" , jsonData , (value) => GetData(value)));
+            httpRequest.Request("http://localhost:8001/setNickName" , "NickName" , jsonData , (value) => GetData(value));
         }
     }
     public void GetData(string value)

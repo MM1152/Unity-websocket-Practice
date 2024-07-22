@@ -18,7 +18,7 @@ public class Coin : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position , userPos.position  , radio);
             yield return null;
         }
-        StartCoroutine(HttpRequest.HttpRequests.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => setGold.ChangeMoney(value , this.gameObject)));
+        HttpRequest.HttpRequests.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => setGold.ChangeMoney(value , this.gameObject));
         
     }
 
