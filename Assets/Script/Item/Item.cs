@@ -7,7 +7,9 @@ public class Item : MonoBehaviour
     public GetInventoryData inventoryData;
     public Transform targetPos;
     private bool isPickUp;
-
+    private void OnEnable() {
+        isPickUp = false;
+    }
     private void Awake() {
         inventoryData = GameObject.Find("InventoryANDstatus").GetComponent<GetInventoryData>();
     }

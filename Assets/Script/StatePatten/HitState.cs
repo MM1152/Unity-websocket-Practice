@@ -14,7 +14,7 @@ public class HitState : Istate
     public void Enter(IMoveObj moveObject, Vector2 targetPos){}
 
     public void Exit() { }
-
+    
     public void Update() { 
         // fix !!
         if(moveObject.ani.GetCurrentAnimatorStateInfo(0).IsName("PlayerHit") && moveObject.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= .9f || Input.GetKeyDown(KeyCode.Space)){

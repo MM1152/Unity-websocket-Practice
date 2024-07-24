@@ -76,12 +76,14 @@ app.post('/saveEquipItem' , (req , res) => {
 app.post('/saveEquipItemTab' , (req , res) => {
     var result = JSON.parse(req.body.EquipItemTab);
     let who = userStateChange(result);
+    console.log("Get Change Equip Item Slot Data is : ")
+    console.log(result);
     var query = "update user_inventory set equipItemTab = JSON_SET(equipItemTab , ? , ?) where id = ?";
     var params = [`$."${result.Key}"` , result.ItemSlotIndex , userList[who].name];
 
     db.query(query , params , function(err) {
         if(err) console.log(err)
-        else console.log(`Save EquipItemTab\n -UpdateData is {${result.Key} : ${result.ItemSlotIndex}} ChangeUser is ${userList[who].name}`)
+        else console.log(`Save EquipItemTab\n -UpdateData is {${result.Key} : ${result.ItemSlotIndex}} ChangeUser is  ${userList[who].name}`)
     })
 })
 app.post('/getItemData' , (req , res) => {
@@ -236,7 +238,7 @@ wss.on('connection', async (ws, req) => {
         enemyList: enemyList,
         NPC : [{NPCList : NPCList}]
     });
-
+    console.log(userList);
     ws.send(data1);
     ws.on('close', () => {
         for (let i = 0; i < userList.length; i++) {
@@ -306,10 +308,23 @@ wss.on('connection', async (ws, req) => {
                     }
                 })
             })
+        }
+        if (data.title == "UsePostion"){
+            let who = userStateChange(data);
+            console.log("Use Postion ");
+            console.log(data);
+            userList[who].hp += itemList[data.Value[0]- 1].HPrecovery;
+            userList[who].mp += itemList[data.Value[0] - 1].MPrecovery;
             
+            var query =  "Update user_inventory set item = JSON_SET(item , ? , JSON_ARRAY(? , ?)) where id = ?";
+            var params = [`$."${data.Key}"` , data.Value[0] , data.Value[1] , userList[who].name];
+
+            db.query(query , params);
+
+            all_player_response({title : "CheckPlayerHP" , this_player : userList[who]})
         }
         if (data.title == "SaveData") {
-            let who = userStateChange(ws);
+            let who = userStateChange(data.this_player);
             var query = "UPDATE user_status Set strstats = ? , intstats = ? , exp = ? , Level = ? where id = ?";
             var params = [data.this_player.strStats, data.this_player.intStats, data.this_player.exp, data.this_player.Level, userList[who].name];
 
@@ -527,11 +542,17 @@ function EnemyChangeState() {
 function EnemyAttack(enemy) {
     if(enemy.FollowTarger != null){
         let who = userStateChange(enemy.FollowTarger);
-        
-        if(userList[who].defense >= enemy.damage) userList[who].hp -= 1;
-        else userList[who].hp -= enemy.damage - userList[who].defense;
+        let damgeValue = 0;
+        if(userList[who].defense >= enemy.damage){ 
+            damgeValue = 1
+            userList[who].hp -= damgeValue;
+        }
+        else {
+            damgeValue = enemy.damage - userList[who].defense;
+            userList[who].hp -= damgeValue;
+        }
 
-        all_player_response({ title: "EnemyAttack", enemy: enemy , this_player : userList[who]})
+        all_player_response({ title: "EnemyAttack", enemy: enemy , this_player : userList[who] , hitDamage : damgeValue})
     }
 }
 function EnemyRespawn(enemy) {
@@ -734,7 +755,7 @@ async function ItemListInit(){
 function init(ws) {
     return new Promise((resolve, rejects) => {
         
-        var getUserDataquery = "select user_info.id , hp , mp , strStats , intStats , exp , nick_name , user_inventory.equipItemSlot , Level from user_status , user_info , user_inventory where user_status.id = ? && user_info.id = ? && user_inventory.id = ?";
+        var getUserDataquery = "select user_info.id , hp , mp , strStats , intStats , exp , nick_name , maxHp, user_inventory.equipItemSlot , Level from user_status , user_info , user_inventory where user_status.id = ? && user_info.id = ? && user_inventory.id = ?";
         var getUserDataparams = [id, id , id];
 
         db.query(getUserDataquery, getUserDataparams, function (err, rows, fields) {
@@ -752,6 +773,7 @@ function init(ws) {
                 id: rows[0].nick_name,
                 x: 0,
                 y: 0,
+                maxhp : rows[0].maxHp,
                 hp: rows[0].hp,
                 mp: rows[0].mp,
                 strStats: rows[0].strStats,

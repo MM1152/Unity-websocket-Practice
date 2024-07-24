@@ -10,6 +10,7 @@ public class Data{
     public Data() {}
     public string title;
     public string id;
+    public int useItemType;
     public UserData[] users;
     public UserData this_player;
     public Vector2 moveXY;
@@ -19,6 +20,7 @@ public class Data{
     public EnemyData enemy = new EnemyData();
     public NPCData[] NPC;
     public int dropItem;
+    public int hitDamage;
  
     public Data(string title){
         this.title = title;
@@ -51,6 +53,7 @@ public class UserData{
     public string id;
     public float x;
     public float y;
+    public int maxhp;
     public int hp;
     public int mp;
     public int strStats;

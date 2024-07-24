@@ -4,16 +4,38 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
-{
+{   
+
     private static GameManager gameManager;
+    [SerializeField] private Text HPrecoveryValueText;
+    [SerializeField] private Text MPrecoveryValueText;
     [SerializeField] private GameObject settingTab;
-    [SerializeField] private Slider HPrecoveryValue;
-    [SerializeField] private Slider MPrecoveryValue;
+    [SerializeField] private Slider HPrecoverySlider;
+    [SerializeField] private Slider MPrecoverySlider;
     [SerializeField] private Slider SoundValue;
-    
+
+    public float HPrecoveryValue {
+        get {
+            if(HPrecoverySlider == null) {
+                Debug.Log("HPrecoverySlider Not Setting");
+                return 0;
+            }
+            return HPrecoverySlider.value;
+        }
+    }
+    public float MPrecoveryValue {
+        get {
+            if(MPrecoverySlider == null) {
+                Debug.Log("MPrecoverySlider Not Setting");
+                return 0;
+            }
+            return MPrecoverySlider.value;
+        }
+    }
+
     public static GameManager Instance {
         get {
-            if(Instance == null){
+            if(gameManager == null){
                 return null;
             }
 
@@ -28,21 +50,22 @@ public class GameManager : MonoBehaviour
     }
     private void Update() {
         PlayerSettingSave();
+        HPrecoveryValueText.text = (int)(HPrecoverySlider.value * 100) + "%";
+        MPrecoveryValueText.text = (int)(MPrecoverySlider.value * 100) + "%";
     }
     
     void PlayerSettingSave(){
         if(!settingTab.activeSelf){
-            PlayerPrefs.SetFloat("HPrecovery" , HPrecoveryValue.value);
-            PlayerPrefs.SetFloat("MPrecovery" , MPrecoveryValue.value);
-            PlayerPrefs.SetFloat("Audio" , SoundValue.value);
-            Debug.Log("Save Player Setting");
+            PlayerPrefs.SetFloat("HPrecovery" , HPrecoverySlider.value);
+            PlayerPrefs.SetFloat("MPrecovery" , MPrecoverySlider.value);
+            PlayerPrefs.SetFloat("Audio" , SoundValue.value); 
         }
     }
 
     void PlayerSettingLoad(){
         if(PlayerPrefs.HasKey("Audio")){
-            HPrecoveryValue.value = PlayerPrefs.GetFloat("HPrecovery");
-            MPrecoveryValue.value = PlayerPrefs.GetFloat("MPrecovery");
+            HPrecoverySlider.value = PlayerPrefs.GetFloat("HPrecovery");
+            MPrecoverySlider.value = PlayerPrefs.GetFloat("MPrecovery");
             SoundValue.value = PlayerPrefs.GetFloat("Audio");
         }
 

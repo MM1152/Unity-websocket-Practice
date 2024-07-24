@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class MoveObject : IMoveObj
 {
+    private GameManager gameManager;
     private SetStatsUI stat;
     public GameObject UI;
     private GameObject PosionSlot;
@@ -52,6 +53,10 @@ public class MoveObject : IMoveObj
     }
     private void Update() {
         stateMachine?.Update();
+
+        /*if(SetPosionNumberUI.autoRecovery[1] && gameManager.MPrecoveryValue >= (UserData.mp){
+            UsePostion(5);
+        }*/
     }
     public void Awake()
     {   
@@ -62,8 +67,9 @@ public class MoveObject : IMoveObj
         playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
         exp = gameObject.transform.Find("Canvas").Find("ExpBar").GetComponent<ExpBarUI>();
         stat = gameObject.transform.Find("InventoryANDstatus").Find("Status").GetComponent<SetStatsUI>();
-        PosionSlot =  gameObject.transform.Find("Canvas").Find("PositionSlot").gameObject;
+        PosionSlot =  UI.transform.Find("PositionSlot").gameObject;
         levelUI = UI.transform.Find("Level").gameObject;
+
         PosionSlot.SetActive(true);
         exp.gameObject.SetActive(true);
         levelUI.SetActive(true);
@@ -76,6 +82,7 @@ public class MoveObject : IMoveObj
         text.text = UserData.id;
         levelUI.GetComponent<Text>().text = "Level " + UserData.Level;
         UI.SetActive(true);
+        gameManager = GameManager.Instance;
     }
     public override void Move()
     {
@@ -89,7 +96,6 @@ public class MoveObject : IMoveObj
             InvokeRepeating("SendMessage", 0, 0.5f);
         }
     }
-
     public void SendMessage()
     {
         Data data = new Data("PlayerMove", this.gameObject.name, transform.position.x, transform.position.y, new Vector2(moveX, moveY));
@@ -147,4 +153,5 @@ public class MoveObject : IMoveObj
         }
     }
     public override void Move(Vector2 targetPos){ }
+
 }

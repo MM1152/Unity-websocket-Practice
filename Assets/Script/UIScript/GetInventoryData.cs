@@ -1,5 +1,7 @@
 
 using Newtonsoft.Json;
+using Unity.VisualScripting;
+using Unity.VisualScripting.ReorderableList;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,22 +46,27 @@ public class GetInventoryData : MonoBehaviour
         if(inventorySize.transform.childCount != 0){
             return;
         }
+
         SetInventoryItem(inven);
         SetEquipItem(inven);
         SetEquipItemTab(inven);
-        
     }
     public void SetInventory(int item , GameObject thisItem)
     {
-        
+        bool setPostion = false;
+        if(itemPooling.itemList.itemDatas[item - 1].item_Type == "Postion"){
+            if (itemsNumber[item - 1] != 0){
+                setPostion = true;
+            }
+        }
         for (int i = 0; i < 30; i++)
         {
             ShowItemUi showItemUi = inventorySize.GetChild(i).GetComponent<ShowItemUi>();
-            if (showItemUi.ThisSlotItemType == 0)
+            if (showItemUi.ThisSlotItemType == 0 && !setPostion)
             {
                 showItemUi.ThisSlotItemType = item;
                 showItemUi.thisSlotCount++;
-
+                itemsNumber[item - 1]++;
                 saveData.Key = (i + 1).ToString();
                 saveData.Value[0] = item;
                 saveData.Value[1] = 1;
@@ -67,9 +74,18 @@ public class GetInventoryData : MonoBehaviour
                 httpRequest.Request("http://localhost:8001/saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
                 break;
             }
+            else if(showItemUi.ThisSlotItemType == item && setPostion){
+                showItemUi.thisSlotCount++;
+                itemsNumber[item - 1]++;
+                saveData.Key = (i + 1).ToString();
+                saveData.Value[0] = item;
+                saveData.Value[1] = showItemUi.thisSlotCount;
+                string jsonData = JsonUtility.ToJson(saveData);
+                httpRequest.Request("http://localhost:8001/saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
+                break;
+            }
+            
         }
-                
-       
     }
     void PickUpItem(GameObject thisItem){
         if(thisItem != null){
@@ -92,11 +108,12 @@ public class GetInventoryData : MonoBehaviour
     private void SetEquipItemTab(InventoryData inven){
         
         foreach(var equipItemTab in inven.equipItemTab.Keys) {
-            Debug.Log(inven.equipItemTab[equipItemTab]);
             if(inven.equipItemTab[equipItemTab] != 0){
-                GameObject equipItemSlot = inventorySize.GetChild(inven.equipItemTab[equipItemTab] - 1).gameObject;
-                equipItemSlot.GetComponent<ShowItemUi>().equipItem = true;
-                transform.Find("Equip").Find(equipItemTab).GetComponent<EquipItemInfo>().equipItemSlot = equipItemSlot;
+                ShowItemUi equipItemSlot = inventorySize.GetChild(inven.equipItemTab[equipItemTab] - 1).gameObject.GetComponent<ShowItemUi>();
+                EquipItemInfo equipitemInfo = transform.Find("Equip").Find(equipItemTab).GetComponent<EquipItemInfo>();
+                equipItemSlot.equipItem = true;
+                equipItemSlot.equipItemInfo = equipitemInfo;
+                equipitemInfo.equipItemSlot = equipItemSlot.gameObject;
             }
         }
     }
@@ -115,9 +132,18 @@ public class GetInventoryData : MonoBehaviour
             {
                 continue;
             }
-            itemsNumber[inven.item[item][0] - 1]++;
             createItemShowItemUI.thisSlotCount = inven.item[item][1];
             createItemShowItemUI.ThisSlotItemType = inven.item[item][0];
+
+            itemsNumber[inven.item[item][0] - 1] += createItemShowItemUI.thisSlotCount;
         }
+    }
+    public ShowItemUi FindPostionSlot(int index){
+        for(int i = 0; i < inventorySize.childCount; i++){
+            if(inventorySize.GetChild(i).GetComponent<ShowItemUi>().ThisSlotItemType == index) {
+                return inventorySize.GetChild(i).GetComponent<ShowItemUi>();
+            }
+        }
+        return null;
     }
 }

@@ -27,6 +27,7 @@ public class CheckThisMapEnemy : ISocket
         }
 
         foreach(var other in socket.other){
+            if(other != socket.this_player)
             other.SetActive(false);
         }
         for(int i = 0; i < socket.other.Length; i++){

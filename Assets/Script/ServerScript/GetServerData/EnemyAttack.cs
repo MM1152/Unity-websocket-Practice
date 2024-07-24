@@ -10,7 +10,7 @@ public class EnemyAttack : ISocket
             enemyAi.stateMachine.Transition(new AttackState());
             IMoveObj attackingPlayer =  GameObject.Find(data.this_player.id).GetComponent<IMoveObj>();
             attackingPlayer.stateMachine.Transition(new HitState());
-            DamagePooling.ShowDamage(attackingPlayer.transform.position , attackingPlayer.UserData.hp - data.this_player.hp);
+            DamagePooling.ShowDamage(attackingPlayer.transform.position , data.hitDamage);
             attackingPlayer.UserData = data.this_player;
         }
     }

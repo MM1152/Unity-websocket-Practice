@@ -22,24 +22,29 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     /// <summary>
     /// EquipItemInfo 를 집어 넣었놓는 변수 , 존재하면 해당 인벤토리의 위치가 변경되었을 때 , EquipItemInfo의 EquipItemInfo에 접근해 변경된 인벤토리 위치를 저장시켜줌
     /// </summary>
-    EquipItemInfo equipItemInfo;
+    public EquipItemInfo equipItemInfo;
     
     GameObject moveItemSlot;
     static bool isDrag;
 
     Sprite curImage;
-
+    ItemPooling itemPooling;
     [SerializeField]private int slotCount;
     /// <summary>
-    /// 해당 슬릇에 몇개가 들어가있는지 판단하는 변수
+    /// 해당 슬릇에 몇개가 들어가있는지 판단하는 변수 
     /// </summary>
     public int thisSlotCount {
         get {
             return slotCount;
         }
         set {
-            if(value != 0) itemSlotCountText.gameObject.SetActive(true);
-            else itemSlotCountText.gameObject.SetActive(false);
+            if(value != 0) {
+                itemSlotCountText.gameObject.SetActive(true);
+            } 
+            else {
+                itemSlotCountText.gameObject.SetActive(false);
+                ThisSlotItemType = 0;
+            }
             slotCount = value;
             itemSlotCountText.text = slotCount.ToString();
         }
@@ -53,11 +58,10 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             if(thisSlotImage == null) thisSlotImage = GetComponent<Image>();
             if(thisSlotItemType == 0){
                 thisSlotImage.sprite = InitImage;
-                thisSlotCount = 0;
                 return;
             }
             try {   
-                if(thisSlotItemType != 0 && thisSlotItemType != 4 && thisSlotItemType != 5){
+                if(thisSlotItemType != 0 && ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type != "Postion"){
                      equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
                 }
                 thisSlotImage.sprite = ItemPooling.Instance.itemList.itemImages[thisSlotItemType - 1];
@@ -79,6 +83,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
     private void Start()
     {
+        itemPooling = ItemPooling.Instance;
         if (transform.parent.parent.Find("ItemUI"))
         {
             itemUI = transform.parent.parent.Find("ItemUI").gameObject;
@@ -180,9 +185,9 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if (hit.collider != null)
         {
             ShowItemUi hitShowItemUi = hit.collider.GetComponent<ShowItemUi>();
-            if (hitShowItemUi.thisSlotItemType != 0)
+            if (hitShowItemUi.thisSlotItemType != 0) // 아이템 슬릇칸 -> 아이템 슬릇칸으로 옮길때 이미 해당 슬릇에 아이템이 존재할 때
             {
-                if((hitShowItemUi.ThisSlotItemType == 4 || hitShowItemUi.ThisSlotItemType == 5) &&  hitShowItemUi.ThisSlotItemType == ThisSlotItemType && hitShowItemUi.thisSlotCount < 99 ){
+                if(itemPooling.itemList.itemDatas[hitShowItemUi.ThisSlotItemType - 1].item_Type == "Postion" &&  hitShowItemUi.ThisSlotItemType == ThisSlotItemType && hitShowItemUi.thisSlotCount + thisSlotCount < 99 ){
                     hitShowItemUi.thisSlotCount += thisSlotCount;
                     thisSlotCount = 0;
                     ThisSlotItemType = 0;
@@ -192,34 +197,31 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 Destroy(moveItemSlot);
                 
             }   
-            else
+            else // 아이템 슬릇칸 -> 아이템 슬릇칸으로 옮길때 해당 슬릇이 비어있을 때
             {
                 GameObject colliderObj = hit.collider.gameObject;
-                
                 hitShowItemUi.ThisSlotItemType = ThisSlotItemType;
                 hitShowItemUi.thisSlotCount = thisSlotCount;
                 hitShowItemUi.equipItem = equipItem;                
                 equipItem = false;
                 if(equipItemInfo != null){
                     hitShowItemUi.equipItemInfo = equipItemInfo;
-                    
                     equipItem = false;
                     equipItemInfo.EquipItemSlot = colliderObj;
                     equipItemInfo = null;
-                    
                 }
 
-                ThisSlotItemType = 0;
+                thisSlotCount = 0;
                 ChangeItemSlot(gameObject.name, new int[] {thisSlotItemType , thisSlotCount}, colliderObj.name, new int[] {hitShowItemUi.thisSlotItemType , hitShowItemUi.thisSlotCount});
                 Destroy(moveItemSlot);
             }
         }
-        else
+        else // 아이템을 버릴 때;
         {
             Destroy(moveItemSlot);
             ChangeItemSlot(gameObject.name, new int[] {0, 0} , null, new int[] {0 ,0});
-            inventoryData.itemsNumber[thisSlotItemType - 1]--;
-            ThisSlotItemType = 0;
+            inventoryData.itemsNumber[thisSlotItemType - 1] -= thisSlotCount;
+            thisSlotCount = 0;
         }
     }
     bool EquipItemSlot(Vector3 ray, Vector3 direction)
@@ -256,6 +258,8 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         if(int.Parse(changedSlotKey) > 30){
             return;
         }
+        
+        
         SaveInvenData saveData = new SaveInvenData();
         saveData.id = Socket.Instance.this_player.name;
         saveData.Key = changedSlotKey;
@@ -277,10 +281,12 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                         thisSlotItemType = 0;
                         EquipItemInfo equipItemInfo = gameObject.transform.parent.GetComponent<EquipItemInfo>();
                         equipItemInfo.ThisSlotItemType = thisSlotItemType;
-                        if(equipItemInfo != null){
-                            equipItemInfo.EquipItemSlot.GetComponent<ShowItemUi>().equipItem = false;
-                            equipItemInfo.EquipItemSlot.GetComponent<ShowItemUi>().equipItemInfo = null;
-                        }
+
+                        equipItemInfo.EquipItemSlot.GetComponent<ShowItemUi>().equipItem = false;
+                        equipItemInfo.EquipItemSlot.GetComponent<ShowItemUi>().equipItemInfo = null;
+                        
+                        equipItemInfo.EquipItemSlot = null;
+
                         itemUI.SetActive(false);
                         gameObject.GetComponent<Image>().sprite = null;
                     }

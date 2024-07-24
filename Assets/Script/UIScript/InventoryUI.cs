@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public class SaveInvenData
 {
+    public string title;
     public string Key;
     public int ItemSlotIndex;
     public int[] Value = new int[2];

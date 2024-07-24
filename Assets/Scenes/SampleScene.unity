@@ -1103,6 +1103,7 @@ GameObject:
   - component: {fileID: 745822571}
   - component: {fileID: 745822572}
   - component: {fileID: 745822573}
+  - component: {fileID: 745822574}
   m_Layer: 0
   m_Name: ServerManager
   m_TagString: Untagged
@@ -1302,6 +1303,20 @@ MonoBehaviour:
   name: 
   NPCcount: {fileID: 0}
   text: {fileID: 1796507938}
+--- !u!114 &745822574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745822560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df1b34538c41df24cadc0f6f23995417, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: 
+  NPCcount: {fileID: 0}
 --- !u!1 &755080837
 GameObject:
   m_ObjectHideFlags: 0
@@ -1623,7 +1638,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3334,7 +3349,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
