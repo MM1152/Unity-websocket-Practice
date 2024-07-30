@@ -61,10 +61,10 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 return;
             }
             try {   
-                if(thisSlotItemType != 0 && ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type != "Postion"){
-                     equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
+                if(thisSlotItemType != 0 && ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type != "Postion"){
+                     equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
                 }
-                thisSlotImage.sprite = ItemPooling.Instance.itemList.itemImages[thisSlotItemType - 1];
+                thisSlotImage.sprite = ItemPooling.ItemPool.itemList.itemImages[thisSlotItemType - 1];
             } catch (Exception ex){
                 Debug.LogError("Fail Set Item Image\n " + ex.Message);
             }
@@ -83,7 +83,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
     private void Start()
     {
-        itemPooling = ItemPooling.Instance;
+        itemPooling = ItemPooling.ItemPool;
         if (transform.parent.parent.Find("ItemUI"))
         {
             itemUI = transform.parent.parent.Find("ItemUI").gameObject;
@@ -92,7 +92,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             itemRectTransForm = itemUI.GetComponent<RectTransform>();
         }
         if(thisSlotItemType != 0 && thisSlotItemType != 4 && thisSlotItemType != 5){
-            equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
+            equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
         }
         inventoryData = transform.parent.parent.parent.GetComponent<GetInventoryData>();
         
@@ -105,7 +105,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         {
             return;
         }
-        foreach (var type in ItemPooling.Instance.itemList.itemDatas)
+        foreach (var type in ItemPooling.ItemPool.itemList.itemDatas)
         {
             if (type.item_id == thisSlotItemType)
             {
@@ -118,7 +118,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 if (CheckWord(type.item_defense.ToString())) itemNameText.text += "\n방어력 : " + type.item_defense;
 
 
-                itemImage.sprite = ItemPooling.Instance.itemList.itemImages[type.item_id - 1];
+                itemImage.sprite = ItemPooling.ItemPool.itemList.itemImages[type.item_id - 1];
                 break;
             }
         }
@@ -230,7 +230,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
         if (hit.collider != null)
         {
-            if( hit.collider.gameObject.name != ItemPooling.Instance.itemList.itemDatas[thisSlotItemType - 1].item_Type) {
+            if( hit.collider.gameObject.name != ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type) {
                 gameObject.GetComponent<Image>().sprite = curImage;
                 Destroy(moveItemSlot);
                 return true;

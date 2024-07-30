@@ -1571,8 +1571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbe524602a60a34ab8da08e3e6efc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coin: {fileID: 4184517412716556649, guid: 66a4b16b61ba7de4396368ba7aa70765, type: 3}
-  maxCoin: 3
+  prefab: {fileID: -2216123569143255708, guid: 66a4b16b61ba7de4396368ba7aa70765, type: 3}
 --- !u!4 &825021212
 Transform:
   m_ObjectHideFlags: 0
@@ -1581,8 +1580,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 825021210}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -396, y: -182.15602, z: -4.95}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1864,7 +1863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac9cdf9be1e7f384ca45bc6eae0c5b67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemPrefeb: {fileID: 1844646295842886531, guid: c6fd99a6732461f489cf135f1f635468, type: 3}
+  prefab: {fileID: 7123569300572224711, guid: c6fd99a6732461f489cf135f1f635468, type: 3}
   enemyCount: {fileID: 1463282592}
   itemList:
     Items: []
@@ -3155,8 +3154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 419d5f98ec8e9e7408182afbc6d64084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damagePrefeb: {fileID: 6515194667566365406, guid: 80bdfe3f1104407479bc4ee1b36cb2d7, type: 3}
-  main: {fileID: 0}
+  prefab: {fileID: -4505399386695446573, guid: 80bdfe3f1104407479bc4ee1b36cb2d7, type: 3}
 --- !u!114 &1768516725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3900,7 +3898,7 @@ Transform:
   m_GameObject: {fileID: 2131214499}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 396, y: 182.15602, z: 4.95}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

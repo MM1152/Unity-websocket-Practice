@@ -65,10 +65,8 @@ public class PostionUI : MonoBehaviour
     public IEnumerator PostionCoolDown(){
         for(float i = 0; i < coolTime; i += Time.deltaTime){
             coolDownRect.localScale = new Vector2(1f, (coolTime / 2) - (i / 2));
-            Debug.Log("CoolDown Postion");
             yield return null;
         }
         postionCoolTime = false;
-        Debug.Log("CoolDown Finished");
     }
 }

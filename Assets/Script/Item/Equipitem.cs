@@ -12,7 +12,7 @@ public class Equipitem : MonoBehaviour
 
     // Start is called before the first frame update
     void Start() {
-        itemPooling = ItemPooling.Instance;
+        itemPooling = ItemPooling.ItemPool;
     }
     void Awake()
     {

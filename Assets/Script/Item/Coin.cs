@@ -6,7 +6,7 @@ public class Coin : MonoBehaviour
     Socket socket;
     [SerializeField] GetInventoryData setGold;
     private void Awake() {
-        socket ??= Socket.Instance;
+        socket = Socket.Instance;
         setGold = socket.this_player.GetComponent<MoveObject>().UI.GetComponent<GetInventoryData>();
     }
     public IEnumerator AbsorbCoin(Transform userPos)
@@ -18,7 +18,7 @@ public class Coin : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position , userPos.position  , radio);
             yield return null;
         }
-        HttpRequest.HttpRequests.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => setGold.ChangeMoney(value , this.gameObject));
+        HttpRequest.HttpRequests.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => setGold.ChangeMoney(value , this));
         
     }
 

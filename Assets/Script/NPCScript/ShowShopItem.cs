@@ -49,7 +49,7 @@ public class ShowShopItem : MonoBehaviour , IPointerEnterHandler , IPointerExitH
         if(CheckWord(item_cost))  itemText.text += "\n가격 : " + item_cost;
     
                 
-        itemImage.sprite = ItemPooling.Instance.itemList.itemImages[thisSlotItemType - 1];  
+        itemImage.sprite = ItemPooling.ItemPool.itemList.itemImages[thisSlotItemType - 1];  
         
         itemUI.transform.position = eventData.position + new Vector2( itemRectTransForm.rect.width / 2 , itemRectTransForm.rect.height / 2);
         itemUI.SetActive(true);

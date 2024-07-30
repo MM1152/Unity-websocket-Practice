@@ -23,8 +23,8 @@ public class ShowDropItemUI : MonoBehaviour
         for(int i = 0 ; i < gameObject.transform.childCount; i++){
             if(gameObject.transform.GetChild(i).gameObject.activeSelf) gameObject.transform.GetChild(i).gameObject.SetActive(false);
         }
-        for(int i = 0; i < ItemPooling.Instance.dropItemList[mapName].Count; i++){
-            gameObject.transform.GetChild(i).GetComponent<Image>().sprite = ItemPooling.Instance.itemList.itemImages[ItemPooling.Instance.dropItemList[mapName][i] - 1];
+        for(int i = 0; i < ItemPooling.ItemPool.dropItemList[mapName].Count; i++){
+            gameObject.transform.GetChild(i).GetComponent<Image>().sprite = ItemPooling.ItemPool.itemList.itemImages[ItemPooling.ItemPool.dropItemList[mapName][i] - 1];
             gameObject.transform.GetChild(i).gameObject.SetActive(true);
         }
         

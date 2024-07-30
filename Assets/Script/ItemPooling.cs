@@ -1,23 +1,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemPooling : MonoBehaviour
+public class ItemPooling : PoolingManager<Item>
 {
-    [SerializeField] private GameObject itemPrefeb;
     [SerializeField] private EnemyCount enemyCount;
-    private static ItemPooling itemPooling;
-    private int createItemCount;
+    private static ItemPooling itemPool;
+    public static ItemPooling ItemPool
+    {
+        get
+        {
+            if (itemPool == null)
+            {
+                return null;
+            }
+            return itemPool;
+        }
+    }
     [SerializeField] public ItemList itemList;
     [SerializeField] public Dictionary<string, List<int>> dropItemList = new Dictionary<string, List<int>>();
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
         HttpRequest.HttpRequests.Request("http://localhost:8001/getItemData", "ItemData", "1", (value) => SetItemValue(value));
-        itemPooling = this;
+        itemPool = this;
     }
+
     void SetItemValue(string Data)
     {
-
         ItemInfos itemDatas = JsonUtility.FromJson<ItemInfos>(Data);
 
         foreach (var item in itemDatas.itemInfos)
@@ -26,62 +36,21 @@ public class ItemPooling : MonoBehaviour
         }
     }
 
-    public static ItemPooling Instance
-    {
-        get
-        {
-            if (itemPooling == null)
-            {
-                return null;
-            }
-            return itemPooling;
-        }
-    }
-
-
-    public void MakeItem(Transform dropPos, Transform userPos, int item)
+    public override void ShowObject(Transform dropPos, Transform userPos, int item)
     {
         if (item != 0)
         {
+            Item createItem;
+            
+            if(pooling.Count > 0) createItem = pooling.Dequeue();
+            else createItem = Instantiate(prefab);
 
-            for (int i = 0; i < this.gameObject.transform.childCount; i++)
-            {
-                if (gameObject.transform.GetChild(i).gameObject.activeSelf)
-                {
-                    continue;
-                }
-                GameObject thisItem = gameObject.transform.GetChild(i).gameObject;
-                int type = thisItem.gameObject.GetComponent<SetItemInfo>().type;
-                if (type == item)
-                {
-                    thisItem.transform.position = dropPos.position;
-                    thisItem.GetComponent<Item>().SetTarget(userPos);
-                    thisItem.SetActive(true);
-                    createItemCount++;
-                    break;
-                }
-            }
-            if (createItemCount == 0)
-            {
-                for (int i = 0; i < itemList.itemDatas.Count; i++)
-                {
-                    if (itemList.itemDatas[i].item_id == item)
-                    {
-                        GameObject thisItem = Instantiate(itemPrefeb, gameObject.transform);
-
-                        thisItem.SetActive(false);
-                        thisItem.GetComponent<Item>().SetTarget(userPos);
-                        thisItem.GetComponent<SpriteRenderer>().sprite = itemList.itemImages[i];
-                        thisItem.GetComponent<SetItemInfo>().setItemData(itemList.itemDatas[i]);
-
-                        thisItem.transform.position = dropPos.position;
-                        thisItem.SetActive(true);
-                        break;
-                    }
-                }
-            }
-
-            createItemCount = 0;
+            createItem.gameObject.SetActive(false);
+            
+            createItem.GetComponent<SetItemInfo>().ItemIndex = item;
+            createItem.GetComponent<Item>().SetTarget(userPos);
+            createItem.transform.position = dropPos.position;
+            createItem.gameObject.SetActive(true);
         }
     }
 }

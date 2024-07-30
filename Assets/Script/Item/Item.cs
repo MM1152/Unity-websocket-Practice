@@ -6,6 +6,7 @@ public class Item : MonoBehaviour
 {
     public GetInventoryData inventoryData;
     public Transform targetPos;
+
     private bool isPickUp;
     private void OnEnable() {
         isPickUp = false;
@@ -18,7 +19,8 @@ public class Item : MonoBehaviour
     {
         if (other.tag == "Player" && targetPos.gameObject == other.gameObject && Input.GetKeyDown(KeyCode.X) && !isPickUp)
         {
-            inventoryData.SetInventory(GetComponent<SetItemInfo>().type , this.gameObject);
+            inventoryData.SetInventory(GetComponent<SetItemInfo>().ItemIndex , this.gameObject);
+            ItemPooling.Instance.ReturnObject(this);
             isPickUp = true;
         }
     }

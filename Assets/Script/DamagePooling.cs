@@ -1,42 +1,26 @@
 
 using System.Collections.Generic;
+using UnityEditor.U2D.Animation;
 using UnityEngine;
 
-public class DamagePooling : MonoBehaviour
+public class DamagePooling : PoolingManager<Damage>
 {
-    private static DamagePooling damagePooling;
-    public static DamagePooling Instance {
-        get {
-            if(damagePooling == null){
-                return null;
-            }
-            return damagePooling;
-        }
-    }
-    [SerializeField] private GameObject damagePrefeb;
-    [SerializeField] private Camera main;
-    Queue<GameObject> damagePool = new Queue<GameObject>();
-
-    private void Awake() {
-        damagePooling = this;
+    Camera main;
+    public override void Awake() {
+        base.Awake();
         main = Camera.main;
     }
 
-    public static void ShowDamage(Vector2 showPos , int value){
-        if(Instance.damagePool.Count > 0){
-            GameObject damage = Instance.damagePool.Dequeue();
-            damage.transform.position = Instance.main.WorldToScreenPoint(showPos)+ new Vector3(0f , 30f);
-            damage.GetComponent<Damage>().Text = value.ToString();
-            damage.SetActive(true);
+    public override void ShowObject(Vector2 showPos , int value){
+        Damage damage;
+        if(pooling.Count > 0){
+            damage = pooling.Dequeue();
         }
         else {
-            GameObject createDamage = Instantiate(Instance.damagePrefeb , Instance.transform);
-            createDamage.GetComponent<Damage>().Text = value.ToString();
-            createDamage.transform.position = Instance.main.WorldToScreenPoint(showPos) + new Vector3(0f , 30f);
+            damage = Instantiate(prefab , transform);
         }
-    }
-    public static void ReturnObject(GameObject damage){
-        Instance.damagePool.Enqueue(damage);
-        damage.SetActive(false);
+        damage.transform.position = main.WorldToScreenPoint(showPos)+ new Vector3(0f , 30f);
+        damage.GetComponent<Damage>().Text = value.ToString();
+        damage.gameObject.SetActive(true);
     }
 }

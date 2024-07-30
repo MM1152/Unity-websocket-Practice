@@ -19,7 +19,7 @@ public class ShowMapUI : MonoBehaviour , IPointerEnterHandler , IPointerExitHand
         
     }
     private void Start() {
-        parent = transform.parent.gameObject;
+        parent ??= transform.parent.gameObject;
     }
     public void OnPointerEnter(PointerEventData eventData)
     {

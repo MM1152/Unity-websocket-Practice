@@ -12,7 +12,7 @@ public class FollowCharacter : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if(followCharacter == null && GameObject.Find("Server").GetComponent<Socket>().this_player.transform != null){
+         if(followCharacter == null && GameObject.Find("Server").GetComponent<Socket>().this_player.transform != null){
              followCharacter = GameObject.Find("Server").GetComponent<Socket>().this_player.transform;
         }
         if(followCharacter != null){

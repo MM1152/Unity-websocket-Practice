@@ -28,6 +28,6 @@ public class Damage : MonoBehaviour
     
     IEnumerator EndAnimation(){
         yield return new WaitUntil(() => ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9f);
-        DamagePooling.ReturnObject(this.gameObject);
+        DamagePooling.Instance.ReturnObject(this);
     }
 }

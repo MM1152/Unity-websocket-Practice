@@ -21,7 +21,7 @@ public class GetInventoryData : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        itemPooling = ItemPooling.Instance;
+        itemPooling = ItemPooling.ItemPool;
         socket = Socket.Instance;
         saveData = new SaveInvenData();
         httpRequest = HttpRequest.HttpRequests;
@@ -31,10 +31,13 @@ public class GetInventoryData : MonoBehaviour
         httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => InitInventory(value));
     }
     
-    public void ChangeMoney(string Data , GameObject offGameObject){
+    public void ChangeMoney(string Data , Coin coin){
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
         gold.text = "Gold : " + inven.gold.ToString();
-        offGameObject.SetActive(false);
+        if(coin != null) {
+            CoinPooling.Instance.ReturnObject(coin);
+            coin.gameObject.SetActive(false);
+        }
     }
 
     public void InitInventory(string Data)

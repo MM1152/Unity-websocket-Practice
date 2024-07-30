@@ -10,9 +10,9 @@ public class EnemyCount : MonoBehaviour
             Enemys.Add(gameObject.transform.GetChild(i).gameObject);
         }
         for(int i = 0; i < Enemys.Count; i++){
-            if(!ItemPooling.Instance.dropItemList.ContainsKey(Enemys[i].GetComponent<EnemyAi>().enemyData.mapName)){
-                ItemPooling.Instance.dropItemList.Add(Enemys[i].GetComponent<EnemyAi>().enemyData.mapName , new List<int>());
-                ItemPooling.Instance.dropItemList[Enemys[i].GetComponent<EnemyAi>().enemyData.mapName] = Enemys[i].GetComponent<EnemyAi>().enemyData.dropItemList;
+            if(!ItemPooling.ItemPool.dropItemList.ContainsKey(Enemys[i].GetComponent<EnemyAi>().enemyData.mapName)){
+                ItemPooling.ItemPool.dropItemList.Add(Enemys[i].GetComponent<EnemyAi>().enemyData.mapName , new List<int>());
+                ItemPooling.ItemPool.dropItemList[Enemys[i].GetComponent<EnemyAi>().enemyData.mapName] = Enemys[i].GetComponent<EnemyAi>().enemyData.dropItemList;
             }
             
         }

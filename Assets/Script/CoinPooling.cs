@@ -1,49 +1,35 @@
 
 using UnityEngine;
 
-public class CoinPooling : MonoBehaviour
+public class CoinPooling : PoolingManager<Coin>
 {   
-    private static CoinPooling coinPooling;
-    public static CoinPooling Instance 
-    { 
-        get {
-            if(coinPooling == null){
-                return null;
-            }
-            return coinPooling;
-        }
+    public override void Awake() {
+        base.Awake();
     }
-    [SerializeField] private GameObject coin;
-    private int createCoinCount = 0;
-    public int maxCoin = 0;
-    private void Awake() {
-        coinPooling = this;
-    }
-    public void MakeCoin(Transform dropPos , Transform userPos){
-        for(int i = 0; i < transform.childCount; i++){
-            GameObject thisCoin = gameObject.transform.GetChild(i).gameObject;
-            if(createCoinCount == 3) break;
-            if(thisCoin.activeSelf){
-                continue;
+    public override void ShowObject(Transform dropPos, Transform userPos, int value)
+    {
+        Coin coin = null;
+        if(pooling.Count >= 3){
+            for(int i = 0; i < 3; i++){
+                coin = pooling.Dequeue();
+                coin.transform.SetParent(null);
+                coin.transform.position = dropPos.position;
+                coin.gameObject.SetActive(true);
+                
+                Debug.Log($"Drop Pos is {dropPos.position} , Coin Position is {coin.gameObject.transform.position}");
+                StartCoroutine(coin.GetComponent<Coin>().AbsorbCoin(userPos));
             }
-            createCoinCount++;
-            thisCoin.transform.position = dropPos.position;
-            thisCoin.SetActive(true);
-            StartCoroutine(thisCoin.GetComponent<Coin>().AbsorbCoin(userPos));
-        }
+        }else {
+            for(int i = 0; i < 3; i++){
+                coin = Instantiate(prefab);
+                coin.gameObject.SetActive(true);
+                coin.transform.position = dropPos.position;
 
-        while(createCoinCount < maxCoin){
-            GameObject coinprefeb = Instantiate(coin , gameObject.transform) as GameObject;
-            coinprefeb.SetActive(false);
-            coinprefeb.transform.position = dropPos.position;
-            coinprefeb.SetActive(true);
-            createCoinCount++;
-            StartCoroutine(coinprefeb.GetComponent<Coin>().AbsorbCoin(userPos));
+                coin.gameObject.SetActive(false);
+                coin.gameObject.SetActive(true);
+
+                StartCoroutine(coin.GetComponent<Coin>().AbsorbCoin(userPos));
+            }
         }
-        Data coinData = new Data("GetCoin");
-        coinData.enemy.id =  int.Parse(dropPos.gameObject.name.Split(' ')[1]);
-        coinData.id = userPos.gameObject.name;
-        Socket.Instance.ws.Send(JsonUtility.ToJson(coinData));
-        createCoinCount = 0;
     }
 }

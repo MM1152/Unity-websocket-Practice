@@ -11,7 +11,7 @@ public class MakeShopItem : MonoBehaviour
 
     private void Awake() {
         npcAi = GetComponent<NpcAi>();
-        items = ItemPooling.Instance.itemList;
+        items = ItemPooling.ItemPool.itemList;
     }
 
     public void MakeShop() {
