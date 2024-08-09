@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 /// </summary>
 public class Socket : MonoBehaviour
 {
+    public SkillDatas skillDatas;
     public List<Sprite> playerSprite;
     public List<RuntimeAnimatorController> playerAnimator;
     public GameObject ServerManager;
