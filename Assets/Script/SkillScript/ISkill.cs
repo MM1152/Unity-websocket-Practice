@@ -2,8 +2,8 @@ using UnityEngine;
 
 public interface ISkill
 {
-    public int skillType { get; set; }
-    public int skillDamage { get; set;}
-    public int skillCoolTime { get; set; }
+    public int SkillType { get; set; }
+    public int SkillDamage { get; set;}
+    public int SkillCoolTime { get; set; }
     void UseSkill();
 } 
