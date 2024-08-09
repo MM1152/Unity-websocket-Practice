@@ -21,7 +21,7 @@ public class IdleState : Istate
             {
                 moveObject.stateMachine.Transition(new MoveState());
             }
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) && !moveObject.IsAttack)
             {
                 moveObject.stateMachine.Transition(new AttackState());
                 Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("AttackOtherPlayer" , moveObject.gameObject.name)));

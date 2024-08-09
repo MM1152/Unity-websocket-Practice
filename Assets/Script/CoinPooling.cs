@@ -1,4 +1,5 @@
 
+using UnityEditor;
 using UnityEngine;
 
 public class CoinPooling : PoolingManager<Coin>
@@ -8,6 +9,10 @@ public class CoinPooling : PoolingManager<Coin>
     }
     public override void ShowObject(Transform dropPos, Transform userPos, int value)
     {
+        Data data = new Data();
+        data.title = "GetCoin";
+        data.enemy.id = int.Parse(dropPos.gameObject.name.Split(' ')[1]);
+        Socket.Instance.ws.Send(JsonUtility.ToJson(data));
         Coin coin = null;
         if(pooling.Count >= 3){
             for(int i = 0; i < 3; i++){
@@ -16,7 +21,6 @@ public class CoinPooling : PoolingManager<Coin>
                 coin.transform.position = dropPos.position;
                 coin.gameObject.SetActive(true);
                 
-                Debug.Log($"Drop Pos is {dropPos.position} , Coin Position is {coin.gameObject.transform.position}");
                 StartCoroutine(coin.GetComponent<Coin>().AbsorbCoin(userPos));
             }
         }else {

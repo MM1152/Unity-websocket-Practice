@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,7 +9,8 @@ using UnityEngine.UI;
 public class Login : MonoBehaviour
 {
     public Text nick_name_text;
-    public GameObject nick_name;
+    [SerializeField] SelectCharacter selectCharacter; 
+    public GameObject characterSelect;
     public Text ID;
     public Text Password;
     LoginData loginData;
@@ -34,10 +36,11 @@ public class Login : MonoBehaviour
     }
     public void NickNameMakeButtonPush(){
         
-        string jsonData = nick_name_text.text;
-        Debug.Log(jsonData);
+        SigninData jsonData = new SigninData();
+        jsonData.nick_name = nick_name_text.text;
+        jsonData.characterType = selectCharacter.slotIndex;
         if(jsonData != null){
-            httpRequest.Request("http://localhost:8001/setNickName" , "NickName" , jsonData , (value) => GetData(value));
+            httpRequest.Request("http://localhost:8001/setNickName" , "NickName" , JsonUtility.ToJson(jsonData) , (value) => GetData(value));
         }
     }
     public void GetData(string value)
@@ -45,7 +48,7 @@ public class Login : MonoBehaviour
         data = value;
         Debug.Log(data);
         if(data.Equals("닉네임 입력.")){
-            nick_name.SetActive(true);
+            characterSelect.SetActive(true);
         }
         if(data.Equals("로그인 성공.")){
             SceneManager.LoadScene("SampleScene");
@@ -59,4 +62,10 @@ public class LoginData
 {
     public string ID;
     public string Password;
+}
+
+public class SigninData 
+{
+    public string nick_name;
+    public int characterType;
 }

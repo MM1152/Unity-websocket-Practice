@@ -15,8 +15,6 @@ public abstract class PoolingManager<T> : MonoBehaviour where T : MonoBehaviour
                 if(poolingManager == null) {
                     Debug.Log("PoolingManger Setting Error");
                 }
-            }else {
-                Debug.Log("Setting PoolingManager" + poolingManager.GetType().ToString());
             }
             return poolingManager;
         }

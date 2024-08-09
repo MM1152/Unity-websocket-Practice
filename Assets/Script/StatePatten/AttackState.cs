@@ -7,6 +7,7 @@ public class AttackState : Istate
     {
         this.moveObject = moveObject;
         moveObject.ani.SetTrigger("IsAttack");
+        
         if(moveObject.gameObject.activeSelf) moveObject.Attack();
     }
 

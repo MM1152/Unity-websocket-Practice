@@ -6,10 +6,8 @@ public class HitState : Istate
     public void Enter(IMoveObj moveObject)
     {
         this.moveObject = moveObject;
-        if(!moveObject.IsAttack){
-            moveObject.ani.SetTrigger("IsHit");
-           
-        }
+        moveObject.ani.SetTrigger("IsHit");
+        
     }
     public void Enter(IMoveObj moveObject, Vector2 targetPos){}
 
@@ -17,7 +15,7 @@ public class HitState : Istate
     
     public void Update() { 
         // fix !!
-        if(moveObject.ani.GetCurrentAnimatorStateInfo(0).IsName("PlayerHit") && moveObject.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= .9f || Input.GetKeyDown(KeyCode.Space)){
+        if(moveObject.ani.GetCurrentAnimatorStateInfo(0).IsName("PlayerHit") && moveObject.ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.9){
             moveObject.stateMachine.Transition(new IdleState());
         }
     }

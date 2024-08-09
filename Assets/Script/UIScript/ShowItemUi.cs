@@ -1,6 +1,4 @@
 using System;
-using Unity.VisualScripting;
-using UnityEditor.MPE;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -191,9 +189,9 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                     hitShowItemUi.thisSlotCount += thisSlotCount;
                     thisSlotCount = 0;
                     ThisSlotItemType = 0;
-                    ChangeItemSlot(gameObject.name, new int[] {thisSlotItemType , thisSlotCount}, hitShowItemUi.gameObject.name, new int[] {hitShowItemUi.thisSlotItemType , hitShowItemUi.thisSlotCount});                }else {
+                    ChangeItemSlot(gameObject.name, new int[] {thisSlotItemType , thisSlotCount}, hitShowItemUi.gameObject.name, new int[] {hitShowItemUi.thisSlotItemType , hitShowItemUi.thisSlotCount});                
                     thisSlot.sprite = curImage;
-                }
+                } 
                 Destroy(moveItemSlot);
                 
             }   

@@ -9,10 +9,12 @@ public class Init : ISocket
     private GameObject[] enemys;
     [SerializeField]
     private GameObject[] npcs;
+
     
     //private EnemyCount enemyCount;
     public override void RunNetworkCode(Data data)
     {
+        Debug.Log(data.this_player.type);
         foreach(var enemy in data.enemyList){
             
             GameObject SpawnEnemy = Instantiate(enemys[enemy.type - 1] , enemyCount.transform) as GameObject;
@@ -34,9 +36,9 @@ public class Init : ISocket
         
         GameObject player = Instantiate(socket.user);
         player.name = data.id;
-        player.AddComponent<MoveObject>();
+        player.AddComponent<MoveObject>().Type = data.this_player.type;
+
         socket.this_player = player;
-        
         socket.this_player_MoveObject = socket.this_player.GetComponent<MoveObject>();
         
         socket.this_player_MoveObject.setUserData(data.this_player);

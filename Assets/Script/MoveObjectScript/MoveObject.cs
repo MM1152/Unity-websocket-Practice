@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
+using System.Threading;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-
 public class MoveObject : IMoveObj
 {
+    private EnemyCount enemyCount;
     private GameManager gameManager;
     private SetStatsUI stat;
     public GameObject UI;
@@ -18,23 +18,25 @@ public class MoveObject : IMoveObj
     private SpriteRenderer playerHand; // 이동방향마다 같이 flipX 해줘야됌
     public Text text;
     [SerializeField]
-    public string playerMap {
-        get {
+    public string playerMap
+    {
+        get
+        {
             return UserData.mapName;
         }
-        set {
+        set
+        {
             UserData.mapName = value;
         }
     }
     public float speed;
-    public float radio;
-    public float pushPower;
     public float moveX;
     public float moveY;
-    public bool isAttackSussecs;
     public bool firstSendMoveData;
-
-    public void setUserData(UserData userData){
+    public float attackTime;
+    public float attackCoolTime;
+    public void setUserData(UserData userData)
+    {
         this.UserData = userData;
     }
     public UserData getUserData()
@@ -51,38 +53,43 @@ public class MoveObject : IMoveObj
         exp.setMaxExp(UserData.maxExp);
         exp.setcurrentExp(UserData.exp);
     }
-    private void Update() {
-        stateMachine?.Update();
-
+    private void Update()
+    {
+        stateMachine.Update();
+        if(attackTime > 0) {
+            attackTime -= Time.deltaTime;
+        }
         /*if(SetPosionNumberUI.autoRecovery[1] && gameManager.MPrecoveryValue >= (UserData.mp){
             UsePostion(5);
         }*/
     }
     public void Awake()
-    {   
-        
+    {
+        enemyCount = GameObject.Find("EnemyCount").GetComponent<EnemyCount>();
         UI = gameObject.transform.Find("InventoryANDstatus").gameObject;
         text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
         attackShow = gameObject.transform.Find("Attack").gameObject;
         playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
         exp = gameObject.transform.Find("Canvas").Find("ExpBar").GetComponent<ExpBarUI>();
         stat = gameObject.transform.Find("InventoryANDstatus").Find("Status").GetComponent<SetStatsUI>();
-        PosionSlot =  UI.transform.Find("PositionSlot").gameObject;
+        PosionSlot = UI.transform.Find("PositionSlot").gameObject;
         levelUI = UI.transform.Find("Level").gameObject;
 
         PosionSlot.SetActive(true);
         exp.gameObject.SetActive(true);
         levelUI.SetActive(true);
 
-        
+        attackCoolTime = 2f;
         speed = 3f;
-        Init(); 
+        Init();
     }
-    void Start(){   
+    void Start()
+    {
         text.text = UserData.id;
         levelUI.GetComponent<Text>().text = "Level " + UserData.Level;
         UI.SetActive(true);
         gameManager = GameManager.Instance;
+
     }
     public override void Move()
     {
@@ -103,15 +110,44 @@ public class MoveObject : IMoveObj
     }
     public override void Attack()
     {
+        IsAttack = true;
+        if (range != null)
+        {
+            int index = 0;
+            float min = 0;
+            float cnt = 9999999;
+            for (int i = 0; i < enemyCount.Enemys.Count; i++)
+            {
+                if (enemyCount.Enemys[i].activeSelf)
+                {
+                    Vector2 enemyPos = enemyCount.Enemys[i].transform.position;
+                    Vector2 userPos = transform.position;
+
+                    min = FindNearEnemy(enemyPos, userPos);
+
+                    if (cnt > min)
+                    {
+                        cnt = min;
+                        index = i;
+                    }
+                }
+            }
+            GameObject nearEnemy = enemyCount.Enemys[index].gameObject;
+            range.target = nearEnemy.transform;
+            Debug.Log(nearEnemy.name);
+            range.CheckAttackPossible();
+        }
         StartCoroutine(AttackShow());
-        Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("AttackOtherPlayer" , gameObject.name)));
+        Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("AttackOtherPlayer", gameObject.name)));
     }
 
     public IEnumerator AttackShow()
     {
-        IsAttack = true;
+        
         attackShow.SetActive(true);
-        yield return new WaitForSeconds(.5f);
+        
+        yield return new WaitUntil(() => attackTime <= 0);
+        attackTime = attackCoolTime;
         IsAttack = false;
         attackShow.SetActive(false);
     }
@@ -135,7 +171,10 @@ public class MoveObject : IMoveObj
     }
 
 
-
+    float FindNearEnemy(Vector2 EnemyPos, Vector2 PlayerPos)
+    {
+        return Vector2.Distance(EnemyPos, PlayerPos);
+    }
     ///<summary>
     /// 애니메이션을 STATE로 SET해주는 함수
     ///</summary>
@@ -152,6 +191,6 @@ public class MoveObject : IMoveObj
             playerHand.flipX = false;
         }
     }
-    public override void Move(Vector2 targetPos){ }
+    public override void Move(Vector2 targetPos) { }
 
 }

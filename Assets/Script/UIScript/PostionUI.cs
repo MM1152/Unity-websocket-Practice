@@ -42,7 +42,6 @@ public class PostionUI : MonoBehaviour
             
 
             if(slot == null || slot.thisSlotCount == 0 ){
-                Debug.Log("Postion Count is 0");
                 return;
             }
 

@@ -13,7 +13,8 @@ using Newtonsoft.Json;
 /// </summary>
 public class Socket : MonoBehaviour
 {
-    
+    public List<Sprite> playerSprite;
+    public List<RuntimeAnimatorController> playerAnimator;
     public GameObject ServerManager;
     public EnemyCount enemyCount;
     private static Socket socket;
@@ -35,7 +36,7 @@ public class Socket : MonoBehaviour
     public static Socket Instance
     {
         get{
-            if(socket== null){
+            if(socket == null){
                 socket = new Socket();
             }
             return socket;

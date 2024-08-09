@@ -50,6 +50,7 @@ public class Data{
 }
 [Serializable]
 public class UserData{
+    public int type;
     public string id;
     public float x;
     public float y;
@@ -64,6 +65,7 @@ public class UserData{
     public string mapName;
     public int defense;
     public int attack;
+    public float attackRadious;
     public Dictionary<string , int> equipItem;
 }
 [Serializable]

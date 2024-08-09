@@ -157,12 +157,13 @@ app.post('/login', (req, res) => {
 })
 
 app.post('/setNickName', (req, res) => {
-    var result = req.body;
-    var query = "Update user_info set nick_name = ? where id = ?";
-    var params = [result.NickName, id];
+    var result = JSON.parse(req.body.NickName);
+    var query = "Update user_info set nick_name = ? , character_type = ? where id = ?";
+    var params = [result.nick_name, result.characterType ,id];
 
-    var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats) values (? , ? , ? , ? , ?)";
-    var insertparmas = [id, 100, 100, 1, 1]
+    var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats , attackRadious) values (? , ? , ? , ? , ? , ?)";
+
+    var findcharacterInfoquery = "select * from character_type where type = ?"
 
     var inventoryquery = "Insert Into user_inventory (id , item , gold , EquipItemSlot , equipItemTab) values (? , ? , ? , ? , ?)";
     var inventoryparams = [id, JSON.stringify({}), 0 , JSON.stringify({}) , JSON.stringify({})]
@@ -192,6 +193,8 @@ app.post('/setNickName', (req, res) => {
         }
         console.log("user_info 업데이트 성공");
         userId = params[0];
+
+        
         db.query(inventoryquery, inventoryparams, function (err, rows, fields) {
             if (err) {
                 console.log(err)
@@ -201,13 +204,19 @@ app.post('/setNickName', (req, res) => {
             db.query(equipItemInitQuery , equipItemInitParams);
             db.query(equipItemTabQuery , equipItemInitParams);
         })
-        db.query(insertquery, insertparmas, function (err, rows, fields) {
-            if (err) {
-                console.log(err)
-            }
-            console.log("UserData 생성 완");
-            res.send("로그인 성공.")
+        db.query(findcharacterInfoquery , result.characterType , function (err , rows , fields) {
+            var insertparmas = [id, rows[0].maxhp, rows[0].maxmp , 1, 1 , rows[0].attackRadious]
+
+            db.query(insertquery, insertparmas, function (err, rows, fields) {
+                if (err) {
+                    console.log(err)
+                }
+    
+                console.log("UserData 생성 완");
+                res.send("로그인 성공.")
+            })
         })
+
     })
 
 
@@ -353,8 +362,9 @@ wss.on('connection', async (ws, req) => {
                 var result = rows[0].gold + enemyList[data.enemy.id].DropGold;
                 var query = "Update user_inventory set gold = ? where id = ?";
                 var params = [result, userList[who].name]
-
+                console.log("getGold");
                 db.query(query, params)
+                
             })            
         }
 
@@ -755,7 +765,7 @@ async function ItemListInit(){
 function init(ws) {
     return new Promise((resolve, rejects) => {
         
-        var getUserDataquery = "select user_info.id , hp , mp , strStats , intStats , exp , nick_name , maxHp, user_inventory.equipItemSlot , Level from user_status , user_info , user_inventory where user_status.id = ? && user_info.id = ? && user_inventory.id = ?";
+        var getUserDataquery = "select user_info.id , attackRadious , user_info.character_type ,hp , mp , strStats , intStats , exp , nick_name , maxHp, user_inventory.equipItemSlot , Level from user_status , user_info , user_inventory where user_status.id = ? && user_info.id = ? && user_inventory.id = ?";
         var getUserDataparams = [id, id , id];
 
         db.query(getUserDataquery, getUserDataparams, function (err, rows, fields) {
@@ -766,9 +776,11 @@ function init(ws) {
                     attackValue += itemList[rows[0].equipItemSlot[key] - 1].item_damage ;
                     defenseValue += itemList[rows[0].equipItemSlot[key] - 1].item_defense;
                 }
-            }
+            }   
 
+            
             userList.push({
+                type : rows[0].character_type,
                 name: rows[0].id,
                 id: rows[0].nick_name,
                 x: 0,
@@ -784,7 +796,8 @@ function init(ws) {
                 mapName: "상점",
                 equipItem : rows[0].equipItemSlot,
                 defense : defenseValue,
-                attack : attackValue + (rows[0].strStats * 10)
+                attack : attackValue + (rows[0].strStats * 10),
+                attackRadious : rows[0].attackRadious
             })
 
             ws.id = rows[0].nick_name;
