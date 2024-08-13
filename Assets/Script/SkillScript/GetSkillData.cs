@@ -30,8 +30,9 @@ public class GetSkillData : MonoBehaviour
         for(int i = 0; i < skillDatas.skillsData.Length; i++){
             GameObject skill = Instantiate(skillprefeb , skillTabTransform);
             skill.GetComponent<Image>().sprite = skillImage[skillDatas.skillsData[i].skill_type];
-            skill.GetComponent<SkillScript>().skillData = skillDatas.skillsData[i];
             
+            SkillCoolTimeManager.skillData.Add(skillDatas.skillsData[i]);
+            skill.GetComponent<SkillScript>().skillData = SkillCoolTimeManager.skillData[i];
         }
     }
 
