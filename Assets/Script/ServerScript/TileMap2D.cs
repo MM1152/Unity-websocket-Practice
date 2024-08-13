@@ -47,7 +47,7 @@ public class TileMap2D : MonoBehaviour
     {
         httpRequest = HttpRequest.HttpRequests;
         Debug.Log("StartMapDataCorutine");
-        httpRequest.Request("http://localhost:8001/mapData", "NeedMapName", "상점", (value) => GetData(value));
+        httpRequest.Request("mapData", "NeedMapName", "상점", (value) => GetData(value));
         Socket.Instance.ws.OnMessage += (sender, e) =>
         {
             MapData mapdata = JsonUtility.FromJson<MapData>(e.Data);

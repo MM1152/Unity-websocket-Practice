@@ -1,21 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using Unity.VisualScripting;
+
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillTabScript : MonoBehaviour , ISkill
 {
-    private float coolTime;
+    [SerializeField] private SkillScript skillScript;
+    public SkillScript SkillScript {
+        get => skillScript;
+        set {
+            skillScript = value;
+            SkillType = value != null ? skillScript.skillData.skill_type : 0; 
+        }
+    }
     private int skillType;
     private int skillDamage;
-    private int skillCoolTime;
+    private float skillCoolTime;
     public int SkillType {
         get => skillType;
         set {
             skillType = value;
-            /*스킬 타입에 맞춰 이미지 변경*/
-            /*아니면 스킬 이미지 자체를 복사해버림?*/
+            skillImage.color = new Color(1, 1 , 1 , value);
+            skillImage.sprite = GetSkillData.Instance.skillImage[skillType];
         }
     }
     public int SkillDamage {
@@ -24,31 +30,34 @@ public class SkillTabScript : MonoBehaviour , ISkill
             skillDamage = value;
         }
     }
-    public int SkillCoolTime  {
+    public float SkillCoolTime  {
         get => skillCoolTime;
         set {
             skillCoolTime = value;
         }
     }
     private Image skillImage;
+    [SerializeField] private Image skillCool;
 
     public void UseSkill()
     {
         /*MoveObject에서 호출할 예정*/
-        if(coolTime <= 0) {
-            coolTime = skillCoolTime;
+        if(skillScript.skillData.coolDown <= 0) {
+            skillScript.skillData.coolDown = skillScript.skillData.skill_cooltime;
             /*스킬 애니메이션 재생*/
         }
     }
-
-    void Awake()
-    {
-        skillImage = GetComponent<Image>();
-    }
-    void Update(){
-        if(skillType != 0 && coolTime > 0){
-            coolTime -= Time.deltaTime;
+    private void Update() { 
+        if(Input.GetKeyDown(KeyCode.Q) && skillScript != null) {
+            UseSkill();
+        }
+        if(skillScript != null && skillScript.skillData.coolDown > 0) {
+            skillImage.fillAmount = 1 / skillScript.skillData.coolDown;
         }
     }
-
+    void Awake()
+    {
+        skillImage = transform.Find("SkillTab").Find("Skill Image").GetComponent<Image>();
+        skillImage.color = new Color(1, 1 , 1 , 0);
+    }
 }

@@ -23,9 +23,11 @@ public class HttpRequest : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
     public void Request(string url , string FiledName ,  string jsonData , Action<string> callback){
+        url = "http://localhost:8001/" + url;
         StartCoroutine(Casting(url , FiledName , jsonData , callback));
     }
     public void Request(string url , string FiledName ,  string jsonData , Action<string> callback , Vector2 targetPos){
+        url = "http://localhost:8001/" + url;
         StartCoroutine(Casting(url , FiledName , jsonData,callback , targetPos));
     }
     public IEnumerator Casting(string url , string FiledName ,  string jsonData , Action<string> callback){     

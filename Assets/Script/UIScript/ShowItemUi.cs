@@ -262,13 +262,13 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         saveData.id = Socket.Instance.this_player.name;
         saveData.Key = changedSlotKey;
         saveData.Value = changedSlotValue;
-        HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory"));
+        HttpRequest.HttpRequests.Request("saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory"));
         if(curSlotKey == null){
             return;
         }
         saveData.Key = curSlotKey;
         saveData.Value = curSlotValue;
-        HttpRequest.HttpRequests.Request("http://localhost:8001/saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory"));
+        HttpRequest.HttpRequests.Request("saveinventoryData", "item", JsonUtility.ToJson(saveData), (value) => Debug.Log("saveInventory"));
     }
     public void OnPointerClick(PointerEventData eventData)
     {

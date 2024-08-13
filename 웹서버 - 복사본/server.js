@@ -49,6 +49,16 @@ app.post('/inventoryData', (req, res) => {
         res.send(data);
     })
 })
+app.post('/getSkillData' , (req , res) => {
+    var getSkillquery = "select * from skill";
+    db.query(getSkillquery , function(err , rows , fields) {
+        var skillData = {
+            skillsData : rows
+        };
+        console.log(skillData);
+        res.send(skillData)
+    })
+})
 app.post('/saveEquipItem' , (req , res) => {
     var result = JSON.parse(req.body.Equip);
     let who = userStateChange(result);

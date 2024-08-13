@@ -22,7 +22,7 @@ public class ItemPooling : PoolingManager<Item>
     public override void Awake()
     {
         base.Awake();
-        HttpRequest.HttpRequests.Request("http://localhost:8001/getItemData", "ItemData", "1", (value) => SetItemValue(value));
+        HttpRequest.HttpRequests.Request("getItemData", "ItemData", "1", (value) => SetItemValue(value));
         itemPool = this;
     }
 

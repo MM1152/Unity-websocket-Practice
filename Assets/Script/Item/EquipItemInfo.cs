@@ -19,7 +19,7 @@ public class EquipItemInfo : MonoBehaviour
             else saveData.ItemSlotIndex = int.Parse(value.name);
             
             gameObject.SetActive(true);
-            HttpRequest.HttpRequests.Request("http://localhost:8001/saveEquipItemTab" , "EquipItemTab" , JsonUtility.ToJson(saveData) ,(value) => Debug.Log($"Save EquipItemTab\nData Key : {saveData.Key}\nData Value : {saveData.Value}"));
+            HttpRequest.HttpRequests.Request("saveEquipItemTab" , "EquipItemTab" , JsonUtility.ToJson(saveData) ,(value) => Debug.Log($"Save EquipItemTab\nData Key : {saveData.Key}\nData Value : {saveData.Value}"));
          }   
     }
     ShowItemUi showItemUi;
@@ -42,7 +42,7 @@ public class EquipItemInfo : MonoBehaviour
             saveData.Value[0] = value;
             saveData.Value[1] = 0;
 
-            HttpRequest.HttpRequests.Request("http://localhost:8001/saveEquipItem" , "Equip" , JsonUtility.ToJson(saveData) , (value) => Debug.Log($"Save Equip Data\n Data Key : {saveData.Key}\n Data Value : {saveData.Value}"));
+            HttpRequest.HttpRequests.Request("saveEquipItem" , "Equip" , JsonUtility.ToJson(saveData) , (value) => Debug.Log($"Save Equip Data\n Data Key : {saveData.Key}\n Data Value : {saveData.Value}"));
         }
     }
     void Start()

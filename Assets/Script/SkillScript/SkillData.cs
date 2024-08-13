@@ -7,7 +7,9 @@ public class SkillDatas{
 
 [Serializable]
 public class SkillData {
-    public int skillType;
-    public int skillDamage;
-    public int skillCoolTime;
+    public int skill_type;
+    public int skill_damage;
+    public float skill_cooltime;
+    public string skill_info;
+    public float coolDown;
 }   

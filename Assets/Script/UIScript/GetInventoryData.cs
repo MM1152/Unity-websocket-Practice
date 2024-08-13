@@ -26,7 +26,7 @@ public class GetInventoryData : MonoBehaviour
         saveData.id = socket.this_player.name;
         itemList = itemPooling.itemList;
         itemsNumber = new int[itemList.itemDatas.Count];
-        httpRequest.Request("http://localhost:8001/inventoryData", "id", socket.this_player.name, (value) => InitInventory(value));
+        httpRequest.Request("inventoryData", "id", socket.this_player.name, (value) => InitInventory(value));
     }
     
     public void ChangeMoney(string Data , Coin coin){
@@ -72,7 +72,7 @@ public class GetInventoryData : MonoBehaviour
                 saveData.Value[0] = item;
                 saveData.Value[1] = 1;
                 string jsonData = JsonUtility.ToJson(saveData);
-                httpRequest.Request("http://localhost:8001/saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
+                httpRequest.Request("saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
                 break;
             }
             else if(showItemUi.ThisSlotItemType == item && setPostion){
@@ -82,7 +82,7 @@ public class GetInventoryData : MonoBehaviour
                 saveData.Value[0] = item;
                 saveData.Value[1] = showItemUi.thisSlotCount;
                 string jsonData = JsonUtility.ToJson(saveData);
-                httpRequest.Request("http://localhost:8001/saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
+                httpRequest.Request("saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
                 break;
             }
             

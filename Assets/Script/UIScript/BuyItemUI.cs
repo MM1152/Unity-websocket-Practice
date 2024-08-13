@@ -20,7 +20,7 @@ public class BuyItemUI : MonoBehaviour
         Data data = new Data("BuyItem" , itemIndex.ToString());
         Socket.Instance.ws.Send(JsonUtility.ToJson(data));
 
-        HttpRequest.HttpRequests.Request("http://localhost:8001/inventoryData", "id", Socket.Instance.this_player.name, (value) => inventoryData.ChangeMoney(value , null));
+        HttpRequest.HttpRequests.Request("inventoryData", "id", Socket.Instance.this_player.name, (value) => inventoryData.ChangeMoney(value , null));
         inventoryData.SetInventory(itemIndex , null);
     }
     public void DontBuy() {
