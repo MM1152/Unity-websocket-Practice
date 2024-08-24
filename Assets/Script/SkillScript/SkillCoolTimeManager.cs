@@ -5,7 +5,7 @@ using UnityEngine.UIElements.Experimental;
 
 public class SkillCoolTimeManager : MonoBehaviour
 {
-    public static List<SkillData> skillData;
+    public static List<SkillData> skillData = new List<SkillData>();
     public static Dictionary<string , int> thisSlotEquipSlot = new Dictionary<string, int>() {
         { "0", 0 },
         { "1", 0 },
@@ -19,6 +19,7 @@ public class SkillCoolTimeManager : MonoBehaviour
     private void Update() {
         foreach(var skill in skillData){
             if(skill.coolDown > 0) skill.coolDown -=  Time.deltaTime;
+            else if (skill.coolDown < 0) skill.coolDown = 0;
         }
     }
 }

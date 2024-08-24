@@ -6,6 +6,7 @@ public abstract class IMoveObj : MonoBehaviour {
     
 
     public Animator ani;
+    public bool useSkill;
     public Range range;
     public SpriteRenderer sp;
     public StateMachine stateMachine;
@@ -57,5 +58,4 @@ public abstract class IMoveObj : MonoBehaviour {
     public abstract void Move();
     public abstract void Move(Vector2 targetPos);
     public abstract void Attack();
-    
 }

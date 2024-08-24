@@ -10,7 +10,8 @@ public class GetInventoryData : MonoBehaviour
     [SerializeField] private Transform inventorySize;
     [SerializeField] private ItemList itemList;
     [SerializeField] private InventoryData inven;
-    [SerializeField] private Text gold;
+    [SerializeField] private Text goldText;
+    public int gold;
     public int[] itemsNumber;
     HttpRequest httpRequest;
     Socket socket;
@@ -31,7 +32,8 @@ public class GetInventoryData : MonoBehaviour
     
     public void ChangeMoney(string Data , Coin coin){
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
-        gold.text = "Gold : " + inven.gold.ToString();
+        gold = inven.gold;
+        goldText.text = "Gold : " + gold;
         if(coin != null) {
             CoinPooling.Instance.ReturnObject(coin);
             coin.gameObject.SetActive(false);
@@ -42,7 +44,8 @@ public class GetInventoryData : MonoBehaviour
     {
         inven = JsonConvert.DeserializeObject<InventoryData>(Data);
         Debug.Log(inven.gold);
-        gold.text = "Gold : " + inven.gold.ToString();
+        gold = inven.gold;
+        goldText.text = "Gold : " + gold;
 
         if(inventorySize.transform.childCount != 0){
             return;

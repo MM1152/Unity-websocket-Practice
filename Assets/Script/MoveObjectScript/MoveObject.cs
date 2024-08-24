@@ -30,6 +30,8 @@ public class MoveObject : IMoveObj
         }
     }
     public float speed;
+    public float curretmoveX;
+    public float curretmoveY;
     public float moveX;
     public float moveY;
     public bool firstSendMoveData;
@@ -93,10 +95,11 @@ public class MoveObject : IMoveObj
     }
     public override void Move()
     {
-        moveX = Input.GetAxisRaw("Horizontal");
-        moveY = Input.GetAxisRaw("Vertical");
+        curretmoveX = Input.GetAxisRaw("Horizontal");
+        curretmoveY = Input.GetAxisRaw("Vertical");
+        if(curretmoveX != 0) moveX = curretmoveX;
         FlipX();
-        transform.position += new Vector3(moveX, moveY).normalized * speed * Time.deltaTime;
+        transform.position += new Vector3(curretmoveX, curretmoveY).normalized * speed * Time.deltaTime;
         if (!firstSendMoveData)
         {
             firstSendMoveData = true;
@@ -105,58 +108,30 @@ public class MoveObject : IMoveObj
     }
     public void SendMessage()
     {
-        Data data = new Data("PlayerMove", this.gameObject.name, transform.position.x, transform.position.y, new Vector2(moveX, moveY));
+        Data data = new Data("PlayerMove", this.gameObject.name, transform.position.x, transform.position.y, new Vector2(curretmoveX, curretmoveY));
         socket.ws.Send(JsonUtility.ToJson(data));
     }
     public override void Attack()
     {
         IsAttack = true;
-        if (range != null)
-        {
-            int index = 0;
-            float min = 0;
-            float cnt = 9999999;
-            for (int i = 0; i < enemyCount.Enemys.Count; i++)
-            {
-                if (enemyCount.Enemys[i].activeSelf)
-                {
-                    Vector2 enemyPos = enemyCount.Enemys[i].transform.position;
-                    Vector2 userPos = transform.position;
-
-                    min = FindNearEnemy(enemyPos, userPos);
-
-                    if (cnt > min)
-                    {
-                        cnt = min;
-                        index = i;
-                    }
-                }
-            }
-            GameObject nearEnemy = enemyCount.Enemys[index].gameObject;
-            range.target = nearEnemy.transform;
-            Debug.Log(nearEnemy.name);
-            range.CheckAttackPossible();
-        }
+        range.target = FindNearEnemy().transform;
+        Debug.Log(FindNearEnemy().name);
+        range.CheckAttackPossible();
         StartCoroutine(AttackShow());
         Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("AttackOtherPlayer", gameObject.name)));
     }
-
     public IEnumerator AttackShow()
-    {
-        
+    {    
         attackShow.SetActive(true);
-        
         yield return new WaitUntil(() => attackTime <= 0);
         attackTime = attackCoolTime;
         IsAttack = false;
         attackShow.SetActive(false);
     }
-
     public Vector2 GetPosition()
     {
         return transform.position;
     }
-
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Enemy")
@@ -169,27 +144,46 @@ public class MoveObject : IMoveObj
             socket.ws.Send(JsonUtility.ToJson(data));
         }
     }
-
-
-    float FindNearEnemy(Vector2 EnemyPos, Vector2 PlayerPos)
-    {
-        return Vector2.Distance(EnemyPos, PlayerPos);
-    }
     ///<summary>
     /// 애니메이션을 STATE로 SET해주는 함수
     ///</summary>
     public void FlipX()
     {
-        if (moveX < 0)
+        if (curretmoveX < 0)
         {
             sp.flipX = true;
             playerHand.flipX = true;
         }
-        else if (moveX > 0)
+        else if (curretmoveX > 0)
         {
             sp.flipX = false;
             playerHand.flipX = false;
         }
+    }
+    
+    public GameObject FindNearEnemy(){
+
+            int index = 0;
+            float min = 0;
+            float cnt = 9999999;
+            for (int i = 0; i < enemyCount.Enemys.Count; i++)
+            {
+                if (enemyCount.Enemys[i].activeSelf)
+                {
+                    Vector2 enemyPos = enemyCount.Enemys[i].transform.position;
+                    Vector2 userPos = transform.position;
+
+                    min = Vector2.Distance(enemyPos, userPos);
+
+                    if (cnt > min)
+                    {
+                        cnt = min;
+                        index = i;
+                    }
+                }
+            }
+            GameObject nearEnemy = enemyCount.Enemys[index].gameObject;
+            return nearEnemy;
     }
     public override void Move(Vector2 targetPos) { }
 

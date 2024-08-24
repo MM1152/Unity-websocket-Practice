@@ -117,8 +117,8 @@ TextureImporter:
         y: 403
         width: 31
         height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -138,8 +138,8 @@ TextureImporter:
         y: 403
         width: 31
         height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -159,8 +159,8 @@ TextureImporter:
         y: 403
         width: 31
         height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 4
+      pivot: {x: 0, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,6 +168,258 @@ TextureImporter:
       bones: []
       spriteID: 354cbe31b7c9b344aa397a0f3a93d62d
       internalID: 508596701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BuffEffect
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 2
+        width: 29
+        height: 28
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d002f9d7774ef0d4ca4df5efbb6bd73a
+      internalID: 1841800153
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BuffEffect(1)
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 2
+        width: 29
+        height: 28
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4208a8c6defb9b743ba8d42d69c3e5d5
+      internalID: 771109192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BuffEffect(2)
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 2
+        width: 29
+        height: 28
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c4d58d982e892e46840149294092560
+      internalID: 1374747450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: BuffEffect(3)
+      rect:
+        serializedVersion: 2
+        x: 609
+        y: 2
+        width: 29
+        height: 28
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c78fece8ed181ab4797335ac75274b5b
+      internalID: 1845357070
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireArrowEffect
+      rect:
+        serializedVersion: 2
+        x: 353
+        y: 324
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 020bda5a519265a43951e6722a8f275f
+      internalID: -135217896
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireArrowEffect(1)
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 324
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c31872e74947e1e4f9b149d0e8ff8243
+      internalID: -1084726795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireArrowEffect(2)
+      rect:
+        serializedVersion: 2
+        x: 415
+        y: 324
+        width: 31
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35cee65ee7594bd43b0018010a3e91d2
+      internalID: -1017002258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: FireArrowEffect(3)
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 321
+        width: 31
+        height: 30
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 294749ea3c4a8d94ab62646d607cf16e
+      internalID: 477182565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Achor Buff Effect
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 33
+        width: 29
+        height: 30
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9987361aee78fd04cab7487b77a4a145
+      internalID: 435194192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Achor Buff Effect(1)
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 33
+        width: 29
+        height: 30
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06ade8dc2aca2f24e93a4153ce04ed03
+      internalID: -929546728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Achor Buff Effect(2)
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 33
+        width: 29
+        height: 30
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecbef85f8ba89124a89ab8330505332e
+      internalID: -602822500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Achor Buff Effect(3)
+      rect:
+        serializedVersion: 2
+        x: 610
+        y: 33
+        width: 29
+        height: 30
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 821e908ae41fe7f4b81fc36c29a1ed36
+      internalID: 809095251
       vertices: []
       indices: 
       edges: []
@@ -183,7 +435,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Red Effect Bullet Impact Explosion 32x32_3: 253060190
+      Achor Buff Effect: 435194192
+      Achor Buff Effect(1): -929546728
+      Achor Buff Effect(2): -602822500
+      Achor Buff Effect(3): 809095251
+      BuffEffect: 1841800153
+      BuffEffect(1): 771109192
+      BuffEffect(2): 1374747450
+      BuffEffect(3): 253060190
+      FireArrowEffect: -135217896
+      FireArrowEffect(1): -1084726795
+      FireArrowEffect(2): -1017002258
+      FireArrowEffect(3): 477182565
       SwordSkill(1)_1: -1277774745
       SwordSkill(1)_2: -1629716892
       SwordSkill(1)_3: 508596701

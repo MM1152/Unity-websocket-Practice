@@ -50,8 +50,10 @@ app.post('/inventoryData', (req, res) => {
     })
 })
 app.post('/getSkillData' , (req , res) => {
-    var getSkillquery = "select * from skill";
-    db.query(getSkillquery , function(err , rows , fields) {
+    var getSkillquery = "select * from skill where learnable_character = ?";
+    console.log( req.body.needSkill);
+    var getSkillparams = req.body.needSkill
+    db.query(getSkillquery , getSkillparams , function(err , rows , fields) {
         var skillData = {
             skillsData : rows
         };
@@ -153,6 +155,7 @@ app.post('/login', (req, res) => {
                     if (rows[0].nick_name == null) {
                         res.send("닉네임 입력.")
                     } else {
+
                         userId = rows[0].nick_name;
                         res.send("로그인 성공.");
 
@@ -166,12 +169,12 @@ app.post('/login', (req, res) => {
     })
 })
 
-app.post('/setNickName', (req, res) => {
+app.post('/setNickName', (req, res) => { 
     var result = JSON.parse(req.body.NickName);
     var query = "Update user_info set nick_name = ? , character_type = ? where id = ?";
     var params = [result.nick_name, result.characterType ,id];
 
-    var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats , attackRadious) values (? , ? , ? , ? , ? , ?)";
+    var insertquery = "Insert into user_status (id , hp , mp , strStats , intStats , attackRadious , learned_skill) values (? , ? , ? , ? , ? , ? , JSON_ARRAY())";
 
     var findcharacterInfoquery = "select * from character_type where type = ?"
 
@@ -215,7 +218,7 @@ app.post('/setNickName', (req, res) => {
             db.query(equipItemTabQuery , equipItemInitParams);
         })
         db.query(findcharacterInfoquery , result.characterType , function (err , rows , fields) {
-            var insertparmas = [id, rows[0].maxhp, rows[0].maxmp , 1, 1 , rows[0].attackRadious]
+            var insertparmas = [id, rows[0].maxhp, rows[0].maxmp , 1, 1 , rows[0].attackRadious , ]
 
             db.query(insertquery, insertparmas, function (err, rows, fields) {
                 if (err) {

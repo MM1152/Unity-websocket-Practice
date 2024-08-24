@@ -4,11 +4,11 @@ using UnityEngine.UI;
 
 public class GetSkillData : MonoBehaviour
 {
-    [SerializeField] private SkillCoolTimeManager skillCoolTimeManager;
     [SerializeField] private GameObject skillprefeb;
     private static GetSkillData instance;
     [SerializeField] public SkillDatas skillDatas;
     [SerializeField] private Transform skillTabTransform;
+    [SerializeField] private GetInventoryData getInventoryData;
     public static GetSkillData Instance{
         get {
             if(instance == null) {
@@ -18,10 +18,10 @@ public class GetSkillData : MonoBehaviour
         }
     }
     public Sprite[] skillImage;
-    private void Awake() {
+    private void Start() {
         instance = this;
-        HttpRequest.HttpRequests.Request("getSkillData" , "needSkill" , "1" , (value) => SetSkill(value) );
-        skillCoolTimeManager = GetComponent<SkillCoolTimeManager>();
+        getInventoryData = transform.parent.GetComponent<GetInventoryData>();
+        HttpRequest.HttpRequests.Request("getSkillData" , "needSkill" , Socket.Instance.this_player_MoveObject.getUserData().type.ToString() , (value) => SetSkill(value) );
     }
 
     public void SetSkill(string skillData){
@@ -32,9 +32,11 @@ public class GetSkillData : MonoBehaviour
             skill.GetComponent<Image>().sprite = skillImage[skillDatas.skillsData[i].skill_type];
             
             SkillCoolTimeManager.skillData.Add(skillDatas.skillsData[i]);
-            skill.GetComponent<SkillScript>().skillData = SkillCoolTimeManager.skillData[i];
+            skill.GetComponent<SkillScript>().SkillData = SkillCoolTimeManager.skillData[i];
         }
     }
-
+    public int CheckGold(){
+        return getInventoryData.gold;
+    }
     
 }

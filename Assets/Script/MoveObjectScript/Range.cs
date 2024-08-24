@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class Range : MonoBehaviour
@@ -8,7 +5,6 @@ public class Range : MonoBehaviour
     public float attackRadious = 0;
     public Transform target;
     private IMoveObj moveObj;
-    private bool IsAttack;
     private void Start() {
         moveObj = GetComponent<IMoveObj>();
         attackRadious = moveObj.UserData.attackRadious;
