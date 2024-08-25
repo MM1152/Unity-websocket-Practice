@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public enum AttackCharacter {
-    ShortRange , LongDistance
-}
 
 public class Skill : MonoBehaviour
 {
@@ -14,9 +11,8 @@ public class Skill : MonoBehaviour
     [SerializeField] private GameObject target;
     [Space(10)]
     private Animator ani;
-    
+    public int skillType;
     public string skillAnimationClip;
-    public AttackCharacter attackCharacter;
     void Awake()
     {
         ani = GetComponent<Animator>();
@@ -46,7 +42,8 @@ public class Skill : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.tag == "Enemy") {
-            
+            //HttpRequest 요청으로 "/HitEnemy" 접근 하여 , 총 데미지를 전송.
+            //SkillCoolTimeManager.skillData[skillType].skill_damage; 접근해서 총 데미지 계산
             if(skillAnimationClip == "3 FireArrow") {
                 SkillPooling.Instance.ReturnObject(this);
             }

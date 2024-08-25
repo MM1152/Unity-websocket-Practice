@@ -21,6 +21,7 @@ public class SkillPooling : PoolingManager<Skill>
             skill.transform.position = showPos;   
         }
         skill.GetComponent<SpriteRenderer>().flipX = Socket.Instance.this_player_MoveObject.moveX > 0 ? false : true;
+        skill.skillType = value;
         skill.skillAnimationClip = animationClips[value].name;
         skill.gameObject.SetActive(true);
     }

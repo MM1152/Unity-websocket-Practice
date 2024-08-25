@@ -29,5 +29,7 @@ public class SkillUnLock : MonoBehaviour , IPointerClickHandler
     }
     public void PurchaseSkill(){
         skillScript.Unlock = true;   
+        //HttpRequest를 통해 해당하는 스킬을 구매했다고 서버로 데이터 전송 후 데이터 저장
+        
     }
 }

@@ -140,6 +140,9 @@ public class MoveObject : IMoveObj
             //other.GetComponent<EnemyAi>().state = State.HURT;
             Data data = new Data("HitEnemy");
             data.id = other.name.Split(' ')[1];
+
+            //이 부분을 적이 받을 데미지 수치 계산을 통해 전송 
+            
             data.this_player = UserData;
             socket.ws.Send(JsonUtility.ToJson(data));
         }

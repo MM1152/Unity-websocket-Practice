@@ -3,7 +3,7 @@ using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SkillTabScript : MonoBehaviour , ISkill
+public class SkillTabScript : MonoBehaviour
 {
     [SerializeField] private SkillScript skillScript;
     public SkillScript SkillScript {
@@ -12,8 +12,8 @@ public class SkillTabScript : MonoBehaviour , ISkill
             skillScript = value;
             SkillType = value != null ? skillScript.SkillData.skill_type : 0; 
             if(skillScript != null){
-                SkillDamage = skillScript.SkillData.skill_damage;
-                SkillCoolTime = skillScript.SkillData.skill_cooltime;
+                skillDamage = skillScript.SkillData.skill_damage;
+                skillCoolTime = skillScript.SkillData.skill_cooltime;
             }
 
         }
@@ -27,18 +27,6 @@ public class SkillTabScript : MonoBehaviour , ISkill
             skillType = value;
             skillImage.color = new Color(1, 1 , 1 , value);
             skillImage.sprite = GetSkillData.Instance.skillImage[skillType];
-        }
-    }
-    public float SkillDamage {
-        get => skillDamage;
-        set {
-            skillDamage = value;
-        }
-    }
-    public float SkillCoolTime  {
-        get => skillCoolTime;
-        set {
-            skillCoolTime = value;
         }
     }
     private Image skillImage;

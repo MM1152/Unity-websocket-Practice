@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +27,7 @@ public class GetSkillData : MonoBehaviour
 
     public void SetSkill(string skillData){
         skillDatas = JsonUtility.FromJson<SkillDatas>(skillData);
-
+        
         for(int i = 0; i < skillDatas.skillsData.Length; i++){
             GameObject skill = Instantiate(skillprefeb , skillTabTransform);
             skill.GetComponent<Image>().sprite = skillImage[skillDatas.skillsData[i].skill_type];
@@ -34,6 +35,7 @@ public class GetSkillData : MonoBehaviour
             SkillCoolTimeManager.skillData.Add(skillDatas.skillsData[i]);
             skill.GetComponent<SkillScript>().SkillData = SkillCoolTimeManager.skillData[i];
         }
+        //서버에서 받은 데이터 중 , UnLock부분 데이터에 존재하는 스킬들은 UnLock = True; 시켜줌
     }
     public int CheckGold(){
         return getInventoryData.gold;
