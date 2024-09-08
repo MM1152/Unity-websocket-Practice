@@ -8,7 +8,7 @@ public class DamagePooling : PoolingManager<Damage>
         main = Camera.main;
     }
 
-    public override void ShowObject(Vector2 showPos , int value){
+    public override void ShowObject(Transform showPos , int value){
         Damage damage;
         if(pooling.Count > 0){
             damage = pooling.Dequeue();
@@ -16,7 +16,7 @@ public class DamagePooling : PoolingManager<Damage>
         else {
             damage = Instantiate(prefab , transform);
         }
-        damage.transform.position = main.WorldToScreenPoint(showPos)+ new Vector3(0f , 30f);
+        damage.transform.position = main.WorldToScreenPoint(showPos.transform.position)+ new Vector3(0f , 30f);
         damage.GetComponent<Damage>().Text = value.ToString();
         damage.gameObject.SetActive(true);
     }

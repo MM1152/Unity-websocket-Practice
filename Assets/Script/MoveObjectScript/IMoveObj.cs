@@ -4,7 +4,6 @@ using UnityEngine;
 
 public abstract class IMoveObj : MonoBehaviour {
     
-
     public Animator ani;
     public bool useSkill;
     public Range range;

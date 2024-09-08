@@ -52,7 +52,6 @@ public class Socket : MonoBehaviour
                 Init.Add((ISocket)component);
             }
         }
-        
         // OnMessage : 서버에서 메세지가 넘어오면 실행되는 함수
         try {
             
@@ -80,10 +79,7 @@ public class Socket : MonoBehaviour
                     }
                 };
             }
-            
-        
         //ws.Connect();
-      
         } catch(Exception e){
             Debug.LogError("서버 연결 실패");
         }

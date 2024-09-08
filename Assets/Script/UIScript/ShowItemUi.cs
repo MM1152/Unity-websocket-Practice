@@ -52,6 +52,11 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             return thisSlotItemType;
         }
         set {
+            if(thisSlotItemType != 0 && gameObject.tag == "EquipItem") {
+                Debug.Log(thisSlotItemType);
+                Socket.Instance.this_player_MoveObject.attack -= ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_damage;
+            } 
+
             thisSlotItemType = value;
             if(thisSlotImage == null) thisSlotImage = GetComponent<Image>();
             if(thisSlotItemType == 0){
@@ -59,9 +64,12 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 return;
             }
             try {   
-                if(thisSlotItemType != 0 && ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type != "Postion"){
-                     equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
+                if(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type != "Postion"){
+                    equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
                 }
+               if(gameObject.tag == "EquipItem") {
+                    Socket.Instance.this_player_MoveObject.attack += ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_damage;
+               } 
                 thisSlotImage.sprite = ItemPooling.ItemPool.itemList.itemImages[thisSlotItemType - 1];
             } catch (Exception ex){
                 Debug.LogError("Fail Set Item Image\n " + ex.Message);
@@ -81,7 +89,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
     private void Start()
     {
-        itemPooling = ItemPooling.ItemPool;
+         if(itemPooling == null) itemPooling = ItemPooling.ItemPool;
         if (transform.parent.parent.Find("ItemUI"))
         {
             itemUI = transform.parent.parent.Find("ItemUI").gameObject;
@@ -239,7 +247,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
             equipItemInfo.EquipItemSlot = this.gameObject;
             equipItemInfo.ThisSlotItemType = thisSlotItemType;
-            showItemUi.thisSlotItemType = thisSlotItemType;
+            showItemUi.ThisSlotItemType = thisSlotItemType;
             equipItem = true;
             showItemUi.GetComponent<Image>().sprite = curImage;
             gameObject.GetComponent<Image>().sprite = curImage;
@@ -276,7 +284,7 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             switch (gameObject.tag) {
                 case "EquipItem" :
                     if(thisSlotItemType != 0){
-                        thisSlotItemType = 0;
+                        ThisSlotItemType = 0;
                         EquipItemInfo equipItemInfo = gameObject.transform.parent.GetComponent<EquipItemInfo>();
                         equipItemInfo.ThisSlotItemType = thisSlotItemType;
 

@@ -56,7 +56,7 @@ public class SkillScript : MonoBehaviour , IBeginDragHandler , IDragHandler , IP
 
         if(hit.collider != null) {
             if(hit.collider.tag == "SkillTab") {
-                ISkill iSkill = hit.collider.GetComponent<ISkill>();
+                SkillTabScript iSkill = hit.collider.GetComponent<SkillTabScript>();
 
                 if(SkillCoolTimeManager.thisSlotEquipSlot[hit.collider.transform.GetSiblingIndex().ToString()] == skillData.skill_type) { // 기존에 동일한 스킬이 장착되있다면 무시
                     Destroy(copyObject);

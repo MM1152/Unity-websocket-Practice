@@ -114,16 +114,16 @@ AnimatorStateMachine:
     m_Position: {x: 80, y: 250, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1557888921527322268}
-    m_Position: {x: 290, y: 200, z: 0}
+    m_Position: {x: 280, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -948108099385215079}
-    m_Position: {x: 500, y: 200, z: 0}
+    m_Position: {x: 490, y: 110, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8942069311390574833}
-    m_Position: {x: 290, y: 250, z: 0}
+    m_Position: {x: 280, y: 160, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5234317390834610593}
-    m_Position: {x: 500, y: 250, z: 0}
+    m_Position: {x: 490, y: 160, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -167,7 +167,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 4 ActorBuffEffect
+  m_Name: 4 ArcherBuffEffect
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

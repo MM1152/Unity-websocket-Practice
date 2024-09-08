@@ -21,7 +21,7 @@ public class Data{
     public NPCData[] NPC;
     public int dropItem;
     public int hitDamage;
- 
+    public int skillinfo;
     public Data(string title){
         this.title = title;
     }
@@ -64,7 +64,7 @@ public class UserData{
     public int maxExp;
     public string mapName;
     public int defense;
-    public int attack;
+    //public int attack;
     public float attackRadious;
     public Dictionary<string , int> equipItem;
 }

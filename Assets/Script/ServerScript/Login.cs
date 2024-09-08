@@ -38,7 +38,7 @@ public class Login : MonoBehaviour
         
         SigninData jsonData = new SigninData();
         jsonData.nick_name = nick_name_text.text;
-        jsonData.characterType = selectCharacter.slotIndex;
+        jsonData.characterType = selectCharacter.CenterType + 1;
         if(jsonData != null){
             httpRequest.Request("setNickName" , "NickName" , JsonUtility.ToJson(jsonData) , (value) => GetData(value));
         }

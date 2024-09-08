@@ -1,11 +1,26 @@
-using System.CodeDom.Compiler;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 public class SelectCharacter : MonoBehaviour
 {
+    [SerializeField] private Sprite[] images;
+    public int leftType;
+    public int rightType;
+    public int centerType;
+    public int CenterType {
+        get { return centerType; }
+        set {
+            centerType = math.abs(value) % images.Length;
+            leftType = math.abs(centerType - 1) ;
+            rightType = math.abs(centerType + 1) % images.Length;
+            
+            center.transform.GetChild(0).GetComponent<Image>().sprite = images[centerType];
+            left.transform.GetChild(0).GetComponent<Image>().sprite = leftType < images.Length ? images[leftType] : null;
+            right.transform.GetChild(0).GetComponent<Image>().sprite =  rightType < images.Length ? images[rightType] : null;
+
+        }
+    }
     [SerializeField] private Transform left;
     [SerializeField] private Transform right;
     [SerializeField] private Transform center;
@@ -30,26 +45,26 @@ public class SelectCharacter : MonoBehaviour
         }
     }
     public int slotIndex;
-    void Start(){
+    void Awake(){
         moveSlotSpeed = 0.05f;
-        slotIndex = 0;
+        CenterType = 1;
     }
     public void OnClickLeft(){
-        StartCoroutine(MoveSlot(right, left , center));
-        slotIndex--;
-        var temp = center;
-        Center = right;
-        Right = left;
-        Left = temp;
-        
-    }
-    public void OnClickRight(){
-        StartCoroutine(MoveSlot(left , right , center));
-        slotIndex++ ;
+        StartCoroutine(MoveSlot(left, right , center));
         var temp = center;
         Center = left;
         Left = right;
         Right = temp;
+        CenterType = leftType;
+
+    }
+    public void OnClickRight(){
+        StartCoroutine(MoveSlot( right , left , center));
+        var temp = center;
+        Center = right;
+        Right = left;
+        Left = temp;
+        CenterType = rightType ;
     }
     IEnumerator MoveSlot(Transform A , Transform B , Transform C){
 
@@ -66,6 +81,7 @@ public class SelectCharacter : MonoBehaviour
         Image CImage = C.GetComponent<Image>();
 
         Color CchangeColor = new Color32(180 , 180 , 180 , 255);
+        
         Color AchangeColor = new Color32(255 , 255 ,255 ,255);
 
         for(float i = 0; i <= 1.2f; i += moveSlotSpeed){

@@ -36,14 +36,21 @@ public class SkillTabScript : MonoBehaviour
     public void UseSkill()
     {
         if(skillScript.SkillData.coolDown <= 0) {
-            Debug.Log("스킬 리얼실행");
             skillScript.SkillData.coolDown = skillScript.SkillData.skill_cooltime;
-            SkillPooling.Instance.ShowObject(Socket.Instance.this_player.transform.position , skillType - 1);
+            SkillPooling.Instance.ShowObject(Socket.Instance.this_player.transform , skillScript.SkillData.skill_type - 1);
+            Data data = new Data("UseSkill");
+            data.id = Socket.Instance.this_player.name;
+            data.skillinfo = skillScript.SkillData.skill_type - 1;
+            data.useItemType = skillScript.SkillData.mp_cost; // 사용한 스킬의 MP 소모량을 Data의 useItemType을 재사용
+            Socket.Instance.ws.Send(JsonUtility.ToJson(data));
+            Socket.Instance.this_player_MoveObject.useSkill = true;
         }
     }
     private void Update() { 
-        if(Input.GetKeyDown((KeyCode) System.Enum.Parse(typeof(KeyCode) , thisSlotCode)) && skillScript != null) {
+        
+        if(Input.GetKeyDown((KeyCode) System.Enum.Parse(typeof(KeyCode) , thisSlotCode)) && skillScript != null && Socket.Instance.this_player_MoveObject.getUserData().mp >= skillScript.SkillData.mp_cost) {
             UseSkill();
+            
         }
         if(skillScript != null && skillCoolTime > 0) {
             skillCoolImage.fillAmount = skillScript.SkillData.coolDown / skillScript.SkillData.skill_cooltime;
@@ -57,5 +64,9 @@ public class SkillTabScript : MonoBehaviour
         skillImage = transform.Find("SkillTab").Find("Skill Image").GetComponent<Image>();
         skillImage.color = new Color(1, 1 , 1 , 0);
         thisSlotCodeText.text = thisSlotCode;
+        
+    }
+    void Start() {
+        gameObject.tag = "SkillTab";
     }
 }

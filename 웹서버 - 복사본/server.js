@@ -70,14 +70,14 @@ app.post('/saveEquipItem' , (req , res) => {
     db.query(query , params , function(err , rows) {
         
         if(userList[who].equipItem[result.Key] != 0){
-            userList[who].attack -= itemList[userList[who].equipItem[result.Key] - 1].item_damage;
+            //userList[who].attack -= itemList[userList[who].equipItem[result.Key] - 1].item_damage;
             userList[who].defense -= itemList[userList[who].equipItem[result.Key] - 1].item_defense;
         }
         
         userList[who].equipItem[result.Key] = result.Value[0];
         
         if(result.Value[0] != 0){
-            userList[who].attack += itemList[result.Value[0] - 1].item_damage;
+            //userList[who].attack += itemList[result.Value[0] - 1].item_damage;
             userList[who].defense += itemList[result.Value[0] - 1].item_defense;
         }
        
@@ -331,6 +331,19 @@ wss.on('connection', async (ws, req) => {
                 })
             })
         }
+        if(data.title == "StatusUpgrade") {
+            let who = userStateChange(data.this_player);
+            let query = "Update user_status set strStats = ? , intStats = ? where id = ?"
+            let params = [data.this_player.strStats , data.this_player.intStats , userList[who].name]
+            userList[who].strStats = data.this_player.strStats;
+            userList[who].intStats = data.this_player.intStats;
+
+            db.query(query , params , function() {
+                console.log(`${data.this_player.id} 의 stat이 업데이트 되었습니다`);
+                console.log(`힘스탯 : ${data.this_player.strStats} 지능스탯 : ${data.this_player.intStats}`);
+            })
+            
+        }
         if (data.title == "UsePostion"){
             let who = userStateChange(data);
             console.log("Use Postion ");
@@ -345,9 +358,17 @@ wss.on('connection', async (ws, req) => {
 
             all_player_response({title : "CheckPlayerHP" , this_player : userList[who]})
         }
+        if(data.title == "UseSkill") {
+            let who = userStateChange(data);
+            userList[who].mp -= data.useItemType;
+            console.log(data);
+            var sendUser = {title : "UseSkill" , id : data.id , this_player : userList[who] ,  skillinfo : data.skillinfo};
+            all_player_response(sendUser);
+        }
         if (data.title == "SaveData") {
             let who = userStateChange(data.this_player);
             var query = "UPDATE user_status Set strstats = ? , intstats = ? , exp = ? , Level = ? where id = ?";
+            console.log( userList[who].name);
             var params = [data.this_player.strStats, data.this_player.intStats, data.this_player.exp, data.this_player.Level, userList[who].name];
 
             db.query(query, params, function (err, rows, fields) {
@@ -405,7 +426,8 @@ wss.on('connection', async (ws, req) => {
         if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
                 if (element.id == data.id) {
-                    element.Hp -= data.this_player.attack;
+                    console.log(data);
+                    element.Hp -= data.hitDamage;
                     if (element.Hp < 0) {
                         element.state = "Die"
                         let who = userStateChange(data.this_player);
@@ -430,10 +452,11 @@ wss.on('connection', async (ws, req) => {
                             element.isDie = true;
                         }
                         element.FollowTarger = null;
-                        all_player_response({ title: "EnemyDie", enemy: element, this_player: userList[who], dropItem: DropItem })
+                        all_player_response({ title: "EnemyHit", enemy: element, this_player: userList[who] , hitDamage : data.hitDamage});
+                        all_player_response({ title: "EnemyDie", enemy: element, this_player: userList[who], dropItem: DropItem , hitDamage : data.hitDamage})
                     } else {
                         element.state = "Hit"
-                        all_player_response({ title: "EnemyHit", enemy: element, this_player: userList[who] });
+                        all_player_response({ title: "EnemyHit", enemy: element, this_player: userList[who] , hitDamage : data.hitDamage});
                     }
 
                 }
@@ -783,10 +806,10 @@ function init(ws) {
 
         db.query(getUserDataquery, getUserDataparams, function (err, rows, fields) {
             let defenseValue = 0;
-            let attackValue = 0;
+            //let attackValue = 0;
             for(var key in rows[0].equipItemSlot){
                 if(rows[0].equipItemSlot[key] != 0) {
-                    attackValue += itemList[rows[0].equipItemSlot[key] - 1].item_damage ;
+                    //attackValue += itemList[rows[0].equipItemSlot[key] - 1].item_damage ;
                     defenseValue += itemList[rows[0].equipItemSlot[key] - 1].item_defense;
                 }
             }   
@@ -809,7 +832,7 @@ function init(ws) {
                 mapName: "상점",
                 equipItem : rows[0].equipItemSlot,
                 defense : defenseValue,
-                attack : attackValue + (rows[0].strStats * 10),
+                //attack : attackValue + (rows[0].strStats * 10),
                 attackRadious : rows[0].attackRadious
             })
 

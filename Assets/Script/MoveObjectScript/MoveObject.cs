@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Unity.Mathematics;
 using UnityEngine;
@@ -36,10 +38,13 @@ public class MoveObject : IMoveObj
     public float moveY;
     public bool firstSendMoveData;
     public float attackTime;
+    public int attack;
+
     public float attackCoolTime;
     public void setUserData(UserData userData)
     {
         this.UserData = userData;
+        attack = UserData.strStats * 10;
     }
     public UserData getUserData()
     {
@@ -67,8 +72,11 @@ public class MoveObject : IMoveObj
     }
     public void Awake()
     {
+
         enemyCount = GameObject.Find("EnemyCount").GetComponent<EnemyCount>();
         UI = gameObject.transform.Find("InventoryANDstatus").gameObject;
+        UI.transform.Find("Skill").gameObject.SetActive(true);
+        UI.transform.Find("SkillCoolTime").gameObject.SetActive(true);
         text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
         attackShow = gameObject.transform.Find("Attack").gameObject;
         playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
@@ -76,6 +84,7 @@ public class MoveObject : IMoveObj
         stat = gameObject.transform.Find("InventoryANDstatus").Find("Status").GetComponent<SetStatsUI>();
         PosionSlot = UI.transform.Find("PositionSlot").gameObject;
         levelUI = UI.transform.Find("Level").gameObject;
+
 
         PosionSlot.SetActive(true);
         exp.gameObject.SetActive(true);
@@ -114,9 +123,12 @@ public class MoveObject : IMoveObj
     public override void Attack()
     {
         IsAttack = true;
-        range.target = FindNearEnemy().transform;
-        Debug.Log(FindNearEnemy().name);
-        range.CheckAttackPossible();
+        if(range != null) {
+            range.target = FindNearEnemy().transform;
+            Debug.Log(FindNearEnemy().name);
+            range.CheckAttackPossible();
+        }
+
         StartCoroutine(AttackShow());
         Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("AttackOtherPlayer", gameObject.name)));
     }
@@ -136,16 +148,16 @@ public class MoveObject : IMoveObj
     {
         if (other.tag == "Enemy")
         {
-            //other.GetComponent<Animator>().SetTrigger("IsHit");
-            //other.GetComponent<EnemyAi>().state = State.HURT;
-            Data data = new Data("HitEnemy");
-            data.id = other.name.Split(' ')[1];
-
-            //이 부분을 적이 받을 데미지 수치 계산을 통해 전송 
-            
-            data.this_player = UserData;
-            socket.ws.Send(JsonUtility.ToJson(data));
+            HitEnemy(other.gameObject , attack , UserData);
         }
+    }
+    public void HitEnemy(GameObject hitEnemy, int hitDamage, UserData player){
+        Data hitData = new Data("HitEnemy");
+        hitData.id = hitEnemy.name.Split(' ')[1];
+        hitData.this_player = player;
+        hitData.hitDamage = hitDamage;
+
+        socket.ws.Send(JsonUtility.ToJson(hitData));
     }
     ///<summary>
     /// 애니메이션을 STATE로 SET해주는 함수

@@ -608,6 +608,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0207764d71322934ca501ecc189e8dd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skillDatas:
+    skillsData: []
   playerSprite:
   - {fileID: 883460396, guid: e7c28b9324b48c44b98568bb3869594e, type: 3}
   - {fileID: 842259290, guid: b8bbdd5f6e7a0374e9e5dfbaa9a43c38, type: 3}
@@ -1110,6 +1112,7 @@ GameObject:
   - component: {fileID: 745822572}
   - component: {fileID: 745822573}
   - component: {fileID: 745822574}
+  - component: {fileID: 745822575}
   m_Layer: 0
   m_Name: ServerManager
   m_TagString: Untagged
@@ -1319,6 +1322,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df1b34538c41df24cadc0f6f23995417, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: 
+  NPCcount: {fileID: 0}
+--- !u!114 &745822575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745822560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70d7e0d5409cb4945904652a1f197944, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   name: 

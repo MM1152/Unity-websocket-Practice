@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    private Socket socket;
     public GameObject followTarget;
     public float speed;
     // Update is called once per frame
+    private void Start() {
+        socket = Socket.Instance;
+    }
     private void OnEnable() {
         Vector2 dir = followTarget.transform.position - transform.position;
         float angle = Mathf.Atan2(dir.y , dir.x) * Mathf.Rad2Deg;  
@@ -21,11 +25,8 @@ public class Projectile : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.gameObject == followTarget) {
+            socket.this_player_MoveObject.HitEnemy(other.gameObject , socket.this_player_MoveObject.attack , socket.this_player_MoveObject.UserData);
             ProjectilePooling.Instance.ReturnObject(this);
-            Data data = new Data("HitEnemy");
-            data.id = other.name.Split(' ')[1];
-            data.this_player = Socket.Instance.this_player_MoveObject.UserData;
-            Socket.Instance.ws.Send(JsonUtility.ToJson(data));
         }
     }
     

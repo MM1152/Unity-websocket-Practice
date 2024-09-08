@@ -24,7 +24,7 @@ public abstract class PoolingManager<T> : MonoBehaviour where T : MonoBehaviour
         poolingManager = this;
     }
     public virtual void ShowObject(Transform dropPos, Transform userPos, int value) { }
-    public virtual void ShowObject(Vector2 showPos , int value) { }
+    public virtual void ShowObject(Transform showPos , int value) { }
     public virtual void ReturnObject(T Object) {
         pooling.Enqueue(Object);
         Object.transform.SetParent(poolingManager.transform);

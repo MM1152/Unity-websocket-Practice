@@ -10,7 +10,7 @@ public class EnemyDie : ISocket
         Transform killUserPos = GameObject.Find(data.this_player.id).transform;
         if(enemy.gameObject.activeSelf){
             enemy.Hpbar.value = data.enemy.Hp;
-            DamagePooling.Instance.ShowObject(enemy.transform.position , data.this_player.attack);
+            //DamagePooling.Instance.ShowObject(enemy.transform.position , data.this_player.attack);
             StartCoroutine(enemy.Die(data));
         }
         if(socket.this_player.name == data.this_player.id){

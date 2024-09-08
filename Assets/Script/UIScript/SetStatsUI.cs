@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SetStatsUI : MonoBehaviour
 {
-    [SerializeField] private UserData userData;
+    [SerializeField] UserData userData;
     [SerializeField] private MoveObject moveObject;
     [SerializeField] private Text[] stats;
     [SerializeField] private Button[] UpgradeButton;
@@ -34,6 +34,9 @@ public class SetStatsUI : MonoBehaviour
         userData = moveObject.getUserData();
         userData.strStats = int.Parse(stats[0].text);
         userData.intStats = int.Parse(stats[1].text);
+        Data data = new Data("StatusUpgrade");
+        data.this_player = userData;
+        Socket.Instance.ws.Send(JsonUtility.ToJson(data));
     }
 
     public void SetStatsPoint(UserData userData){

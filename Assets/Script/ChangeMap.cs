@@ -17,7 +17,7 @@ public class ChangeMap : MonoBehaviour , IPointerClickHandler
         mapData.title = "changeMap";
         mapData.mapName = currentMapName;
         Socket.Instance.this_player_MoveObject.playerMap = currentMapName;
-        HttpRequest.HttpRequests.Request("http://localhost:8001/mapData" , "NeedMapName" , currentMapName , (value) => tilemap2D.GetData(value) , playerSpawnPos);
+        HttpRequest.HttpRequests.Request("mapData" , "NeedMapName" , currentMapName , (value) => tilemap2D.GetData(value) , playerSpawnPos);
         Socket.Instance.ws.Send(JsonUtility.ToJson(mapData));
         Socket.Instance.this_player.transform.position = playerSpawnPos;
     }

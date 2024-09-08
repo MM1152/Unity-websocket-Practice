@@ -113,6 +113,7 @@ public class GetInventoryData : MonoBehaviour
         
         foreach(var equipItemTab in inven.equipItemTab.Keys) {
             if(inven.equipItemTab[equipItemTab] != 0){
+                
                 ShowItemUi equipItemSlot = inventorySize.GetChild(inven.equipItemTab[equipItemTab] - 1).gameObject.GetComponent<ShowItemUi>();
                 EquipItemInfo equipitemInfo = transform.Find("Equip").Find(equipItemTab).GetComponent<EquipItemInfo>();
                 equipItemSlot.equipItem = true;
