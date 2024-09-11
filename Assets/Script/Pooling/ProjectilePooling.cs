@@ -16,7 +16,7 @@ public class ProjectilePooling : PoolingManager<Projectile>
             projectile = pooling.Dequeue();
             projectile.transform.position = userPos.position;
             projectile.followTarget = dropPos.gameObject;   
-            projectile.  gameObject.SetActive(true);
+            projectile.gameObject.SetActive(true);
         }
         else {
             projectile = Instantiate(prefab , transform);

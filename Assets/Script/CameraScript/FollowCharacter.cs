@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Threading;
 public class FollowCharacter : MonoBehaviour
 {
     [Header("Camera Move State")]
@@ -10,7 +7,7 @@ public class FollowCharacter : MonoBehaviour
     // Start is called before the first frame update
 
     // Update is called once per frame
-    void LateUpdate()
+    void FixedUpdate()
     {
          if(followCharacter == null && GameObject.Find("Server").GetComponent<Socket>().this_player.transform != null){
              followCharacter = GameObject.Find("Server").GetComponent<Socket>().this_player.transform;
@@ -19,10 +16,5 @@ public class FollowCharacter : MonoBehaviour
              gameObject.transform.position += (followCharacter.position - gameObject.transform.position + Vector3.back * 10f) * Time.deltaTime * smooth;
         }
        
-    }
-    public void getFollowCharacter(){
-        Debug.Log("Thread Start");
-        
-        Debug.Log("Thread End");
     }
 }

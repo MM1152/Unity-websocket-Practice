@@ -33,9 +33,11 @@ public class TileMap2D : MonoBehaviour
 {
     [SerializeField] private Image ChangeScene;
     [SerializeField] private Text mapNameText;
+    [SerializeField] private GameObject[] walls;
+    [SerializeField] private CameraMoveLimit cameraMoveLimit;
+
     public Sprite[] mapImage;
     public Sprite[] colliderImage;
-    private HttpRequest httpRequest;
     public Sprite[] decoImage;
     public Transform mapSpawn;
     public Transform decoSpawn;
@@ -45,9 +47,7 @@ public class TileMap2D : MonoBehaviour
     private bool firstIn;
     private void Awake()
     {
-        httpRequest = HttpRequest.HttpRequests;
-        Debug.Log("StartMapDataCorutine");
-        httpRequest.Request("mapData", "NeedMapName", "상점", (value) => GetData(value));
+        HttpRequest.HttpRequests.Request("mapData", "NeedMapName", "상점", (value) => GetData(value));
         Socket.Instance.ws.OnMessage += (sender, e) =>
         {
             MapData mapdata = JsonUtility.FromJson<MapData>(e.Data);
@@ -85,6 +85,14 @@ public class TileMap2D : MonoBehaviour
             int y = 0;
             int bottomX = -mapData.mapSizeX / 2;
             int bottonY = -mapData.mapSizeY / 2;
+            Vector3[] wallsPos = {new Vector3(mapData.mapSizeX  / 2 , 0), new Vector3(-mapData.mapSizeX  / 2 - 1 ,0), new Vector3(-0.5f, mapData.mapSizeY / 2 + 1), new Vector3(-0.5f, -mapData.mapSizeY / 2 - 1)};
+            Vector2[] wallSize = {new Vector2(1f , mapData.mapSizeY + 1) , new Vector2(1f , mapData.mapSizeY + 1) , new Vector2(mapData.mapSizeX , 1f) , new Vector2(mapData.mapSizeX , 1f)};
+            for(int i = 0; i < walls.Length; i++) {
+                walls[i].transform.position = wallsPos[i];
+                walls[i].GetComponent<BoxCollider2D>().size = wallSize[i];
+            }
+
+            cameraMoveLimit.SetCameraLimit(new Vector2(-bottomX , -bottonY)); // 카메라 이동범위 제한
             for (int x = 0; x < mapData.mapValue.Length; x++)
             {
                 if (x % mapData.mapSizeX == 0 && x != 0)

@@ -10,6 +10,9 @@ public class StateMachine{
     public StateMachine(IMoveObj moveObject){
         this.moveObject = moveObject;
     }
+    public Istate getState() {
+        return CurrentState;
+    }
     public void Init(Istate state){
         CurrentState = state;
         CurrentState.Enter(moveObject);

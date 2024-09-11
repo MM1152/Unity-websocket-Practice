@@ -23,6 +23,7 @@ public class CreateOtherUser : ISocket
                     createUser.AddComponent<OtherPlayerMove>();
                     createUser.name = data.users[i].id.ToString();
                     createUser.GetComponent<OtherPlayerMove>().UserData = data.users[i];
+                    createUser.GetComponent<OtherPlayerMove>().Type = data.users[i].type;
                     if(data.users[i].mapName != socket.this_player_MoveObject.playerMap){
                         createUser.SetActive(false);
                     }

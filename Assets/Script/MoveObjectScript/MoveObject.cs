@@ -66,6 +66,7 @@ public class MoveObject : IMoveObj
         if(attackTime > 0) {
             attackTime -= Time.deltaTime;
         }
+        
         /*if(SetPosionNumberUI.autoRecovery[1] && gameManager.MPrecoveryValue >= (UserData.mp){
             UsePostion(5);
         }*/
@@ -107,7 +108,7 @@ public class MoveObject : IMoveObj
         curretmoveX = Input.GetAxisRaw("Horizontal");
         curretmoveY = Input.GetAxisRaw("Vertical");
         if(curretmoveX != 0) moveX = curretmoveX;
-        FlipX();
+        FlipX(curretmoveX);
         transform.position += new Vector3(curretmoveX, curretmoveY).normalized * speed * Time.deltaTime;
         if (!firstSendMoveData)
         {
@@ -122,7 +123,7 @@ public class MoveObject : IMoveObj
     }
     public override void Attack()
     {
-        IsAttack = true;
+        
         if(range != null) {
             range.target = FindNearEnemy().transform;
             Debug.Log(FindNearEnemy().name);
@@ -162,14 +163,14 @@ public class MoveObject : IMoveObj
     ///<summary>
     /// 애니메이션을 STATE로 SET해주는 함수
     ///</summary>
-    public void FlipX()
+    public void FlipX(float moveX)
     {
-        if (curretmoveX < 0)
+        if (moveX < 0)
         {
             sp.flipX = true;
             playerHand.flipX = true;
         }
-        else if (curretmoveX > 0)
+        else if (moveX > 0)
         {
             sp.flipX = false;
             playerHand.flipX = false;
@@ -178,7 +179,7 @@ public class MoveObject : IMoveObj
     
     public GameObject FindNearEnemy(){
 
-            int index = 0;
+            int index = -1;
             float min = 0;
             float cnt = 9999999;
             for (int i = 0; i < enemyCount.Enemys.Count; i++)
@@ -197,9 +198,12 @@ public class MoveObject : IMoveObj
                     }
                 }
             }
+            if(index == -1) return null;
             GameObject nearEnemy = enemyCount.Enemys[index].gameObject;
             return nearEnemy;
     }
-    public override void Move(Vector2 targetPos) { }
 
+    public override void Move(Vector2 targetPos) {
+        
+    }
 }

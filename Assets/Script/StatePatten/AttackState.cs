@@ -5,9 +5,10 @@ public class AttackState : Istate
     private IMoveObj moveObject;
     public void Enter(IMoveObj moveObject)
     {
+        Debug.Log("State is AttackState");
         this.moveObject = moveObject;
         moveObject.ani.SetTrigger("IsAttack");
-        
+        moveObject.IsAttack = true;
         if(moveObject.gameObject.activeSelf) moveObject.Attack();
     }
 

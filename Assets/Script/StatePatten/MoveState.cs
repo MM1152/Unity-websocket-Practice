@@ -23,7 +23,7 @@ public class MoveState : Istate{
         if(Input.GetKeyDown(KeyCode.Space)){
             moveObject.stateMachine.Transition(new AttackState());
         }
-        if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0){
+        if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0 && !AutoBattle.autoBattle){
             moveObject.stateMachine.Transition(new IdleState());
         }
     }

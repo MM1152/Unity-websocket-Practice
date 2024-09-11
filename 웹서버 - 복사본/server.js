@@ -361,7 +361,6 @@ wss.on('connection', async (ws, req) => {
         if(data.title == "UseSkill") {
             let who = userStateChange(data);
             userList[who].mp -= data.useItemType;
-            console.log(data);
             var sendUser = {title : "UseSkill" , id : data.id , this_player : userList[who] ,  skillinfo : data.skillinfo};
             all_player_response(sendUser);
         }
@@ -438,11 +437,11 @@ wss.on('connection', async (ws, req) => {
                             userList[who].maxExp = userList[who].Level * 100;
                         }
                         //fix !
-                        var isDropItem = GetRandomInt(0, 2)
+                        var isDropItem = GetRandomInt(0, 100)
 
                         var DropItem = 0;
 
-                        if (isDropItem == 1){
+                        if (isDropItem < 20){
                             DropItem = element.dropItemList[Math.floor(Math.random() * element.dropItemList.length)];
                         }
 
@@ -667,12 +666,14 @@ async function EnemyInit() {
                 }
                 var positionX = xPos % rows[i].mapSizeX + bottomX;
                 var positionY = yPos + bottomY;
+               
                 
                 if(rows[i].npcValue[j] != 0) {
                     const npcRows = await db.query(query2 , [rows[i].npcValue[j]]);
                     NPCList.push({id : NPCID , type : rows[i].npcValue[j]});
                     NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : positionX, y : positionY} , talk : npcRows[0].talk , sellingList : npcRows[0].sellingList})
                     NPCID++;
+                    console.log("npc 위치 : " + positionX + "," + positionY);
                 }
 
                 if (rows[i].enemyValue[j] != 0) {
