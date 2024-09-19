@@ -13,8 +13,7 @@ public class BuyItemUI : MonoBehaviour
     public int itemIndex;
     
     private void Awake() {
-        inventoryData = GameObject.Find("InventoryANDstatus").GetComponent<GetInventoryData>();
-        
+        inventoryData = GameObject.FindObjectOfType<GetInventoryData>();
     }
     public void Buy() {
         Data data = new Data("BuyItem" , itemIndex.ToString());

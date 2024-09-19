@@ -93,6 +93,7 @@ public class NPCData{
     public string name;
     public Vector2 spawnPos;
     public int[] sellingList;
+    public int[] quest_type;
     public NPC[] NPCList;
 }
 
@@ -100,4 +101,5 @@ public class NPCData{
 public class NPC {
     public int id;
     public int type;
+    public int npc_type;
 }

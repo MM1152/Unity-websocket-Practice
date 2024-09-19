@@ -11,15 +11,12 @@ public class ShowMapUI : MonoBehaviour , IPointerEnterHandler , IPointerExitHand
     [SerializeField] GameObject MapUI;
     ChangeMap changeMap;
     RectTransform size;
-    GameObject parent;
+    GameObject parentGameObject;
 
     private void Awake() {
         changeMap = GetComponent<ChangeMap>();
         size = MapUI.GetComponent<RectTransform>();
-        
-    }
-    private void Start() {
-        parent ??= transform.parent.gameObject;
+        parentGameObject = transform.parent != null ? transform.parent.gameObject : null;
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -42,7 +39,7 @@ public class ShowMapUI : MonoBehaviour , IPointerEnterHandler , IPointerExitHand
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        parent.SetActive(false);
+        parentGameObject?.SetActive(false);
         MapUI.SetActive(false);
     }
 }

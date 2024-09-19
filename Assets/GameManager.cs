@@ -7,12 +7,15 @@ public class GameManager : MonoBehaviour
 {   
 
     private static GameManager gameManager;
+    public QuestDatas quests;
     [SerializeField] private Text HPrecoveryValueText;
     [SerializeField] private Text MPrecoveryValueText;
     [SerializeField] private GameObject settingTab;
     [SerializeField] private Slider HPrecoverySlider;
     [SerializeField] private Slider MPrecoverySlider;
     [SerializeField] private Slider SoundValue;
+    
+
 
     public float HPrecoveryValue {
         get {
@@ -46,6 +49,7 @@ public class GameManager : MonoBehaviour
     {
         gameManager = this;
         PlayerSettingLoad();
+        HttpRequest.HttpRequests.Request("getQuestData" , "null" , "null" , (value) => GetQuestData(value));
         DontDestroyOnLoad(gameObject);
     }
     private void Update() {
@@ -70,4 +74,9 @@ public class GameManager : MonoBehaviour
         }
 
     }
+    private void GetQuestData(string data){
+        quests = JsonUtility.FromJson<QuestDatas>(data);
+    }
+
+
 }

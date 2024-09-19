@@ -1,4 +1,5 @@
 
+using System.CodeDom;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
@@ -102,7 +103,9 @@ public class GetInventoryData : MonoBehaviour
     /// <param name="inven">서버로부터 받아온 장착 정보데이터</param>
     private void SetEquipItem(InventoryData inven){
         foreach(var equip in inven.equip.Keys){
-            transform.Find("Equip").Find(equip).transform.GetChild(0).GetComponent<ShowItemUi>().ThisSlotItemType = inven.equip[equip];
+            ShowItemUi equipedItem = transform.Find("Equip").Find(equip).transform.GetChild(0).GetComponent<ShowItemUi>();
+            equipedItem.interactionCanvas = this.transform;
+            equipedItem.ThisSlotItemType = inven.equip[equip];
         }
     }
     /// <summary>
@@ -116,6 +119,7 @@ public class GetInventoryData : MonoBehaviour
                 
                 ShowItemUi equipItemSlot = inventorySize.GetChild(inven.equipItemTab[equipItemTab] - 1).gameObject.GetComponent<ShowItemUi>();
                 EquipItemInfo equipitemInfo = transform.Find("Equip").Find(equipItemTab).GetComponent<EquipItemInfo>();
+                equipItemSlot.interactionCanvas = this.transform;
                 equipItemSlot.equipItem = true;
                 equipItemSlot.equipItemInfo = equipitemInfo;
                 equipitemInfo.equipItemSlot = equipItemSlot.gameObject;
@@ -131,6 +135,7 @@ public class GetInventoryData : MonoBehaviour
         {
             GameObject createItem = Instantiate(itemTab, inventorySize);
             ShowItemUi createItemShowItemUI = createItem.GetComponent<ShowItemUi>();
+            createItemShowItemUI.interactionCanvas = this.transform; // 생성시 해당하는 슬릇에 Transform 을 전달
             createItem.name = slotIndex++.ToString();  
             createItemShowItemUI.ThisSlotItemType = 0;
             if (inven.item[item][0] == 0)

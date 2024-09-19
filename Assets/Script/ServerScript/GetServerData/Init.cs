@@ -15,25 +15,27 @@ public class Init : ISocket
     public override void RunNetworkCode(Data data)
     {
         foreach(var enemy in data.enemyList){
-            
             GameObject SpawnEnemy = Instantiate(enemys[enemy.type - 1] , enemyCount.transform) as GameObject;
             SpawnEnemy.name = "Enemy " + enemy.id.ToString();
             SpawnEnemy.transform.position = new Vector3(enemy.x , enemy.y , -2f);
             SpawnEnemy.GetComponent<EnemyAi>().Hpbar.maxValue = enemy.MaxHp;
             SpawnEnemy.GetComponent<EnemyAi>().Hpbar.value = enemy.Hp;
             SpawnEnemy.GetComponent<EnemyAi>().enemyData = enemy;
-            if(enemy.state == "Die"){
-                SpawnEnemy.SetActive(false);
-            }
+            SpawnEnemy.SetActive(false);
         }
         foreach(var NPC in data.NPC[0].NPCList){
-            GameObject spawnNPC = Instantiate(npcs[NPC.type - 1] , NPCcount.transform);
+            GameObject spawnNPC = Instantiate(npcs[NPC.type - 1] , NPCcount.transform); 
             NPCcount.npc_List.Add(NPC.id , spawnNPC);
+
+            if(NPC.npc_type == 1) spawnNPC.AddComponent<MakeShopItem>(); // NPC TYPE (1 : 상점 , 2 : 퀘스트)
+
             spawnNPC.name = NPC.id.ToString();
-            spawnNPC.SetActive(true);
+            spawnNPC.SetActive(true); 
+            Debug.Log("Spawn NPC Set Active (true)");
         }
         
         GameObject player = Instantiate(socket.user);
+        player.transform.SetSiblingIndex(0);
         player.name = data.id;
         player.AddComponent<MoveObject>().Type = data.this_player.type;
 

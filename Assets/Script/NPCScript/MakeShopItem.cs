@@ -6,14 +6,34 @@ public class MakeShopItem : MonoBehaviour
 {
     [SerializeField] GameObject itemList;
     [SerializeField] GameObject itemPrefeb;
+    [SerializeField] GameObject shop;
     [SerializeField] NpcAi npcAi;
     [SerializeField] ItemList items;
-
-    private void Awake() {
+    bool inPlayer;
+    private void Start() {
         npcAi = GetComponent<NpcAi>();
         items = ItemPooling.ItemPool.itemList;
+        shop = gameObject.transform.Find("Canvas").Find("Shop").gameObject;
+        itemList = gameObject.transform.transform.Find("Canvas").Find("Shop").Find("ItemList").gameObject;
+        itemPrefeb = Resources.Load<GameObject>("ShopItem");
+        MakeShop();
     }
-
+    private void OnTriggerEnter2D(Collider2D other) {
+        if(other.tag == "Player" && Socket.Instance.this_player == other.gameObject){
+            inPlayer = true;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D other) {
+         if(other.tag == "Player" && Socket.Instance.this_player == other.gameObject){
+            shop.SetActive(false);
+            inPlayer = false;
+         }
+    }
+    private void Update() {
+        if(inPlayer){
+            if(Input.GetKeyDown(KeyCode.X)) shop.SetActive(!shop.activeSelf);
+        }
+    }
     public void MakeShop() {
         if(itemList.transform.childCount == 0){
             foreach(var type in npcAi.NpcData.sellingList) {

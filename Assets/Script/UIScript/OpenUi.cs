@@ -22,7 +22,7 @@ public class OpenUi : MonoBehaviour
             Skill.SetActive(false);
         }
 
-        if(Input.GetKeyDown(KeyCode.I) && socket.this_player == this.gameObject.transform.root.gameObject) Inventory.SetActive(!Inventory.activeSelf);
+        if(Input.GetKeyDown(KeyCode.I) && socket.this_player == this.gameObject.transform.root.gameObject) {Debug.Log("Open inventory"); Inventory.SetActive(!Inventory.activeSelf);} 
         if(Input.GetKeyDown(KeyCode.U) && socket.this_player == this.gameObject.transform.root.gameObject) Status.SetActive(!Status.activeSelf);
         if(Input.GetKeyDown(KeyCode.E) && socket.this_player == this.gameObject.transform.root.gameObject) Equip.SetActive(!Equip.activeSelf);
         if(Input.GetKeyDown(KeyCode.K) && socket.this_player == this.gameObject.transform.root.gameObject) Skill.SetActive(!Skill.activeSelf);

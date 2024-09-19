@@ -9,9 +9,10 @@ public class FollowCharacter : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-         if(followCharacter == null && GameObject.Find("Server").GetComponent<Socket>().this_player.transform != null){
-             followCharacter = GameObject.Find("Server").GetComponent<Socket>().this_player.transform;
-        }
+        if(Socket.Instance.this_player == null) return;
+        else if(followCharacter == null) followCharacter = GameObject.Find("Server").GetComponent<Socket>().this_player.transform;
+        
+        
         if(followCharacter != null){
              gameObject.transform.position += (followCharacter.position - gameObject.transform.position + Vector3.back * 10f) * Time.deltaTime * smooth;
         }

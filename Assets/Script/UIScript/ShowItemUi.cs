@@ -1,7 +1,9 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
 
 public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler , IPointerClickHandler
 {
@@ -9,19 +11,19 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     [SerializeField] Image thisSlotImage;
     [SerializeField] private int thisSlotItemType;
     [SerializeField] private GameObject equipText;
+
     private GameObject itemUI;
     private Text itemNameText;
     private Image itemImage;
     private RectTransform itemRectTransForm;
     [SerializeField] private Sprite InitImage;
     private GetInventoryData inventoryData;
-    
-    private GameObject equipAbleSlot;
+    [SerializeField] private GameObject equipAbleSlot;
     /// <summary>
     /// EquipItemInfo 를 집어 넣었놓는 변수 , 존재하면 해당 인벤토리의 위치가 변경되었을 때 , EquipItemInfo의 EquipItemInfo에 접근해 변경된 인벤토리 위치를 저장시켜줌
     /// </summary>
     public EquipItemInfo equipItemInfo;
-    
+    public Transform interactionCanvas;
     GameObject moveItemSlot;
     static bool isDrag;
 
@@ -64,8 +66,8 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
                 return;
             }
             try {   
-                if(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type != "Postion"){
-                    equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
+                if(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type != "Postion"){ 
+                    equipAbleSlot = interactionCanvas.Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
                 }
                if(gameObject.tag == "EquipItem") {
                     Socket.Instance.this_player_MoveObject.attack += ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_damage;
@@ -89,7 +91,10 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     }
     private void Start()
     {
-         if(itemPooling == null) itemPooling = ItemPooling.ItemPool;
+        if(itemPooling == null) itemPooling = ItemPooling.ItemPool;
+
+        inventoryData = transform.parent.parent.parent.GetComponent<GetInventoryData>();
+
         if (transform.parent.parent.Find("ItemUI"))
         {
             itemUI = transform.parent.parent.Find("ItemUI").gameObject;
@@ -98,12 +103,8 @@ public class ShowItemUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             itemRectTransForm = itemUI.GetComponent<RectTransform>();
         }
         if(thisSlotItemType != 0 && thisSlotItemType != 4 && thisSlotItemType != 5){
-            equipAbleSlot = transform.root.Find("InventoryANDstatus").Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
+            //equipAbleSlot = transform.root.Find("Equip").Find(ItemPooling.ItemPool.itemList.itemDatas[thisSlotItemType - 1].item_Type).gameObject;
         }
-        inventoryData = transform.parent.parent.parent.GetComponent<GetInventoryData>();
-        
-        
-        
     }
     public void OnPointerEnter(PointerEventData eventData)
     {

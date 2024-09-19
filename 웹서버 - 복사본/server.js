@@ -9,6 +9,7 @@ var db = require('./bin/DB.js');
 const { connect } = require('http2');
 const { debug } = require('console');
 const { spawn } = require('child_process');
+const { queryObjects } = require('v8');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -134,6 +135,17 @@ app.post('/mapData', (req, res) => {
             }
         }
         res.send(data);
+    })
+})
+app.post('/getQuestData' , (req , res) => {
+    query = 'SELECT * FROM QUEST';
+    console.log("get Quest");
+    db.query(query , function(err, rows , fields) {
+        var data = {
+            quests : rows
+        }
+        console.log(data)
+        res.send(JSON.stringify(data));
     })
 })
 var id;
@@ -288,12 +300,9 @@ wss.on('connection', async (ws, req) => {
         data = JSON.parse(data)
         if(data.title == "CheckThisMapEnemy"){
             let who = userStateChange(ws);
+            ws.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList , users : thisMapUserList , NPC : NpcSpawn[userList[who].mapName]}));
             wss.clients.forEach(function each(client) {
-
-                if(ws.id == client.id) {
-                    client.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList , users : thisMapUserList , NPC : NpcSpawn[userList[who].mapName]}))
-                }
-                else if(ws.id != client.id) {
+                if(ws.id != client.id) {
                     client.send(JSON.stringify({title : "UserChangeMap" , this_player : userList[who]}))
                 }
             })
@@ -670,7 +679,7 @@ async function EnemyInit() {
                 
                 if(rows[i].npcValue[j] != 0) {
                     const npcRows = await db.query(query2 , [rows[i].npcValue[j]]);
-                    NPCList.push({id : NPCID , type : rows[i].npcValue[j]});
+                    NPCList.push({id : NPCID , type : rows[i].npcValue[j] ,  npc_type : npcRows[0].npc_type});
                     NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : positionX, y : positionY} , talk : npcRows[0].talk , sellingList : npcRows[0].sellingList})
                     NPCID++;
                     console.log("npc 위치 : " + positionX + "," + positionY);

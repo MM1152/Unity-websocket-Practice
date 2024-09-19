@@ -12,7 +12,7 @@ public class Item : MonoBehaviour
         isPickUp = false;
     }
     private void Awake() {
-        inventoryData = GameObject.Find("InventoryANDstatus").GetComponent<GetInventoryData>();
+        inventoryData = GameObject.FindObjectOfType<GetInventoryData>();
     }
 
     private void OnTriggerStay2D(Collider2D other)

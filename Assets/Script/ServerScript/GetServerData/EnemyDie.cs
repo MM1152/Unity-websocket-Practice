@@ -1,12 +1,16 @@
+using System;
 using UnityEngine;
 
 public class EnemyDie : ISocket
 {
+    [SerializeField]Quest quest;
     public override void RunNetworkCode(Data data)
     {
+        quest ??= GameObject.FindObjectOfType<Quest>();
         Debug.Log($"DropItem {data.dropItem}");
-
+        
         EnemyAi enemy = enemyCount.Enemys[data.enemy.id].GetComponent<EnemyAi>();   
+        if(quest.questData.enemyType != 0 && quest.questData.enemyType == enemy.enemyData.type) quest.questData.count++;
         Transform killUserPos = GameObject.Find(data.this_player.id).transform;
         if(enemy.gameObject.activeSelf){
             enemy.Hpbar.value = data.enemy.Hp;

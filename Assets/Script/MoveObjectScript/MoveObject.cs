@@ -73,19 +73,20 @@ public class MoveObject : IMoveObj
     }
     public void Awake()
     {
-
         enemyCount = GameObject.Find("EnemyCount").GetComponent<EnemyCount>();
-        UI = gameObject.transform.Find("InventoryANDstatus").gameObject;
+
+        UI = GameObject.FindObjectOfType<GetInventoryData>().gameObject;
         UI.transform.Find("Skill").gameObject.SetActive(true);
         UI.transform.Find("SkillCoolTime").gameObject.SetActive(true);
-        text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
-        attackShow = gameObject.transform.Find("Attack").gameObject;
-        playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
-        exp = gameObject.transform.Find("Canvas").Find("ExpBar").GetComponent<ExpBarUI>();
-        stat = gameObject.transform.Find("InventoryANDstatus").Find("Status").GetComponent<SetStatsUI>();
+        stat = UI.transform.Find("Status").GetComponent<SetStatsUI>();
         PosionSlot = UI.transform.Find("PositionSlot").gameObject;
         levelUI = UI.transform.Find("Level").gameObject;
 
+        exp = gameObject.transform.Find("BackGroundCanvas").Find("ExpBar").GetComponent<ExpBarUI>();
+        text = gameObject.transform.Find("BackGroundCanvas").Find("Name").GetComponent<Text>();
+
+        attackShow = gameObject.transform.Find("Attack").gameObject;
+        playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
 
         PosionSlot.SetActive(true);
         exp.gameObject.SetActive(true);
@@ -129,13 +130,13 @@ public class MoveObject : IMoveObj
             Debug.Log(FindNearEnemy().name);
             range.CheckAttackPossible();
         }
-
         StartCoroutine(AttackShow());
         Socket.Instance.ws.Send(JsonUtility.ToJson(new Data("AttackOtherPlayer", gameObject.name)));
     }
     public IEnumerator AttackShow()
-    {    
-        attackShow.SetActive(true);
+    {
+        if(!AutoBattle.autoBattle) attackShow.SetActive(true);
+        
         yield return new WaitUntil(() => attackTime <= 0);
         attackTime = attackCoolTime;
         IsAttack = false;

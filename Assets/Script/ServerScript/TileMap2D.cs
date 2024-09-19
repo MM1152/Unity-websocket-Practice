@@ -62,6 +62,7 @@ public class TileMap2D : MonoBehaviour
     public void GetData(string result)
     {
         mapDownLoad = false;
+        ChangeScene.gameObject.SetActive(true);
         StartCoroutine(ChangeMap());
         try
         {
@@ -152,6 +153,6 @@ public class TileMap2D : MonoBehaviour
             mapNameText.color = new Color(1f, 1f, 1f, Alpha);
             yield return null;
         }
-
+        ChangeScene.gameObject.SetActive(false);
     }
 }

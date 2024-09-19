@@ -13,11 +13,15 @@ public class ChangeMap : MonoBehaviour , IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        Change(currentMapName);        
+    }
+
+    public void Change(string mapName){
         MapData mapData = new MapData();
         mapData.title = "changeMap";
-        mapData.mapName = currentMapName;
-        Socket.Instance.this_player_MoveObject.playerMap = currentMapName;
-        HttpRequest.HttpRequests.Request("mapData" , "NeedMapName" , currentMapName , (value) => tilemap2D.GetData(value) , playerSpawnPos);
+        mapData.mapName = mapName;
+        Socket.Instance.this_player_MoveObject.playerMap = mapName;
+        HttpRequest.HttpRequests.Request("mapData" , "NeedMapName" , mapName , (value) => tilemap2D.GetData(value) , playerSpawnPos);
         Socket.Instance.ws.Send(JsonUtility.ToJson(mapData));
         Socket.Instance.this_player.transform.position = playerSpawnPos;
     }
