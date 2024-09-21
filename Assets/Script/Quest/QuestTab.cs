@@ -15,12 +15,15 @@ public class QuestTab : MonoBehaviour
         gameManager = GameManager.Instance;
         quest = GetComponentInParent<QuestNPC>().quest;
     }
-    private void FixedUpdate() {
-        
-    }
     private void SetNpcQuestEffect(bool qusetFin){
         questNpcEffect[0].SetActive(qusetFin);
         questNpcEffect[1].SetActive(!qusetFin);
     }
-
+    public void AcceptQuest(){
+        // 현재 플레이어의 퀘스트 단계에 맞춰 진행
+        // quest.SettingQuest();
+    }
+    public void RefusalQuest(){
+        this.gameObject.SetActive(false);
+    }
 }
