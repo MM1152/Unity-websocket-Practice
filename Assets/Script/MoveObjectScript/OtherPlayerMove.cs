@@ -6,18 +6,18 @@ public class OtherPlayerMove : IMoveObj
 {
     private float radio;
     public Text text;
-    [SerializeField]
 
     SpriteRenderer playerHand;
     public GameObject attackShow;
 
-
+    private GameObject offObject;
     private void Awake()
     {
         Init();
+        gameObject.transform.Find("InteractionCanvas").gameObject.SetActive(false);
         attackShow = gameObject.transform.Find("Attack").gameObject;
         radio = 0.02f;
-        text = gameObject.transform.Find("Canvas").Find("Name").GetComponent<Text>();
+        text = gameObject.transform.Find("BackGroundCanvas").Find("Name").GetComponent<Text>();
         playerHand = gameObject.transform.Find("Hand").GetComponent<SpriteRenderer>();
     }
     private void Start()

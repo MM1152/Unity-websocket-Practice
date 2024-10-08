@@ -10,6 +10,7 @@ public class Login : MonoBehaviour
 {
     public Text nick_name_text;
     [SerializeField] SelectCharacter selectCharacter; 
+    [SerializeField] GameObject signUp;
     public GameObject characterSelect;
     public Text ID;
     public Text Password;
@@ -33,6 +34,9 @@ public class Login : MonoBehaviour
             string JsonData = JsonUtility.ToJson(loginData);
             httpRequest.Request("login", "Login", JsonData, (value) => GetData(value));
         }
+    }
+    public void SignUpButtonPush(){
+        signUp.SetActive(true);
     }
     public void NickNameMakeButtonPush(){
         

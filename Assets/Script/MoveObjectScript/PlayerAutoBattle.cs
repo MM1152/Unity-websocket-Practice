@@ -28,7 +28,7 @@ public class PlayerAutoBattle : MonoBehaviour
                     player.FlipX(target.transform.position.x - transform.position.x);
                     player.stateMachine.Transition(new MoveState());
                 }
-                else if(player.getUserData().attackRadious >= Vector2.Distance(target.transform.position, transform.position) && !player.IsAttack)
+                else if(player.getUserData().attackRadious >= Vector2.Distance(target.transform.position, transform.position) && player.attackTime <= 0 && !player.IsAttack)
                 {
                     player.stateMachine.Transition(new AttackState());
                 }

@@ -43,6 +43,7 @@ public class TileMap2D : MonoBehaviour
     public Transform decoSpawn;
     public Transform colliderSpawn;
     private bool mapDownLoad;
+    public static bool mapDownLoadEnd;
     public GameObject Tile;
     private bool firstIn;
     private void Awake()
@@ -62,6 +63,7 @@ public class TileMap2D : MonoBehaviour
     public void GetData(string result)
     {
         mapDownLoad = false;
+        mapDownLoadEnd = false;
         ChangeScene.gameObject.SetActive(true);
         StartCoroutine(ChangeMap());
         try
@@ -154,5 +156,6 @@ public class TileMap2D : MonoBehaviour
             yield return null;
         }
         ChangeScene.gameObject.SetActive(false);
+        mapDownLoadEnd = true;
     }
 }

@@ -7,7 +7,7 @@ public class HitState : Istate
     {
         this.moveObject = moveObject;
         moveObject.ani.SetTrigger("IsHit");
-        
+        moveObject.IsAttack = false;
     }
     public void Enter(IMoveObj moveObject, Vector2 targetPos){}
 

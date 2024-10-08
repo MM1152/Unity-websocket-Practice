@@ -56,8 +56,9 @@ public class GetInventoryData : MonoBehaviour
         SetEquipItem(inven);
         SetEquipItemTab(inven);
     }
-    public void SetInventory(int item , GameObject thisItem)
+    public bool   SetInventory(int item , GameObject thisItem)
     {
+        bool setItem = false;
         bool setPostion = false;
         if(itemPooling.itemList.itemDatas[item - 1].item_Type == "Postion"){
             if (itemsNumber[item - 1] != 0){
@@ -77,6 +78,7 @@ public class GetInventoryData : MonoBehaviour
                 saveData.Value[1] = 1;
                 string jsonData = JsonUtility.ToJson(saveData);
                 httpRequest.Request("saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
+                setItem = true;
                 break;
             }
             else if(showItemUi.ThisSlotItemType == item && setPostion){
@@ -87,10 +89,17 @@ public class GetInventoryData : MonoBehaviour
                 saveData.Value[1] = showItemUi.thisSlotCount;
                 string jsonData = JsonUtility.ToJson(saveData);
                 httpRequest.Request("saveinventoryData", "item", jsonData , (value) => PickUpItem(thisItem));  
+                setItem = true;
                 break;
             }
             
         }
+        if(!setItem) {
+            Debug.LogError("item setting fail");
+            return setItem;
+        }
+        return setItem;
+        
     }
     void PickUpItem(GameObject thisItem){
         if(thisItem != null){

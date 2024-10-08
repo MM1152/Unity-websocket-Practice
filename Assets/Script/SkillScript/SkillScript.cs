@@ -1,4 +1,5 @@
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -26,13 +27,25 @@ public class SkillScript : MonoBehaviour , IBeginDragHandler , IDragHandler , IP
         get => unLock;
         set {
             unLock = value;
-            SkillLock.SetActive(false);
-            texts[0].gameObject.SetActive(true);
-            if(SkillData.skill_damage == 0) return;
-            texts[1].gameObject.SetActive(true);
+            if(gameObject.transform.parent.gameObject.activeSelf) StartCoroutine(SkillUnLock());
+            else {
+                SkillLock.SetActive(false);
+                texts[0].gameObject.SetActive(true);
+                if(SkillData.skill_damage != 0) texts[1].gameObject.SetActive(true);
+            }
         }
     }
-    
+    private IEnumerator SkillUnLock(){
+
+        
+        yield return new WaitForSeconds(1f);
+
+        SkillLock.SetActive(false);
+        texts[0].gameObject.SetActive(true);
+        if(SkillData.skill_damage != 0) texts[1].gameObject.SetActive(true);
+        
+        
+    }
     public void OnBeginDrag(PointerEventData eventData)
     {
         if(Unlock){

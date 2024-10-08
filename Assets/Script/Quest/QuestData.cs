@@ -20,8 +20,8 @@ public class QuestData{
     [Header("수행해야할 퀘스트 목표")]
     public string questexplanation;
     [Header ("NPC 정보")]
-    public Transform giveQuestNPC;
-    public Transform clearQuestNPC;
+    public Transform clearQuestTrans;
+    public int clearQuestNpc;
     public string mapName;
     [Header("퀘스트 클리어 보상")]
     public int clearGold;
@@ -32,4 +32,12 @@ public class QuestData{
 [Serializable]
 public class QuestDatas{
     public QuestData[] quests;
+}
+
+[Serializable]
+public class ClearQuest{
+    public string title;
+    public int clearGold;
+    public int clearExp;
+    public int clearItem;
 }

@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 public class ChangeMap : MonoBehaviour , IPointerClickHandler
 {
+    public static ChangeMap Instance;
     public string currentMapName;
     public Vector2 playerSpawnPos;
     public TileMap2D tilemap2D;
@@ -28,5 +29,6 @@ public class ChangeMap : MonoBehaviour , IPointerClickHandler
     private void Awake() {
         tilemap2D = GameObject.Find("Server").GetComponent<TileMap2D>();
         changeMap = transform.parent.gameObject;
+        Instance = this;
     }
 }

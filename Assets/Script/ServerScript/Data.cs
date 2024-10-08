@@ -66,6 +66,8 @@ public class UserData{
     public int defense;
     //public int attack;
     public float attackRadious;
+    public int clearquestnumber;
+    public int[] learned_skill;
     public Dictionary<string , int> equipItem;
 }
 [Serializable]
@@ -82,6 +84,7 @@ public class EnemyData{
     public int Hp;
     public int MaxHp;
     public string mapName;
+    public int DropGold;
     public List<int> dropItemList;
     public UserData FollowTarger;
 }
@@ -94,6 +97,7 @@ public class NPCData{
     public Vector2 spawnPos;
     public int[] sellingList;
     public int[] quest_type;
+    public string mapName;
     public NPC[] NPCList;
 }
 
@@ -102,4 +106,5 @@ public class NPC {
     public int id;
     public int type;
     public int npc_type;
+    public int npc_image;
 }

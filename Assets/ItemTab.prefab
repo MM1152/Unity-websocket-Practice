@@ -255,6 +255,9 @@ MonoBehaviour:
   thisSlotItemType: 0
   equipText: {fileID: 3906495727833663470}
   InitImage: {fileID: 21300000, guid: 7066e0747291df44fa5c2bf93bee3a6e, type: 3}
+  equipAbleSlot: {fileID: 0}
+  equipItemInfo: {fileID: 0}
+  interactionCanvas: {fileID: 0}
   slotCount: 0
   equipItem: 0
 --- !u!61 &7198181705369906344
@@ -300,7 +303,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 30, y: 30}
+  m_Size: {x: 40, y: 35}
   m_EdgeRadius: 0
 --- !u!50 &182735517367118688
 Rigidbody2D:

@@ -60,8 +60,7 @@ public class Socket : MonoBehaviour
                 ws.OnMessage += (sender , e) => {
                     try {
                     Data data =  JsonConvert.DeserializeObject<Data>(e.Data);
-
-                    if(data.title == "CreateOtherUser" ){
+                    if(data.title == "BuyItem" ){
                         Debug.Log(e.Data);
                     }
                     Action action = null;

@@ -37,14 +37,13 @@ public class MoveObject : IMoveObj
     public float moveX;
     public float moveY;
     public bool firstSendMoveData;
-    public float attackTime;
     public int attack;
 
     public float attackCoolTime;
     public void setUserData(UserData userData)
     {
         this.UserData = userData;
-        attack = UserData.strStats * 10;
+        attack = userData.strStats * 5;
     }
     public UserData getUserData()
     {
@@ -124,7 +123,10 @@ public class MoveObject : IMoveObj
     }
     public override void Attack()
     {
-        
+        if(attackTime > 0) {
+            stateMachine.Transition(new IdleState());
+            return;
+        }
         if(range != null) {
             range.target = FindNearEnemy().transform;
             Debug.Log(FindNearEnemy().name);
@@ -137,7 +139,7 @@ public class MoveObject : IMoveObj
     {
         if(!AutoBattle.autoBattle) attackShow.SetActive(true);
         
-        yield return new WaitUntil(() => attackTime <= 0);
+        yield return new WaitUntil(() => ani.GetCurrentAnimatorStateInfo(0).IsName("PlayerAttack") && ani.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.8);
         attackTime = attackCoolTime;
         IsAttack = false;
         attackShow.SetActive(false);

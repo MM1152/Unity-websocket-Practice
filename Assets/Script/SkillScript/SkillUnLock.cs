@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -29,7 +30,13 @@ public class SkillUnLock : MonoBehaviour , IPointerClickHandler
     }
     public void PurchaseSkill(){
         skillScript.Unlock = true;   
-        //HttpRequest를 통해 해당하는 스킬을 구매했다고 서버로 데이터 전송 후 데이터 저장
+        SkillData sendSkillData = new SkillData();
+        succes.SetActive(false);
+        sendSkillData.skill_type = skillScript.SkillData.skill_type;
+        sendSkillData.id = Socket.Instance.this_player.name;
+        //HttpRequest를 통해 해당하는 스킬을 구매했다고 서버로 데이터 전송 후 데이터 저장   
+        HttpRequest.HttpRequests.Request("purchaseSkill" , "skillType" , JsonUtility.ToJson(sendSkillData) , (data) => HttpRequest.HttpRequests.DataInsertSussecs(data));
         
     }
+    
 }

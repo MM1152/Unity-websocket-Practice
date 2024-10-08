@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class IMoveObj : MonoBehaviour {
     
     public Animator ani;
+    public float attackTime;
     public bool useSkill;
     public Range range;
     public SpriteRenderer sp;

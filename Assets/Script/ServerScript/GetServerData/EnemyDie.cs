@@ -10,7 +10,7 @@ public class EnemyDie : ISocket
         Debug.Log($"DropItem {data.dropItem}");
         
         EnemyAi enemy = enemyCount.Enemys[data.enemy.id].GetComponent<EnemyAi>();   
-        if(quest.questData.enemyType != 0 && quest.questData.enemyType == enemy.enemyData.type) quest.questData.count++;
+        if(quest.QuestData.enemyType != 0 && quest.QuestData.enemyType == enemy.enemyData.type) quest.QuestData.count++;
         Transform killUserPos = GameObject.Find(data.this_player.id).transform;
         if(enemy.gameObject.activeSelf){
             enemy.Hpbar.value = data.enemy.Hp;

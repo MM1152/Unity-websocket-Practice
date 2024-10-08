@@ -19,7 +19,8 @@ public class Item : MonoBehaviour
     {
         if (other.tag == "Player" && targetPos.gameObject == other.gameObject && Input.GetKeyDown(KeyCode.X) && !isPickUp)
         {
-            inventoryData.SetInventory(GetComponent<SetItemInfo>().ItemIndex , this.gameObject);
+            bool insert = inventoryData.SetInventory(GetComponent<SetItemInfo>().ItemIndex , this.gameObject);
+            if (insert) Debug.Log("Fail To Get DropItem");
             ItemPooling.Instance.ReturnObject(this);
             isPickUp = true;
         }

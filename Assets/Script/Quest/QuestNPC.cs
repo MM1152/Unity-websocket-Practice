@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
+using System.Diagnostics;
 using UnityEngine;
 
 /*
@@ -13,25 +11,50 @@ public class QuestNPC : MonoBehaviour
     private NpcAi npc;
     public Quest quest { get ; private set; }
     [SerializeField] GameObject questTab;
+    [SerializeField] GameObject clearQuestTab;
+    [SerializeField] GameObject[] questNpcEffect = new GameObject[2];
     private void Start() {
         npc = GetComponent<NpcAi>();
-                
+        questTab = transform.Find("Canvas").Find("QuestTab").gameObject;
+        clearQuestTab = transform.Find("Canvas").Find("ClearQuestTab").gameObject;
+        questNpcEffect[0] = transform.Find("QuestMark").gameObject;
+        questNpcEffect[1] = transform.Find("NoneQuestMark").gameObject;
     }
 
     private void FixedUpdate() {
         if(Socket.Instance.this_player == null) return;
         if(quest == null) quest = Socket.Instance.this_player.transform.Find("InteractionCanvas").Find("Quest").GetComponent<Quest>();
+        SetNpcQuestEffect(quest.clear);
     }
+    private void SetNpcQuestEffect(bool qusetFin){
+        if(GiveQuest()) {
+            questNpcEffect[0].SetActive(!qusetFin);
+            questNpcEffect[1].SetActive(qusetFin);
+        }else {
+            questNpcEffect[0].SetActive(false);
+            questNpcEffect[1].SetActive(false);
+        }
+  
+    }
+    private bool GiveQuest(){
+        foreach(var quests in npc.NpcData.quest_type) {
+            if(quests == Socket.Instance.this_player_MoveObject.getUserData().clearquestnumber + 1) {
+                return true;
+            }
+        }
+        return false;
 
-    private void OnTriggerEnter2D(Collider2D other) {
-        if(other.gameObject == Socket.Instance.this_player) {
-            if(Input.GetKeyDown(KeyCode.X)) questTab.SetActive(true);
+    }
+    private void Update() {
+        if(npc.inPlayer && GiveQuest() && !quest.progressQuest) {
+            if(Input.GetKeyDown(KeyCode.X)) questTab.SetActive(!questTab.activeSelf);
+        }else if(npc.inPlayer && quest.clear) {
+            if(Input.GetKeyDown(KeyCode.X)) clearQuestTab.SetActive(!clearQuestTab.activeSelf);
         }
     }
-
     private void OnTriggerExit2D(Collider2D other) {
         if(other.gameObject == Socket.Instance.this_player) {
-            if(Input.GetKeyDown(KeyCode.X)) questTab.SetActive(false);
+            questTab.SetActive(false);
         }
     }
 }

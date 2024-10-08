@@ -13,7 +13,6 @@ public class CheckThisMapEnemy : ISocket
 
         foreach(var NPC in data.NPC){
             GameObject this_npc = NPCcount.npc_List[NPC.id];
-            Debug.Log(this_npc.name);
             this_npc.transform.localPosition = NPC.spawnPos;
             this_npc.GetComponent<NpcAi>().NpcData = NPC;
             this_npc.SetActive(true);
@@ -24,7 +23,6 @@ public class CheckThisMapEnemy : ISocket
         }
         
         foreach(var enemy in data.enemyList){
-            Debug.Log(enemy.id);
             enemyCount.Enemys[enemy.id].SetActive(true);
         }
 

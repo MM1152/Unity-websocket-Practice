@@ -7,9 +7,10 @@ const app = express()
 
 var db = require('./bin/DB.js');
 const { connect } = require('http2');
-const { debug } = require('console');
+const { debug, Console } = require('console');
 const { spawn } = require('child_process');
 const { queryObjects } = require('v8');
+const json = require('body-parser/lib/types/json.js');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -36,6 +37,7 @@ app.post('/getData', (req, res) => {
 
 app.post('/inventoryData', (req, res) => {
     var result = req.body;
+    console.log(result);
     let who = userStateChange(result)
     var query = 'Select * from user_inventory where id = ?'
     var params = [userList[who].name]
@@ -50,17 +52,46 @@ app.post('/inventoryData', (req, res) => {
         res.send(data);
     })
 })
-app.post('/getSkillData' , (req , res) => {
-    var getSkillquery = "select * from skill where learnable_character = ?";
-    console.log( req.body.needSkill);
-    var getSkillparams = req.body.needSkill
-    db.query(getSkillquery , getSkillparams , function(err , rows , fields) {
-        var skillData = {
-            skillsData : rows
-        };
-        console.log(skillData);
-        res.send(skillData)
+
+app.post('/purchaseSkill' , (req, res) => {
+    var skillData = JSON.parse(req.body.skillType);;
+    var who = userStateChange(skillData);
+    var insertquery = `update user_status set learned_skill = json_merge_preserve(learned_skill , JSON_ARRAY(?)) where id = ?`
+    var insertparmas = [skillData.skill_type , userList[who].name]
+
+    db.query(insertquery , insertparmas , function(err) {
+        if(err) res.send('insert fail');
+        else res.send(`insert sussecs\n **Data Type = ${skillData.skillType} , ${userList[who]}`);
     })
+})
+app.post('/signup' , (req , res) => {
+    var result = JSON.parse(req.body.signData);
+    var query = "insert into user_info (id , password) values (? , ?)";
+    var params = [result.ID , result.Password];
+
+    db.query(query , params , function(err) {
+        if(err) res.send("회원가입 실패");
+        else res.send("회원가입 성공");
+    })
+})
+app.post('/getSkillData' , async (req , res) => {
+    var result = JSON.parse(req.body.needSkill);
+
+    var getSkillquery = "select * from skill where learnable_character = ?";
+    var getSkillparams = result.type;
+
+    let who = userStateChange(result);
+    var getSkilllearndquery = "select learned_skill from user_status where id = ?";
+    var getSkilllearndparams = userList[who].name;
+   
+    const skillData = await db.query(getSkillquery , getSkillparams);
+    const learnedSkillData = await db.query(getSkilllearndquery , getSkilllearndparams);
+    var sendData = {
+        skillsData : skillData,
+        skillLearn : learnedSkillData
+    };
+
+    res.send(sendData)
 })
 app.post('/saveEquipItem' , (req , res) => {
     var result = JSON.parse(req.body.Equip);
@@ -144,7 +175,6 @@ app.post('/getQuestData' , (req , res) => {
         var data = {
             quests : rows
         }
-        console.log(data)
         res.send(JSON.stringify(data));
     })
 })
@@ -264,6 +294,7 @@ wss.on('connection', async (ws, req) => {
     
     
     await init(ws);
+    console.log(NPCList);
     let who = userStateChange(ws);
     var data1 = JSON.stringify({ 
         title: "Init",
@@ -272,7 +303,6 @@ wss.on('connection', async (ws, req) => {
         enemyList: enemyList,
         NPC : [{NPCList : NPCList}]
     });
-    console.log(userList);
     ws.send(data1);
     ws.on('close', () => {
         for (let i = 0; i < userList.length; i++) {
@@ -340,23 +370,51 @@ wss.on('connection', async (ws, req) => {
                 })
             })
         }
+        if(data.title == "clearQuest") {
+            let who = userStateChange(ws);
+            
+            userList[who].gold += data.clearGold;
+            userList[who].clearquestnumber++;
+            CheckExp(userList[who] , data.clearExp , ws);
+            // 유저의 clearQuestNumber를 데이터베이스에 플러스된 클리어 넘버를 업데이트하는 로직
+            const userClearQuestNumberPlus = "Update user_status set clearquestnumber = ? where id = ?";
+            const params = [userList[who].clearquestnumber , userList[who].name];
+            db.query(userClearQuestNumberPlus , params , function(err) {
+                if(err) console.log(err);
+                else {
+                    data = {
+                        title : "ClearQuestReward",
+                        this_player : userList[who],
+                        useItemType : data.clearGold,
+                        dropItem : data.clearItem
+                    }
+                    ws.send(JSON.stringify(data));
+                }
+            })
+
+        }
         if(data.title == "StatusUpgrade") {
-            let who = userStateChange(data.this_player);
+            let who = userStateChange(ws);
             let query = "Update user_status set strStats = ? , intStats = ? where id = ?"
             let params = [data.this_player.strStats , data.this_player.intStats , userList[who].name]
             userList[who].strStats = data.this_player.strStats;
             userList[who].intStats = data.this_player.intStats;
 
-            db.query(query , params , function() {
+            db.query(query , params , function(err) {
+                
                 console.log(`${data.this_player.id} 의 stat이 업데이트 되었습니다`);
                 console.log(`힘스탯 : ${data.this_player.strStats} 지능스탯 : ${data.this_player.intStats}`);
             })
-            
+
+            var data1 = {
+                title : "UpgradeStat" ,
+                id : "Str"  
+            }
+            ws.send(JSON.stringify(data1));
         }
         if (data.title == "UsePostion"){
             let who = userStateChange(data);
             console.log("Use Postion ");
-            console.log(data);
             userList[who].hp += itemList[data.Value[0]- 1].HPrecovery;
             userList[who].mp += itemList[data.Value[0] - 1].MPrecovery;
             
@@ -401,7 +459,7 @@ wss.on('connection', async (ws, req) => {
             var query = "select * from user_inventory where id = ?";
             var params = [userList[who].name]
             db.query(query, params, function (err, rows, fields) {
-                var result = rows[0].gold + enemyList[data.enemy.id].DropGold;
+                var result = rows[0].gold + data.useItemType;
                 var query = "Update user_inventory set gold = ? where id = ?";
                 var params = [result, userList[who].name]
                 console.log("getGold");
@@ -415,18 +473,21 @@ wss.on('connection', async (ws, req) => {
             var query = "select * from user_inventory where id = ?";
             var params = [userList[who].name]
             db.query(query, params, function (err, rows, fields) {
+                if(err) err;
                 console.log("buy item");
                 var result = rows[0].gold - itemList[data.id - 1].cost;
                 var query = "Update user_inventory set gold = ? where id = ?";
                 var params = [result, userList[who].name]
 
                 db.query(query, params);
+                /*
                 var data1 = {
                     title : "BuyItem",
                     id : ws
                 }
-
-                only_player_respose(data1)
+                
+                ws.send(JSON.stringify(data1))
+                */
             })  
             
             
@@ -434,17 +495,13 @@ wss.on('connection', async (ws, req) => {
         if (data.title == "HitEnemy") {
             enemyList.forEach(element => {
                 if (element.id == data.id) {
-                    console.log(data);
                     element.Hp -= data.hitDamage;
                     if (element.Hp < 0) {
                         element.state = "Die"
                         let who = userStateChange(data.this_player);
-                        userList[who].exp += element.DropExp;
-                        if (userList[who].exp >= userList[who].maxExp) {
-                            userList[who].Level++;
-                            userList[who].exp -= userList[who].maxExp;
-                            userList[who].maxExp = userList[who].Level * 100;
-                        }
+                        
+                        CheckExp(userList[who] , element.DropExp , ws);
+                       
                         //fix !
                         var isDropItem = GetRandomInt(0, 100)
 
@@ -489,6 +546,15 @@ wss.on('listening', () => {
 setInterval(EnemyChangeState, 1000)
 
 let AttackInterval = new Map();
+
+function CheckExp(player , exp , ws){
+    player.exp += exp;
+    if(player.exp >= player.maxExp){
+        player.Level++;
+        player.exp -= player.maxExp;
+        player.maxExp = player.Level * 100;
+    } 
+}
 
 function EnemyChangeState() {
     for (let i = 0; i < enemyList.length; i++) {
@@ -624,20 +690,11 @@ function EnemyRespawn(enemy) {
 
 }
 
-function only_player_respose(data){
-    wss.clients.forEach(function each(client) {
-        if(data.id == client.id){
-            client.send(JSON.stringify(data))
-        }
-    })
-}
-
 function all_player_response(data) {
     wss.clients.forEach(function each(client) {
         client.send(JSON.stringify(data))
     })
 }
-
 function without_player_response(data) {
     wss.clients.forEach(function each(client) {
         if (data.id != client.id) {
@@ -679,10 +736,9 @@ async function EnemyInit() {
                 
                 if(rows[i].npcValue[j] != 0) {
                     const npcRows = await db.query(query2 , [rows[i].npcValue[j]]);
-                    NPCList.push({id : NPCID , type : rows[i].npcValue[j] ,  npc_type : npcRows[0].npc_type});
-                    NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : positionX, y : positionY} , talk : npcRows[0].talk , sellingList : npcRows[0].sellingList})
+                    NPCList.push({id : NPCID , type : rows[i].npcValue[j] ,  npc_type : npcRows[0].npc_type , npc_image : npcRows[0].npc_image});
+                    NpcSpawn[rows[i].mapName].push({id : NPCID , type : npcRows[0].type , name : npcRows[0].name ,spawnPos : {x : positionX, y : positionY} , talk : npcRows[0].talk , sellingList : npcRows[0].sellingList , quest_type : npcRows[0].quest_type , mapName : rows[i].mapName})
                     NPCID++;
-                    console.log("npc 위치 : " + positionX + "," + positionY);
                 }
 
                 if (rows[i].enemyValue[j] != 0) {
@@ -811,7 +867,7 @@ async function ItemListInit(){
 function init(ws) {
     return new Promise((resolve, rejects) => {
         
-        var getUserDataquery = "select user_info.id , attackRadious , user_info.character_type ,hp , mp , strStats , intStats , exp , nick_name , maxHp, user_inventory.equipItemSlot , Level from user_status , user_info , user_inventory where user_status.id = ? && user_info.id = ? && user_inventory.id = ?";
+        var getUserDataquery = "select user_status.clearquestnumber ,user_info.id , attackRadious , user_info.character_type ,hp , mp , strStats , intStats , exp , nick_name , maxHp, user_inventory.equipItemSlot , Level from user_status , user_info , user_inventory where user_status.id = ? && user_info.id = ? && user_inventory.id = ?";
         var getUserDataparams = [id, id , id];
 
         db.query(getUserDataquery, getUserDataparams, function (err, rows, fields) {
@@ -843,6 +899,7 @@ function init(ws) {
                 equipItem : rows[0].equipItemSlot,
                 defense : defenseValue,
                 //attack : attackValue + (rows[0].strStats * 10),
+                clearquestnumber : rows[0].clearquestnumber,
                 attackRadious : rows[0].attackRadious
             })
 

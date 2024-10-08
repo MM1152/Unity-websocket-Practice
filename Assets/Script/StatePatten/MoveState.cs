@@ -20,10 +20,10 @@ public class MoveState : Istate{
     public void Update()
     {
         moveObject.Move();   
-        if(Input.GetKeyDown(KeyCode.Space)){
+        if(Input.GetKeyDown(KeyCode.Space) && moveObject.attackTime <= 0 && !moveObject.IsAttack){
             moveObject.stateMachine.Transition(new AttackState());
         }
-        if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0 && !AutoBattle.autoBattle){
+        if(Input.GetAxisRaw("Horizontal") == 0 && Input.GetAxisRaw("Vertical") == 0 && !AutoBattle.autoBattle && !Quest.autoQuest){
             moveObject.stateMachine.Transition(new IdleState());
         }
     }

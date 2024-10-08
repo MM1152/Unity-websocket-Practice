@@ -4,10 +4,9 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     Socket socket;
-    [SerializeField] GetInventoryData setGold;
+
     private void Awake() {
         socket = Socket.Instance;
-        setGold = socket.this_player.GetComponent<MoveObject>().UI.GetComponent<GetInventoryData>();
     }
     public IEnumerator AbsorbCoin(Transform userPos)
     {   
@@ -18,8 +17,8 @@ public class Coin : MonoBehaviour
             transform.position = Vector3.Lerp(transform.position , userPos.position  , radio);
             yield return null;
         }
-        HttpRequest.HttpRequests.Request("inventoryData", "id", socket.this_player.name, (value) => setGold.ChangeMoney(value , this));
         
+        CoinPooling.coinPooling.SettingCoin(this);
     }
 
 

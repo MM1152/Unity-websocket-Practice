@@ -22,6 +22,14 @@ public class HttpRequest : MonoBehaviour
         httpRequests = this;
         DontDestroyOnLoad(gameObject);
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="url">http://localhost:8001/뒷부분 작정</param>
+    /// <param name="FiledName"></param>
+    /// <param name="jsonData"></param>
+    /// <param name="callback"></param>
+    /// <returns></returns>
     public void Request(string url , string FiledName ,  string jsonData , Action<string> callback){
         url = "http://localhost:8001/" + url;
         StartCoroutine(Casting(url , FiledName , jsonData , callback));
@@ -64,5 +72,9 @@ public class HttpRequest : MonoBehaviour
         }else {
             Debug.Log("Connection Fail");
         }
+    }
+
+    public void DataInsertSussecs(string issussecs){
+        Debug.Log("Data InsertSussecs\nInsertCode " + issussecs);
     }
 }

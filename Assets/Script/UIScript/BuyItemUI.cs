@@ -20,7 +20,8 @@ public class BuyItemUI : MonoBehaviour
         Socket.Instance.ws.Send(JsonUtility.ToJson(data));
 
         HttpRequest.HttpRequests.Request("inventoryData", "id", Socket.Instance.this_player.name, (value) => inventoryData.ChangeMoney(value , null));
-        inventoryData.SetInventory(itemIndex , null);
+        bool insert = inventoryData.SetInventory(itemIndex , null);
+        if(insert) Debug.Log("Fail To Buying Item");
     }
     public void DontBuy() {
         this.gameObject.SetActive(false);

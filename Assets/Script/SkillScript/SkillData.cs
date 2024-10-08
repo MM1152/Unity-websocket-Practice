@@ -7,7 +7,18 @@ public class SkillDatas{
 }
 
 [Serializable]
+public class SkillLearn {
+    public int[] learned_skill;
+}
+
+[Serializable]
+public class SkillLearnData {
+    public SkillLearn[] skillLearn;
+}
+
+[Serializable]
 public class SkillData {
+    public string id;
     public int skill_type;
     public float skill_damage;
     public float skill_cooltime;
