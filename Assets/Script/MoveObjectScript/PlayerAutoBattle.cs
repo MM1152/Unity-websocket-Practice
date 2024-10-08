@@ -30,6 +30,7 @@ public class PlayerAutoBattle : MonoBehaviour
                 }
                 else if(player.getUserData().attackRadious >= Vector2.Distance(target.transform.position, transform.position) && player.attackTime <= 0 && !player.IsAttack)
                 {
+                    if(Socket.Instance.this_player_MoveObject.getUserData().type == 1) Socket.Instance.this_player_MoveObject.HitEnemy(target.gameObject , Socket.Instance.this_player_MoveObject.attack , Socket.Instance.this_player_MoveObject.getUserData());
                     player.stateMachine.Transition(new AttackState());
                 }
             }

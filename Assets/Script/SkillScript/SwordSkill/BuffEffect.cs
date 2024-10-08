@@ -15,6 +15,7 @@ public class BuffEffect : ISkill{
             return;     
         } else {
             BuffSkillController.buffType.Add(this.GetType().Name , 60f);
+            Socket.Instance.this_player_MoveObject.attack += 20; 
         }
         base.UseSkill();
     }

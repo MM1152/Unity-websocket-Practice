@@ -10,7 +10,13 @@ public class BuffSkillController : MonoBehaviour
     void Update()
     {
         foreach(var buff in buffType.Keys.ToList()) {
-            if (buffType[buff] > 0) buffType[buff] -= Time.deltaTime;
+            if(buffType[buff] > 0) buffType[buff] -= Time.deltaTime;
+            if(buffType[buff] <= 0) {
+                buffType.Remove(buff);
+                Socket.Instance.this_player_MoveObject.attack -= 20;
+            }
         }
+        
     }
+
 }

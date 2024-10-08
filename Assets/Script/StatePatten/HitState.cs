@@ -5,9 +5,11 @@ public class HitState : Istate
     private IMoveObj moveObject;
     public void Enter(IMoveObj moveObject)
     {
-        this.moveObject = moveObject;
-        moveObject.ani.SetTrigger("IsHit");
-        moveObject.IsAttack = false;
+        if(!moveObject.IsAttack) {
+            this.moveObject = moveObject;
+            moveObject.ani.SetTrigger("IsHit");
+            moveObject.IsAttack = false;
+        }        
     }
     public void Enter(IMoveObj moveObject, Vector2 targetPos){}
 
