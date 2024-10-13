@@ -14,7 +14,7 @@ public abstract class ISocket : MonoBehaviour
     protected ISocket(){
         socket = Socket.Instance;
     }
-    public void Start() {
+    public virtual void Start() {
         enemyCount ??= GameObject.Find("EnemyCount").GetComponent<EnemyCount>();    
         NPCcount = GameObject.Find("NPCcount").GetComponent<NPCcount>();
     }

@@ -337,6 +337,15 @@ wss.on('connection', async (ws, req) => {
                 }
             })
         }
+        if(data.title == "chatting") {
+            let who = userStateChange(ws)
+            var data = {
+                title : "ChattingManager" , 
+                this_player : userList[who],
+                chattingText : data.chattingText
+            }
+            all_player_response(data)
+        }
         if(data.title == "changeMap"){
             var result = data;
             var query = 'SELECT * FROM MAPDATA WHERE MAPNAME = ?';
@@ -415,7 +424,7 @@ wss.on('connection', async (ws, req) => {
         if (data.title == "UsePostion"){
             let who = userStateChange(data);
             console.log("Use Postion ");
-            userList[who].hp += itemList[data.Value[0]- 1].HPrecovery;
+            userList[who].hp += itemList[data.Value[0] - 1].HPrecovery;
             userList[who].mp += itemList[data.Value[0] - 1].MPrecovery;
             
             var query =  "Update user_inventory set item = JSON_SET(item , ? , JSON_ARRAY(? , ?)) where id = ?";

@@ -209,4 +209,11 @@ public class MoveObject : IMoveObj
     public override void Move(Vector2 targetPos) {
         
     }
+    public void ChatingSystem(){ // 엔터 시 채팅창 보이도록 구현
+        if(Input.GetKeyDown(KeyCode.KeypadEnter)) {
+            // 대화창 열리도록 구현
+        }
+    }
+
 }
+

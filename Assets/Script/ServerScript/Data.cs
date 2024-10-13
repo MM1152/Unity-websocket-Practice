@@ -10,6 +10,7 @@ public class Data{
     public Data() {}
     public string title;
     public string id;
+    public string chattingText;
     public int useItemType;
     public UserData[] users;
     public UserData this_player;
