@@ -7,6 +7,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using Newtonsoft.Json;
+using System.Linq;
 
 /// <summary>
 /// ws://localhost:8000 연결 
@@ -21,7 +22,7 @@ public class Socket : MonoBehaviour
     private static Socket socket;
     public ConcurrentQueue<Action> queue = new ConcurrentQueue<Action>();
     public string url;
-    public GameObject[] other ;
+    public List<GameObject> other ;
     public MoveObject[] otherMoveObject;
     public GameObject user;
     public WebSocket ws;
@@ -46,6 +47,7 @@ public class Socket : MonoBehaviour
     private void Awake(){
         QualitySettings.vSyncCount = 0; 
         Application.targetFrameRate = 120;
+        playerAnimator = Resources.LoadAll<RuntimeAnimatorController>("PlayerImage").ToList();
         components = ServerManager.GetComponents<Component>();
         foreach(Component component in components){
             if(component is MonoBehaviour){

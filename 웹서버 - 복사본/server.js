@@ -58,11 +58,22 @@ app.post('/purchaseSkill' , (req, res) => {
     var who = userStateChange(skillData);
     var insertquery = `update user_status set learned_skill = json_merge_preserve(learned_skill , JSON_ARRAY(?)) where id = ?`
     var insertparmas = [skillData.skill_type , userList[who].name]
+    
+    var gold = `select * from user_inventory where id = ?`;
+    var params = userList[who].name;
 
+    db.query(gold , params , function(err, rows) {
+        console.log(skillData);
+        var change = `update user_inventory set gold = ? where id = ?`;
+        var changeparams = [rows[0].gold - skillData.learnableGold , userList[who].name];
+        db.query(change , changeparams);
+    })
     db.query(insertquery , insertparmas , function(err) {
         if(err) res.send('insert fail');
         else res.send(`insert sussecs\n **Data Type = ${skillData.skillType} , ${userList[who]}`);
     })
+    
+    
 })
 app.post('/signup' , (req , res) => {
     var result = JSON.parse(req.body.signData);
@@ -330,6 +341,7 @@ wss.on('connection', async (ws, req) => {
         data = JSON.parse(data)
         if(data.title == "CheckThisMapEnemy"){
             let who = userStateChange(ws);
+
             ws.send(JSON.stringify({title : "CheckThisMapEnemy" , enemyList : thisMapEnemyList , users : thisMapUserList , NPC : NpcSpawn[userList[who].mapName]}));
             wss.clients.forEach(function each(client) {
                 if(ws.id != client.id) {
@@ -675,11 +687,16 @@ function EnemyAttack(enemy) {
         if(userList[who].defense >= enemy.damage){ 
             damgeValue = 1
             userList[who].hp -= damgeValue;
+
         }
         else {
             damgeValue = enemy.damage - userList[who].defense;
             userList[who].hp -= damgeValue;
         }
+        if(userList[who].hp <=0 ){
+            userList[who].hp = 0;
+        }
+
 
         all_player_response({ title: "EnemyAttack", enemy: enemy , this_player : userList[who] , hitDamage : damgeValue})
     }

@@ -9,7 +9,7 @@ public class UserChangeMap : ISocket
     {
         Debug.Log("맵을 이동한 유저 : " + data.this_player.id);
         
-        for(int i = 0; i < socket.other.Length; i++){
+        for(int i = 0; i < socket.other.Count; i++){
             if(socket.other[i].name == data.this_player.id && data.this_player.mapName != text.text) {
                 socket.other[i].SetActive(false);
                 break;

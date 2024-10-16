@@ -20,7 +20,7 @@ public class InputChatting : MonoBehaviour
             input.gameObject.SetActive(!input.gameObject.activeSelf);
             if(input.gameObject.activeSelf == true) {
                 input.text = "";
-                input.ActivateInputField();
+                input.ActivateInputField(); // Input Filed로 포커스 이동
             }
             
         }

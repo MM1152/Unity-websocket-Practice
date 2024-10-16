@@ -35,7 +35,7 @@ public class TileMap2D : MonoBehaviour
     [SerializeField] private Text mapNameText;
     [SerializeField] private GameObject[] walls;
     [SerializeField] private CameraMoveLimit cameraMoveLimit;
-
+    [SerializeField] GameObject potal;
     public Sprite[] mapImage;
     public Sprite[] colliderImage;
     public Sprite[] decoImage;
@@ -157,5 +157,7 @@ public class TileMap2D : MonoBehaviour
         }
         ChangeScene.gameObject.SetActive(false);
         mapDownLoadEnd = true;
+        if(mapNameText.text == "상점") potal.SetActive(true);
+        else potal.SetActive(false);
     }
 }

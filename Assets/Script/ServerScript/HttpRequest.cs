@@ -74,7 +74,4 @@ public class HttpRequest : MonoBehaviour
         }
     }
 
-    public void DataInsertSussecs(string issussecs){
-        Debug.Log("Data InsertSussecs\nInsertCode " + issussecs);
-    }
 }

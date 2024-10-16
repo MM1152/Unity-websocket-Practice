@@ -25,4 +25,6 @@ public class SkillData {
     public string skill_info;
     public int mp_cost;
     public float coolDown = 0;
+    public int learnableLevel;
+    public int learnableGold;
 }   

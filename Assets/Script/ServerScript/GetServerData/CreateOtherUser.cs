@@ -6,13 +6,13 @@ public class CreateOtherUser : ISocket
 {
     public override void RunNetworkCode(Data data)
     {
-        socket.other = GameObject.FindGameObjectsWithTag("Player");
+        socket.other = GameObject.FindGameObjectsWithTag("Player").ToList();
         
-        if(socket.other.Length != data.users.Length){
+        if(socket.other.Count != data.users.Length){
             
             for(int i = 0; i < data.users.Length; i++){
                 bool isCreated = false;
-                for(int j = 0; j < socket.other.Length; j++){
+                for(int j = 0; j < socket.other.Count; j++){
                     if(socket.other[j].name == data.users[i].id.ToString()){
                         isCreated = true;
                         break;
@@ -24,12 +24,13 @@ public class CreateOtherUser : ISocket
                     createUser.name = data.users[i].id.ToString();
                     createUser.GetComponent<OtherPlayerMove>().UserData = data.users[i];
                     createUser.GetComponent<OtherPlayerMove>().Type = data.users[i].type;
+                    socket.other.Add(createUser);
                     if(data.users[i].mapName != socket.this_player_MoveObject.playerMap){
                         createUser.SetActive(false);
                     }
                 }
             }
         }
-        socket.other = GameObject.FindGameObjectsWithTag("Player");
+        
     }
 }

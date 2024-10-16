@@ -15,7 +15,7 @@ public class CheckMove : ISocket
     public override void RunNetworkCode(Data data)
     {
         
-        for (int i = 0; i < socket.other.Length; i++)
+        for (int i = 0; i < socket.other.Count; i++)
         {
             if (socket.other[i].name == data.id.ToString())
             {

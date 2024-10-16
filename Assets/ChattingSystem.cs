@@ -16,9 +16,6 @@ public class ChattingSystem : MonoBehaviour
             text.text = sb.ToString();
 
             rect.sizeDelta += new Vector2(0 , 10);
-            Debug.Log($"Input sb : {sb.Length}");
-            
-            Debug.Log($"문자열의 길이 :{value.Length}");
             StartCoroutine(DeleteChatCorutine(value.Length + 2));
         }
     }
@@ -29,7 +26,6 @@ public class ChattingSystem : MonoBehaviour
     private IEnumerator DeleteChatCorutine(int Count){
         yield return new WaitForSeconds(2f);
         sb.Remove(0 , Count);
-        Debug.Log($"remove sb : {sb.Length}");
         rect.sizeDelta -= new Vector2(0 , 10);
         text.text = sb.ToString();
     }

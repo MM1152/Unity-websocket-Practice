@@ -11,7 +11,6 @@ public class ChangeMap : MonoBehaviour , IPointerClickHandler
     public Vector2 playerSpawnPos;
     public TileMap2D tilemap2D;
     [SerializeField] GameObject changeMap;
-
     public void OnPointerClick(PointerEventData eventData)
     {
         Change(currentMapName);        

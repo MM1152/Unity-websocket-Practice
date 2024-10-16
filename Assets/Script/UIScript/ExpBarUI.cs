@@ -12,7 +12,6 @@ public class ExpBarUI : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        
         expValueText = GetComponentInChildren<Text>();
         slider = GetComponent<Slider>();
     }

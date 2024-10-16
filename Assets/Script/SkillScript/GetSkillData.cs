@@ -1,5 +1,7 @@
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +21,17 @@ public class GetSkillData : MonoBehaviour
             return instance;
         }
     }
-    public Sprite[] skillImage;
+    public List<Sprite> skillImage;
+    private void Awake() {
+        
+        skillImage = Resources.LoadAll<Sprite>("SkillImage").ToList();
+        skillImage.Add(null);
+        for(int i = skillImage.Count - 2; i >= 0; i--) {
+            Debug.Log(skillImage[i].name);
+            skillImage[i + 1] = skillImage[i];
+        }
+        skillImage[0] = null;
+    }
     private void Start() {
         instance = this;
         getInventoryData = transform.parent.GetComponent<GetInventoryData>();

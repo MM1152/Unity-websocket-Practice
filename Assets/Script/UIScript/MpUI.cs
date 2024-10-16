@@ -11,7 +11,7 @@ public class MpUI : MonoBehaviour
     {
         player = transform.root.GetComponent<IMoveObj>();
         mpValue = GetComponent<Slider>();
-        mpValue.maxValue = player.UserData.hp;
+        mpValue.maxValue = player.UserData.mp;
     }
 
     // Update is called once per frame

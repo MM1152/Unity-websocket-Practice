@@ -6,7 +6,12 @@ public class CheckOutUser : ISocket
 {
     public override void RunNetworkCode(Data data)
     {        
-        Destroy(GameObject.Find(data.id.ToString()).gameObject);
-        socket.other = GameObject.FindGameObjectsWithTag("Player");
+        for(int i = 0; i < socket.other.Count; i++) {
+            if(data.id == socket.other[i].name) {
+                Destroy(socket.other[i]);
+                socket.other.RemoveAt(i);
+            }
+        }
+        
     }
 }
